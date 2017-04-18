@@ -1,4 +1,4 @@
-import { Router, Request, Response, NextFunction, Express } from 'express';
+import { Router } from 'express';
 
 export abstract class BaseRouter {
 
@@ -18,5 +18,4 @@ export abstract class BaseRouter {
         let configuration = new routerConfigurationConstructor();
         this.router.use(`/${rootPath}`, configuration.router);
     }
-
 }
