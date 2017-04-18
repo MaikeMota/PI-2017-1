@@ -1,5 +1,6 @@
 import * as express from 'express';
 import * as process from 'process';
+import * as morgan from 'morgan';
 
 import { CalculatorRouter } from './router/CalculatorRouter';
 
@@ -22,7 +23,8 @@ export class Application {
     }
 
     private configureMiddlewares() {
-        this.app.use(this.requestLogger)
+        this.app.use(this.requestLogger);
+        this.app.use(morgan("dev"));
     }
 
     private configureRouter() {
