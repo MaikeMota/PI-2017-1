@@ -27,6 +27,7 @@ export class Application {
 
     private configureMiddlewares() {
         this.app.use(morgan("dev"));
+        this.app.use(bodyParser.urlencoded({ extended: false }))
         this.app.use(bodyParser.json())
     }
 
