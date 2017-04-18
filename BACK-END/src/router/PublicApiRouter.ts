@@ -4,7 +4,7 @@ import { BaseRouter } from './BaseRouter';
 import { TokenRouter } from './TokenRouter';
 
 
-export class ApiRouter extends BaseRouter {
+export class PublicApiRouter extends BaseRouter {
 
     protected configureRouter(): void {
         this.register('token', TokenRouter);

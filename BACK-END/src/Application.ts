@@ -3,7 +3,7 @@ import * as process from 'process';
 import * as morgan from 'morgan';
 
 import { BaseRouter } from './router/BaseRouter';
-import { ApiRouter } from './router/ApiRouter';
+import { PublicApiRouter } from './router/PublicApiRouter';
 import { CalculatorRouter } from './router/CalculatorRouter';
 
 export class Application {
@@ -29,7 +29,7 @@ export class Application {
     }
 
     private configureRouter() {
-        this.register("api", ApiRouter);
+        this.register("api", PublicApiRouter);
         this.register("calculator", CalculatorRouter);
     }
 
