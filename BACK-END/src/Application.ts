@@ -1,6 +1,7 @@
 import * as express from 'express';
 import * as process from 'process';
 import * as morgan from 'morgan';
+import * as bodyParser from 'body-parser';
 
 import { BaseRouter } from './router/BaseRouter';
 import { PublicApiRouter } from './router/PublicApiRouter';
@@ -26,6 +27,7 @@ export class Application {
 
     private configureMiddlewares() {
         this.app.use(morgan("dev"));
+        this.app.use(bodyParser.json())
     }
 
     private configureRouter() {
