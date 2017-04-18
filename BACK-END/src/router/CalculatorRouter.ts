@@ -10,6 +10,6 @@ export class CalculatorRouter extends BaseRouter {
     }
 
     private static add(request: Request, response: Response, next: NextFunction) {
-        response.json({ result: Calculator.add(parseInt(request.params['a']), parseInt(request.params['b'])) })
+        response.json({ result: Calculator.add(parseInt(request.params['a']), parseInt(request.params['b'])) });
     }
 }
