@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { BaseRouter } from './BaseRouter';
-import { Calculator } from '../services/Calculator';
+import { Calculator } from '../service/Calculator';
 
 
 export class CalculatorRouter extends BaseRouter {
