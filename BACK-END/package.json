@@ -16,6 +16,8 @@
     "@types/jsonwebtoken": "^7.2.0",
     "@types/morgan": "^1.7.32",
     "@types/node": "^6.0.58",
+    "nodemon": "^1.11.0",
+    "ts-node": "^3.0.2",
     "typescript": "^2.1.4"
   },
   "dependencies": {
