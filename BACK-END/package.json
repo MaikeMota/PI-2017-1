@@ -1,0 +1,23 @@
+{
+  "name": "mean-typescript",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run build:live",
+    "build:live": "nodemon --exec ts-node ./src/Application.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/body-parser": "0.0.33",
+    "@types/express": "^4.0.34",
+    "@types/node": "^6.0.58",
+    "typescript": "^2.1.4"
+  },
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0"
+  }
+}
