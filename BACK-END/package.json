@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "npm run build:live",
-    "build:live": "nodemon --exec ts-node ./src/Application.ts",
+    "build:live": "nodemon --exec ts-node --inspect ./src/Application.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
