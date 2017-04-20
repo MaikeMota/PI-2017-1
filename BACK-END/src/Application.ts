@@ -6,6 +6,7 @@ import * as bodyParser from 'body-parser';
 import { BaseRouter } from './router/BaseRouter';
 import { PublicApiRouter } from './router/PublicApiRouter';
 import { CalculatorRouter } from './router/CalculatorRouter';
+import { SequelizeInitializer } from '../database/SequelizeInitializer';
 
 export class Application {
 
@@ -13,6 +14,7 @@ export class Application {
 
     constructor(port: number) {
         this.initializeServer(port);
+        SequelizeInitializer.intialize();
     }
 
     private initializeServer(port: number) {
