@@ -8,8 +8,6 @@
 #define R 10
 #define H_MAX 25.2
 #define H_MIN 22.8
-
-const int SAMPLES = 10;
  
 //Define os pinos para o trigger e echo
 #define pino_trigger 4
@@ -23,7 +21,6 @@ float H_ATUAL = 0;
 void setup()
 {
   Serial.begin(9600);
-  //Serial.println("Lendo dados do sensor...");
 }
 
 int estado_atual = -1;
