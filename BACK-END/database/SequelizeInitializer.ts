@@ -25,6 +25,10 @@ export class SequelizeInitializer {
             },
             password: {
                 type: Sequelize.STRING
+            },
+            active: {
+                type: Sequelize.BOOLEAN,
+                defaultValue: true
             }
         });
 
