@@ -1,4 +1,5 @@
 import * as Sequelize from 'sequelize';
+import { SequelizeInstance } from './SequelizeInstance';
 
 export class SequelizeInitializer {
 
@@ -18,7 +19,7 @@ export class SequelizeInitializer {
         });
 
 
-        var User = sequelize.define('user', {
+        SequelizeInstance.UserModel = sequelize.define('user', {
             username: {
                 type: Sequelize.STRING
             },
@@ -28,18 +29,12 @@ export class SequelizeInitializer {
         });
 
         // force: true will drop the table if it already exists
-        User.sync({ force: false }).then(() => {
+        SequelizeInstance.UserModel.sync({ force: false }).then(() => {
             // Table created
-            return User.create({
+            return SequelizeInstance.UserModel.create({
                 username: 'system',
                 password: 'system1234SYSTEM!@#$'
             });
         });
-
-        User.findAll().then(function (users) {
-            console.log(users)
-        })
-
-        console.log("Initialized with success");
     }
 }

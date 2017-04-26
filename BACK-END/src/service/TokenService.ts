@@ -19,7 +19,7 @@ export class TokenService {
     public static signToken(userWrapper: UserWrapper): TokenWrapper {
         let signedToken: string = jwt.sign(userWrapper, TokenService.privateKey, TokenService.defaultOptions);
         let tokenWrapper: TokenWrapper = new TokenWrapper(signedToken);
-        return;
+        return tokenWrapper;
     }
 
     public static renewToken(userWrapper: UserWrapper, oldToken: string): TokenWrapper {
