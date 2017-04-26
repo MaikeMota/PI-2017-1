@@ -17,36 +17,50 @@ export class TokenRouter extends BaseRouter {
     }
 
     private static token(request: Request, response: Response, next: NextFunction): void {
-        let authenticationWrapper: AuthenticationWrapper = <AuthenticationWrapper>request.body;
-        SequelizeInstance.UserModel.findOne({ where: { username: authenticationWrapper.username } }).then((user) => {
-            if(user && authenticationWrapper && user.password === authenticationWrapper.password) {
-                let userWrapper: UserWrapper = new UserWrapper(null, user);
-                response.json({
-                    token: TokenService.signToken(userWrapper).token,
-                    userId: userWrapper.id
-                });
-            } else {
-                response.statusCode = 403;
-                response.json({
-                    developerMessage: "Login Failure",
-                    statusCode: 1
-                });
-            }
-        });
+        let authenticationWrapper: AuthenticationWrapper = request.body;
+        if (!authenticationWrapper) {
+            response.statusCode = 403;
+            response.json({
+                developerMessage: "Login Failure",
+                statusCode: 1
+            });
+        }
+        SequelizeInstance.UserModel.findOne(
+            {
+                where: {
+                    username: authenticationWrapper.username,
+                    password: authenticationWrapper.password,
+                    active: true
+                }
+            }).then((user) => {
+                if (user) {
+                    let userWrapper: UserWrapper = new UserWrapper(null, user);
+                    response.json({
+                        token: TokenService.signToken(userWrapper).token,
+                        userInfo: userWrapper
+                    });
+                } else {
+                    response.statusCode = 403;
+                    response.json({
+                        developerMessage: "Login Failure",
+                        statusCode: 1
+                    });
+                }
+            });
     }
 
     private static renew(request: Request, response: Response, next: NextFunction): void {
-        let authorizationToken: string = request.header['Authorization'];
+        let authorizationToken: string = request.header('authorization');
         if (!authorizationToken) {
             response.sendStatus(400);
             return;
         }
         let userWrapper: UserWrapper; //TODO retrieve userWrapper
-        let renewTokenWrapper: TokenWrapper = TokenService.renewToken(userWrapper, authorizationToken.split(' ')[1]);
-        if (!renewTokenWrapper) {
-            response.sendStatus(403); // TODO 
-        } else {
-            response.json(renewTokenWrapper);
-        }
+        TokenService.renewToken(userWrapper,
+            authorizationToken.split(' ')[1]).then((renewedTokenWrapper: TokenWrapper) => {
+                response.json(renewedTokenWrapper);
+            }).catch(error => {
+                response.sendStatus(403); // TODO 
+            });
     }
 }

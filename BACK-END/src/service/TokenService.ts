@@ -22,19 +22,33 @@ export class TokenService {
         return tokenWrapper;
     }
 
-    public static renewToken(userWrapper: UserWrapper, oldToken: string): TokenWrapper {
-        let isValid: boolean = TokenService.isValid(new TokenWrapper(oldToken));
-        if (isValid) {
-            let user: User;
-            return TokenService.signToken(userWrapper);
-        } else {
-            return undefined;
-        }
+    public static renewToken(userWrapper: UserWrapper, oldToken: string): Promise<TokenWrapper> {
+        return new Promise<TokenWrapper>((resolve, reject) => {
+            TokenService.isValid(new TokenWrapper(oldToken)).then((isValid) => {
+                if (isValid) {
+                    let user: User;
+                    resolve(TokenService.signToken(userWrapper));
+                } else {
+                    reject();
+                }
+            });
+        });
     }
 
-    private static isValid(tokenWrapper: TokenWrapper): boolean {
-        jwt.verify(tokenWrapper.token, TokenService.privateKey, {})
-        return false;
+    private static isValid(tokenWrapper: TokenWrapper): Promise<boolean> {
+        return new Promise<boolean>((resolve, reject) => {
+            jwt.verify(tokenWrapper.token, TokenService.publicKey, {
+                algorithms: [this.defaultOptions.algorithm]
+            }, (err, decoded) => {
+                if (err) {
+                    reject();
+                } else {
+                    resolve(true);
+
+                }
+            });;
+        });
+
     }
 
     private static get privateKey(): any {
