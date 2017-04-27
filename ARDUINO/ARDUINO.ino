@@ -27,7 +27,13 @@
                               HARDWARE MAPPING
   ===============================================================================
 
-  ** Ethernet Shield uses PINS 4, 10, 11 and 12
+  ** Ethernet Shield Notes
+      Arduino communicates with both the W5100 and SD card using the SPI bus (through the ICSP header).
+      This is on D11, D12, and D13 on "classic" format Arduino models such as the Duemilanove,
+        and pins D50, D51, and D52 on the Arduino Mega.
+
+      D10 is used to select the W5100 and cannot be used for general I/O.
+      D4 is used for the SD card and can only be used for general I/O if the SD slot is not occupied.
 */
 #define STREET_WATER_FLUX_SENSOR 2
 #define WATER_EXIT_FLUX_SENSOR 3
