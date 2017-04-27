@@ -24,17 +24,18 @@ export class TokenService {
         return tokenWrapper;
     }
 
-    public static renewToken(userWrapper: UserWrapper, tokenWrapper: TokenWrapper): Promise<TokenWrapper> {
+    public static renewToken(tokenWrapper: TokenWrapper): Promise<TokenWrapper> {
         return new Promise<TokenWrapper>((resolve, reject) => {
-            TokenService.isValid(userWrapper, tokenWrapper).then((isValid) => {
+            TokenService.isValid(tokenWrapper).then((isValid) => {
                 if (isValid) {
-                    SequelizeInstance.UserModel.findById(userWrapper.id, {
+                    let userId = TokenService.decodeToken(tokenWrapper.token).id;
+                    SequelizeInstance.UserModel.findById(userId, {
                         where: {
                             active: true
                         }
                     }).then((dbUser) => {
                         if (dbUser) {
-                            resolve(TokenService.signToken(userWrapper));
+                            resolve(TokenService.signToken(new UserWrapper(null, dbUser)));
                         } else {
                             reject();
                         }
@@ -47,10 +48,15 @@ export class TokenService {
     }
 
     public static decodeToken(token: string): UserWrapper {
-        return <UserWrapper>jwt.decode(token);
+        let decodedToken = jwt.decode(token);
+        let userWrapper: UserWrapper = new UserWrapper(null, null);
+        userWrapper.id = decodedToken.id;
+        userWrapper.username = decodedToken.username;
+        // TODO Improve Object Reconstruction
+        return userWrapper;
     }
 
-    private static isValid(userWrapper: UserWrapper, tokenWrapper: TokenWrapper): Promise<boolean> {
+    private static isValid(tokenWrapper: TokenWrapper): Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
 
             jwt.verify(tokenWrapper.token, TokenService.publicKey, {

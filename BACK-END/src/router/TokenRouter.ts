@@ -56,8 +56,7 @@ export class TokenRouter extends BaseRouter {
             return;
         }
         let token: string = authorizationToken.split(' ')[1];
-        let userWrapper: UserWrapper = TokenService.decodeToken(token);
-        TokenService.renewToken(userWrapper, new TokenWrapper(token)).then((renewedTokenWrapper: TokenWrapper) => {
+        TokenService.renewToken(new TokenWrapper(token)).then((renewedTokenWrapper: TokenWrapper) => {
             response.json(renewedTokenWrapper);
         }).catch(error => {
             response.sendStatus(403); // TODO 

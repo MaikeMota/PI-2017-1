@@ -1,21 +1,6 @@
 {
     "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "Debug",
-            "type": "node",
-            "request": "launch",
-            "cwd": "${workspaceRoot}/BACK-END/ts-node/bin",
-            "program": "${cwd}/npm start",
-            "stopOnEntry": false,
-            "sourceMaps": true,
-            "runtimeArgs": [
-                "--no-timeouts",
-                "--colors",
-                "--compilers",
-                "ts:ts-node/register"
-            ]
-        },
+    "configurations": [        
         {
             "name": "Attach",
             "type": "node",
