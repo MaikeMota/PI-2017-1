@@ -7,6 +7,7 @@ import { AuthenticationWrapper } from "../model/AuthenticationWrapper";
 import { UserWrapper } from "../model/UserWrapper";
 
 import { SequelizeInstance } from '../../database/SequelizeInstance';
+import { RTKException } from '../api/rethink/core';
 
 
 export class TokenRouter extends BaseRouter {
@@ -43,7 +44,7 @@ export class TokenRouter extends BaseRouter {
                     response.statusCode = 403;
                     response.json({
                         developerMessage: "Login Failure",
-                        statusCode: 1
+                        code: -1
                     });
                 }
             });
@@ -59,7 +60,8 @@ export class TokenRouter extends BaseRouter {
         TokenService.renewToken(new TokenWrapper(token)).then((renewedTokenWrapper: TokenWrapper) => {
             response.json(renewedTokenWrapper);
         }).catch(error => {
-            response.sendStatus(403); // TODO 
+            response.statusCode = 403;
+            response.json(error.toJson());
         });
     }
 }

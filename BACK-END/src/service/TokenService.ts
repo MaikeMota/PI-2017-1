@@ -8,6 +8,8 @@ import { UserWrapper } from '../model/UserWrapper';
 import { AuthenticationWrapper } from '../model/AuthenticationWrapper';
 import { User } from '../model/User';
 
+import { RTKException } from '../api/rethink/core';
+
 export class TokenService {
 
     private static defaultOptions: jwt.SignOptions = {
@@ -37,12 +39,14 @@ export class TokenService {
                         if (dbUser) {
                             resolve(TokenService.signToken(new UserWrapper(null, dbUser)));
                         } else {
-                            reject();
+                            reject(new RTKException("JWT Error: Inavlid Signature", -1));
                         }
                     });
                 } else {
-                    reject();
+                    reject(new RTKException("JWT Error: Inavlid Signature", -1));
                 }
+            }).catch(error => {
+                reject(new RTKException("JWT Error: Inavlid Signature", -1));
             });
         });
     }
@@ -63,7 +67,7 @@ export class TokenService {
                 algorithms: [this.defaultOptions.algorithm]
             }, (err, decoded) => {
                 if (err) {
-                    reject();
+                    reject(err);
                 } else {
                     resolve(true);
                 }
