@@ -55,12 +55,12 @@ export class TokenRouter extends BaseRouter {
             response.sendStatus(400);
             return;
         }
-        let userWrapper: UserWrapper; //TODO retrieve userWrapper
-        TokenService.renewToken(userWrapper,
-            authorizationToken.split(' ')[1]).then((renewedTokenWrapper: TokenWrapper) => {
-                response.json(renewedTokenWrapper);
-            }).catch(error => {
-                response.sendStatus(403); // TODO 
-            });
+        let token: string = authorizationToken.split(' ')[1];
+        let userWrapper: UserWrapper = TokenService.decodeToken(token);
+        TokenService.renewToken(userWrapper, new TokenWrapper(token)).then((renewedTokenWrapper: TokenWrapper) => {
+            response.json(renewedTokenWrapper);
+        }).catch(error => {
+            response.sendStatus(403); // TODO 
+        });
     }
 }

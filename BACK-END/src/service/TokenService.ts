@@ -1,6 +1,8 @@
 import * as jwt from 'jsonwebtoken';
 import { readFileSync } from 'fs'
 
+import { SequelizeInstance } from '../../database/SequelizeInstance';
+
 import { TokenWrapper } from '../model/TokenWrapper';
 import { UserWrapper } from '../model/UserWrapper';
 import { AuthenticationWrapper } from '../model/AuthenticationWrapper';
@@ -22,12 +24,21 @@ export class TokenService {
         return tokenWrapper;
     }
 
-    public static renewToken(userWrapper: UserWrapper, oldToken: string): Promise<TokenWrapper> {
+    public static renewToken(userWrapper: UserWrapper, tokenWrapper: TokenWrapper): Promise<TokenWrapper> {
         return new Promise<TokenWrapper>((resolve, reject) => {
-            TokenService.isValid(new TokenWrapper(oldToken)).then((isValid) => {
+            TokenService.isValid(userWrapper, tokenWrapper).then((isValid) => {
                 if (isValid) {
-                    let user: User;
-                    resolve(TokenService.signToken(userWrapper));
+                    SequelizeInstance.UserModel.findById(userWrapper.id, {
+                        where: {
+                            active: true
+                        }
+                    }).then((dbUser) => {
+                        if (dbUser) {
+                            resolve(TokenService.signToken(userWrapper));
+                        } else {
+                            reject();
+                        }
+                    });
                 } else {
                     reject();
                 }
@@ -35,8 +46,13 @@ export class TokenService {
         });
     }
 
-    private static isValid(tokenWrapper: TokenWrapper): Promise<boolean> {
+    public static decodeToken(token: string): UserWrapper {
+        return <UserWrapper>jwt.decode(token);
+    }
+
+    private static isValid(userWrapper: UserWrapper, tokenWrapper: TokenWrapper): Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
+
             jwt.verify(tokenWrapper.token, TokenService.publicKey, {
                 algorithms: [this.defaultOptions.algorithm]
             }, (err, decoded) => {
@@ -44,7 +60,6 @@ export class TokenService {
                     reject();
                 } else {
                     resolve(true);
-
                 }
             });;
         });
