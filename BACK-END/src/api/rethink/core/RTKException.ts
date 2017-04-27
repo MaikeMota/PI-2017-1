@@ -15,7 +15,7 @@ export class RTKException {
         return this._code;
     }
 
-    toJson(): any {
+    toJSON(): any {
         return {
             developerMessage: this.developerMessage,
             code: this.code

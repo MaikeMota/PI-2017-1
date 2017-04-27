@@ -21,10 +21,7 @@ export class TokenRouter extends BaseRouter {
         let authenticationWrapper: AuthenticationWrapper = request.body;
         if (!authenticationWrapper) {
             response.statusCode = 403;
-            response.json({
-                developerMessage: "Login Failure",
-                statusCode: 1
-            });
+            response.json(new RTKException("Login Failure", -1));
         }
         SequelizeInstance.UserModel.findOne(
             {
@@ -42,10 +39,7 @@ export class TokenRouter extends BaseRouter {
                     });
                 } else {
                     response.statusCode = 403;
-                    response.json({
-                        developerMessage: "Login Failure",
-                        code: -1
-                    });
+                    response.json(new RTKException("Login Failure", -1));
                 }
             });
     }
@@ -61,7 +55,7 @@ export class TokenRouter extends BaseRouter {
             response.json(renewedTokenWrapper);
         }).catch(error => {
             response.statusCode = 403;
-            response.json(error.toJson());
+            response.json(error);
         });
     }
 }
