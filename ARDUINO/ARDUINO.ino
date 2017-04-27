@@ -1,48 +1,201 @@
+/*
+  ===============================================================================
+                              EXTERNAL LIBRARIES
+  ===============================================================================
+*/
+
 #include <avr/interrupt.h>
 #include <avr/io.h>
-
 #include <Ultrasonic.h>
 
-//#define DEBUG 1
+/*
+  ===============================================================================
+                              TYPE DEFINITIONS
+  ===============================================================================
+*/
 
-#define PI 3.14159
+/*
+  ===============================================================================
+                              PROGRAM CONSTANTS
+  ===============================================================================
+*/
 #define PRECISION 3
+#define DEBUG
 
-#define TRIGGER_PIN 6
-#define ECHO_PIN 7
+/*
+  ===============================================================================
+                              HARDWARE MAPPING
+  ===============================================================================
 
-volatile float radius = 10;
-volatile float totalheight = 25.2;
-volatile float mininumheight = 22.8;
+  ** Ethernet Shield uses PINS 4, 10, 11 and 12
+*/
+#define STREET_WATER_FLUX_SENSOR 2
+#define WATER_EXIT_FLUX_SENSOR 3
+#define STREET_WATER_FLUX_LED 5
+#define WATER_EXIT_FLUX_LED 6
+#define STREET_WATER_SOLENOIDE 7
+#define TRIGGER_PIN 8
+#define ECHO_PIN 9
 
+/*
+  ===============================================================================
+                              GLOBAL VARIABLES (INTERRUPTS)
+  ===============================================================================
+*/
 volatile long streetWaterFrequency = 0;
 volatile long waterExitFrequency = 0;
+
+/*
+  ===============================================================================
+                              GLOBAL VARIABLES
+  ===============================================================================
+*/
+float recipientRadius = 10;
+float recipientHeight = 25.2;
+
+float minWaterLevel = 0.0;
+float minWaterHeight = 0.0;
+
+float medWaterLevel = 0.0;
+float medWaterHeight = 0.0;
+
+float maxWaterLevel = 0.0;
+float maxWaterHeight = 0.0;
+
 long lastTime = 0;
 long currentTime = 0;
-
 float lastStreetWaterFlux = 0;
 float lastWaterExitFlux = 0;
-
+unsigned long lastCheck = 0;
+unsigned long startedToFullFill = 0;
+unsigned long startedToEmpty = 0;
 Ultrasonic ultrasonic(TRIGGER_PIN, ECHO_PIN);
 
+/*
+  ===============================================================================
+                              FUNCTIONS PROTOTYPES
+  ===============================================================================
+*/
+float readWaterHeight();
+float calculateActualWaterVolume();
+float waterLevelToWaterHeight(float targetVolume);
+void setMinWaterLevel(float targetVolume);
+void setMedWaterLevel(float targetVolume);
+void setMaxWaterLevel(float targetVolume);
+
+void setup()
+{
+  pinMode(13, OUTPUT);
+  pinMode(STREET_WATER_FLUX_SENSOR, INPUT); // Configures STREET_WATER_FLUX_SENSOR as Input
+  pinMode(WATER_EXIT_FLUX_SENSOR, INPUT);   // Configures WATER_EXIT_FLUX_SENSOR as Input
+
+  Serial.begin(9600);
+
+  attachInterrupt(0, streetWaterFlowInterrupt, RISING); // Attachs streetWaterFlowInterrupt function to INT0
+  attachInterrupt(1, waterExitFlowInterrupt, RISING);   // Attachs waterExitFlowInterrupt function to INT1
+  sei();                                                // Enables interrupts
+
+  setMinWaterLevel(1);
+  setMedWaterLevel(3.5);
+  setMaxWaterLevel(6);
+}
+
+void loop()
+{
+
+  if (millis() >= (lastCheck + 1000))
+  {
+    float actualVolume = calculateActualWaterVolume();
+    float actualStreetWaterFlux = streetWaterFrequency / (7.5 * 60);
+    float actualWaterExitFlux = waterExitFrequency / (7.5 * 60);
+    streetWaterFrequency = 0;
+    waterExitFrequency = 0;
+
+#ifdef DEBUG
+    Serial.print("Volume: ");
+    Serial.print(actualVolume);
+    Serial.print(" L");
+    Serial.print(" Vazao Agua Rua: ");
+    Serial.print(actualStreetWaterFlux, PRECISION); // Liters per second
+    Serial.print(" l/s");
+    Serial.print(" Vazao saida: ");
+    Serial.print(actualWaterExitFlux, PRECISION); // Liters per second
+    Serial.println(" l/s");
+#endif
+
+    if (lastStreetWaterFlux == 0 && actualStreetWaterFlux > 0)
+    {
+      digitalWrite(13, HIGH);
+      startedToFullFill = millis();
+//TODO SET STATUS
+#ifdef DEBUG
+      Serial.println("INICIO_FLUXO_AGUA_RUA");
+#endif
+    }
+    else if (lastStreetWaterFlux > 0 && actualStreetWaterFlux == 0)
+    {
+      digitalWrite(13, LOW);
+      long fullFillTime = (millis() - startedToFullFill) / 1000;
+//TODO SET STATUS
+#ifdef DEBUG
+      Serial.println("FIM_FLUXO_AGUA_RUA");
+      Serial.print("Enchido em: ");
+      Serial.print(fullFillTime);
+      Serial.println(" s");
+      Serial.print(" Vazao Media: ");
+#endif
+    }
+
+    lastStreetWaterFlux = actualStreetWaterFlux;
+
+    if (lastWaterExitFlux == 0 && actualWaterExitFlux > 0)
+    {
+      digitalWrite(13, HIGH);
+      startedToEmpty = millis();
+//TODO SET STATUS
+#ifdef DEBUG
+      Serial.println("INICIO_FLUXO_SAIDA_AGUA");
+#endif
+    }
+    else if (lastWaterExitFlux > 0 && actualWaterExitFlux == 0)
+    {
+      digitalWrite(13, LOW);
+      long emptyTime = (millis() - startedToEmpty) / 1000;
+//TODO SET STATUS
+#ifdef DEBUG
+      Serial.println("FIM_FLUXO_SAIDA_AGUA");
+      Serial.print("Esvaziado em: ");
+      Serial.print(emptyTime);
+      Serial.println(" s");
+#endif
+    }
+
+    lastWaterExitFlux = actualWaterExitFlux;
+    lastCheck = millis();
+  }
+}
+
+/*
+  ===============================================================================
+                              AUXILIARY FUNCTIONS
+  ===============================================================================
+*/
 /**
 * Calculates the actual water volume of the recipient in Liters.
-* @param float radius The radius of the recipient.
-* @param float actualheight Actual height of the water level.
 * @returns float the current water volume (L).
 */
-float calculateWaterVolume(float radius, float actualheight)
+float calculateActualWaterVolume()
 {
-  float currentVolume = (PI * pow(radius, 2) * (totalheight - actualheight));
+  float actualWaterHeight = readWaterHeight();
+  float currentWaterVolume = (PI * pow(recipientRadius, 2) * (actualWaterHeight)); // V = PI * R^2 * H
+                                                                                   // R and H are in CM
+  currentWaterVolume = currentWaterVolume / 1000;                                  // Convert cm³ to L
+
 #ifdef DEBUG
-  Serial.print(F("Radius: "));
-  Serial.print(radius);
-  Serial.print(F(" Actual Height: "));
-  Serial.print(actualheight);
-  Serial.print(F(" Current Volume: "));
-  Serial.println(currentVolume);
-#endif                         // DEBUG
-  return currentVolume / 1000; //convert to L
+  Serial.print("actualWaterHeight: ");
+  Serial.println(actualWaterHeight);
+#endif
+  return currentWaterVolume;
 }
 
 /**
@@ -51,123 +204,65 @@ float calculateWaterVolume(float radius, float actualheight)
 */
 float readWaterHeight()
 {
-  long microsec = ultrasonic.timing();
-  float cm = ultrasonic.convert(microsec, Ultrasonic::CM);
-#ifdef DEBUG
-  Serial.print(F("Total Microseconds: "));
-  Serial.print(microsec);
-  Serial.print(F(" Current distance (cm): "));
-  Serial.println(cm);
-#endif //DEBUG
+  long echoTiming = ultrasonic.timing();
+  float cm = ultrasonic.convert(echoTiming, Ultrasonic::CM);
+  cm = recipientHeight - cm;
   return cm;
 }
 
-/**
-* Checks Actual Recipient Volume
+float waterLevelToWaterHeight(float targetVolume)
+{
+
+  float waterHeight = targetVolume / (PI * pow(recipientRadius, 2)); // H = V / (PI * R ^ 2);
+                                                                     // R and H are in CM
+  waterHeight = waterHeight * 1000;                                  // Convert L to cm
+
+  //waterHeight = recipientHeight - waterHeight; // Revert the Heigth ( Because the needed value is the distance of the sensor
+                                               // [recipientHeight] and the waterHeight
+  return waterHeight;
+}
+
+void setMinWaterLevel(float targetVolume)
+{
+  minWaterLevel = targetVolume;
+  minWaterHeight = waterLevelToWaterHeight(minWaterLevel);
+#ifdef DEBUG
+  Serial.print("minWaterLevel: ");
+  Serial.print(minWaterLevel, PRECISION);
+  Serial.print(" minWaterHeight: ");
+  Serial.println(minWaterHeight, PRECISION);
+#endif
+}
+
+void setMedWaterLevel(float targetVolume)
+{
+  medWaterLevel = targetVolume;
+  medWaterHeight = waterLevelToWaterHeight(medWaterLevel);
+#ifdef DEBUG
+  Serial.print("medWaterLevel: ");
+  Serial.print(medWaterLevel, PRECISION);
+  Serial.print(" medWaterHeight: ");
+  Serial.println(medWaterHeight, PRECISION);
+#endif
+}
+
+void setMaxWaterLevel(float targetVolume)
+{
+  maxWaterLevel = targetVolume;
+  maxWaterHeight = waterLevelToWaterHeight(maxWaterLevel);
+#ifdef DEBUG
+  Serial.print("maxWaterLevel: ");
+  Serial.print(maxWaterLevel, PRECISION);
+  Serial.print(" maxWaterHeight: ");
+  Serial.println(maxWaterHeight, PRECISION);
+#endif
+}
+
+/*
+  ===============================================================================
+                              INTERRUPTION HANDLERS
+  ===============================================================================
 */
-void checkRecipientVolume()
-{
-}
-
-void setup()
-{
-  pinMode(13, OUTPUT);
-  pinMode(2, INPUT);
-  pinMode(3, INPUT);
-  Serial.begin(9600);
-  attachInterrupt(0, streetWaterFlowInterrupt, RISING);
-  attachInterrupt(1, waterExitFlowInterrupt, RISING);
-  //EICRA = (1 << ISC11);// | (1 << ISC10); // Set INT0 and INT1 to interrupt at RISING
-  /* Serial.println(ISC11, BIN);
-  Serial.println(1 << ISC11, BIN);
-  Serial.println(ISC10, BIN);
-  Serial.println(1 << ISC10, BIN);
-  Serial.println(ISC01, BIN);
-  Serial.println(1 << ISC01, BIN);
-  Serial.println(ISC00, BIN);
-  Serial.println(1 << ISC00, BIN);*/
-  //EIMSK |= (1 << INT0);// | (1 << INT1); // Turns on INT0 and INT1
-  sei(); // Enable interrupts
-}
-
-long lastCheck = 0;
-
-long startedToFullFill = 0;
-long startedToEmpty = 0;
-
-void loop()
-{
-  /*currentTime = millis();
-  if (currentTime >= (lastTime + 1000))
-  {
-    lastTime = currentTime;
-    //Serial.println(frequency / 7.5);
-    digitalWrite(13, !digitalRead(13));
-    frequency = 0;
-  }*/
-
-  if (millis() >= (lastCheck + 1000))
-  {
-    Serial.print("Volume: ");
-    Serial.print(calculateWaterVolume(radius, readWaterHeight()), PRECISION);
-    Serial.print(" L");
-    Serial.print(" Vazao Agua Rua: ");
-    float actualStreetWaterFlux = streetWaterFrequency / (7.5 * 60);
-
-    Serial.print(actualStreetWaterFlux, PRECISION); // Liters per second
-    streetWaterFrequency = 0;
-    Serial.print(" l/s");
-    Serial.print(" Vazao saida: ");
-
-    float actualWaterExitFlux = waterExitFrequency / (7.5 * 60);
-    Serial.print(actualWaterExitFlux, PRECISION); // Liters per second
-    waterExitFrequency = 0;
-    Serial.println(" l/s");
-
-    if (lastStreetWaterFlux == 0 && actualStreetWaterFlux > 0)
-    {
-      digitalWrite(13, HIGH);
-      Serial.println("INICIO_FLUXO_AGUA_RUA");
-      startedToFullFill = millis();
-    }
-    else if (lastStreetWaterFlux > 0 && actualStreetWaterFlux == 0)
-    {
-      digitalWrite(13, LOW);
-      Serial.println("FIM_FLUXO_AGUA_RUA");
-      Serial.print("Enchido em: ");
-      long fullFillTime = (millis() - startedToFullFill) / 1000;
-      Serial.print(fullFillTime);
-      Serial.print(" s");
-      Serial.print(" Vazao Media: ");
-      Serial.println((5 / fullFillTime), PRECISION); // TODO CHANGE TO VOL_MAX
-      Serial.println(" l/s");
-    }
-    lastStreetWaterFlux = actualStreetWaterFlux;
-
-    if (lastWaterExitFlux == 0 && actualWaterExitFlux > 0)
-    {
-      digitalWrite(13, HIGH);
-      Serial.println("INICIO_FLUXO_SAIDA_AGUA");
-      startedToEmpty = millis();
-    }
-    else if (lastWaterExitFlux > 0 && actualWaterExitFlux == 0)
-    {
-      digitalWrite(13, LOW);
-      Serial.println("FIM_FLUXO_SAIDA_AGUA");
-      Serial.print("Esvaziado em: ");
-      long emptyTime = (millis() - startedToEmpty) / 1000;
-      Serial.print(emptyTime);
-      Serial.println(" s");
-      Serial.print(" Vazao Media: ");
-      Serial.print((5 / emptyTime), PRECISION); // TODO CHANGE TO VOL_MAX
-      Serial.println(" l/s");
-    }
-    lastWaterExitFlux = actualWaterExitFlux;
-
-    lastCheck = millis();
-  }
-}
-
 void streetWaterFlowInterrupt()
 {
   streetWaterFrequency++;
