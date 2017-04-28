@@ -3,12 +3,12 @@ import { readFileSync } from 'fs'
 
 import { SequelizeInstance } from '../../database/SequelizeInstance';
 
-import { TokenWrapper } from '../model/TokenWrapper';
-import { UserWrapper } from '../model/UserWrapper';
-import { AuthenticationWrapper } from '../model/AuthenticationWrapper';
-import { User } from '../model/User';
+import { ForbiddenException } from '../api/rethink/core';
 
-import { RTKException } from '../api/rethink/core';
+import { User } from '../model/User';
+import { UserWrapper } from '../model/UserWrapper';
+import { TokenWrapper } from '../model/TokenWrapper';
+import { AuthenticationWrapper } from '../model/AuthenticationWrapper';
 
 export class TokenService {
 
@@ -17,8 +17,29 @@ export class TokenService {
         expiresIn: "7d"
     };
 
-    private static _privateKey;
-    private static _publicKey;
+    private static _privateKey: Buffer;
+    private static _publicKey: Buffer;
+
+    public static authenticate(authenticationWrapper: AuthenticationWrapper): Promise<AuthenticationWrapper> {
+        return new Promise<any>((resolve, reject) => {
+            SequelizeInstance.UserModel.findOne(
+                {
+                    where: {
+                        username: authenticationWrapper.username,
+                        password: authenticationWrapper.password,
+                        active: true
+                    }
+                }).then((dbUser) => {
+                    if (dbUser) {
+                        authenticationWrapper.userWrapper = new UserWrapper(null, dbUser);
+                        authenticationWrapper.token = TokenService.signToken(authenticationWrapper.userWrapper).token;
+                        resolve(authenticationWrapper);
+                    } else {
+                        throw new ForbiddenException("Login Failure", -1);
+                    }
+                });
+        });
+    }
 
     public static signToken(userWrapper: UserWrapper): TokenWrapper {
         let signedToken: string = jwt.sign(userWrapper, TokenService.privateKey, TokenService.defaultOptions);
@@ -39,14 +60,10 @@ export class TokenService {
                         if (dbUser) {
                             resolve(TokenService.signToken(new UserWrapper(null, dbUser)));
                         } else {
-                            reject(new RTKException("JWT Error: Inavlid Signature", -1));
+                            throw new ForbiddenException("JWT Error: Invalid User", -1);
                         }
                     });
-                } else {
-                    reject(new RTKException("JWT Error: Inavlid Signature", -1));
                 }
-            }).catch(error => {
-                reject(new RTKException("JWT Error: Inavlid Signature", -1));
             });
         });
     }
@@ -62,12 +79,11 @@ export class TokenService {
 
     private static isValid(tokenWrapper: TokenWrapper): Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
-
             jwt.verify(tokenWrapper.token, TokenService.publicKey, {
                 algorithms: [this.defaultOptions.algorithm]
-            }, (err, decoded) => {
+            }, (err: jwt.JsonWebTokenError | jwt.TokenExpiredError | jwt.NotBeforeError, decoded) => {
                 if (err) {
-                    reject(err);
+                    throw new ForbiddenException("JWT: Invalid Token.", -1);
                 } else {
                     resolve(true);
                 }
@@ -76,14 +92,14 @@ export class TokenService {
 
     }
 
-    private static get privateKey(): any {
+    private static get privateKey(): Buffer {
         if (!TokenService._privateKey) {
             TokenService._privateKey = readFileSync('./resources/privateKey.key');
         }
         return TokenService._privateKey;
     }
 
-    private static get publicKey(): any {
+    private static get publicKey(): Buffer {
         if (!TokenService._publicKey) {
             TokenService._publicKey = readFileSync('./resources/publicKey.pem');
         }
