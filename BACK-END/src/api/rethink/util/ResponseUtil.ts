@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { RTKException, ForbiddenException, BadRequestException, ServerErrorException } from '../core';
+import { RTKException, ForbiddenException, BadRequestException, ServerErrorException } from '../core/exception';
 
 export abstract class ResponseUtil {
 
