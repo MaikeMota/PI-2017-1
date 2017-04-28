@@ -1,4 +1,4 @@
-import { User } from './User';
+import { User } from './interface';
 
 export class UserWrapper {
 
