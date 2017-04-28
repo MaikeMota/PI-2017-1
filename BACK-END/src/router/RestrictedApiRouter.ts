@@ -7,6 +7,7 @@ import { TokenService } from "../service";
 import { TokenRouter } from "./TokenRouter";
 import { BaseRouter } from './BaseRouter';
 import { CalculatorRouter } from './CalculatorRouter';
+import { TokenWrapper } from '../model/TokenWrapper';
 
 
 export class RestrictedApiRouter extends BaseRouter {
@@ -17,10 +18,16 @@ export class RestrictedApiRouter extends BaseRouter {
 
     protected configureMiddleware(): void {
         this.router.use((request: Request, response: Response, next: NextFunction) => {
-            if (!request.header(TokenRouter.AUTHORIZATION_HEADER)) {
+            let header: string = request.header(TokenRouter.AUTHORIZATION_HEADER);
+            if (!header) {
                 throw new ForbiddenException("Missing Token Authorzation", -1);
             } else {
-                next();
+                let token: string = header.replace("Bearer ", "");
+                if (TokenService.isValid(new TokenWrapper(token))) {
+                    next();
+                } else {
+                    throw new ForbiddenException("Invalid Token", -1);
+                }
             }
         });
     }

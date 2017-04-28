@@ -83,7 +83,7 @@ export class TokenService {
         return userWrapper;
     }
 
-    private static isValid(tokenWrapper: TokenWrapper): Promise<boolean> {
+    public static isValid(tokenWrapper: TokenWrapper): Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
             jwt.verify(tokenWrapper.token, TokenService.publicKey, {
                 algorithms: [this.defaultOptions.algorithm]
@@ -95,7 +95,6 @@ export class TokenService {
                 }
             });;
         });
-
     }
 
     private static get privateKey(): Buffer {
