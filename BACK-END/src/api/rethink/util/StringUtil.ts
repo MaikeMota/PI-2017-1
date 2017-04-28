@@ -7,4 +7,8 @@ export abstract class StringUtil {
         return value.trim().length == 0;
     }
 
+    public static isNotNullNotEmptyOrUndefined(value: string) {
+        return !StringUtil.isNullEmptyOrUndefined(value);
+    }
+
 }
