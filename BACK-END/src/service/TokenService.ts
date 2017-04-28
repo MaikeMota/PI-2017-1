@@ -66,8 +66,10 @@ export class TokenService {
                         }
                     }).catch(error => {
                         reject(error);
-                    });;
+                    });
                 }
+            }).catch(error => {
+                reject(error);
             });
         });
     }
