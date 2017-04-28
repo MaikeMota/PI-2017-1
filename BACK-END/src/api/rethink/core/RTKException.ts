@@ -1,9 +1,11 @@
 export class RTKException {
     protected _developerMessage: string;
     protected _code: number;
+    protected _statusCode: number;
 
-    constructor(developerMessage: string, code: number) {
+    constructor(developerMessage: string, code: number, statusCode: number) {
         this._code = code;
+        this._statusCode = statusCode;
         this._developerMessage = developerMessage;
     }
 

@@ -7,6 +7,7 @@ import { BaseRouter } from './router/BaseRouter';
 import { PublicApiRouter } from './router/PublicApiRouter';
 import { CalculatorRouter } from './router/CalculatorRouter';
 import { SequelizeInitializer } from '../database/SequelizeInitializer';
+import { ErrorHandler } from "./api/rethink/service/ErrorHandler";
 
 export class Application {
 
@@ -17,28 +18,33 @@ export class Application {
         SequelizeInitializer.intialize();
     }
 
-    private initializeServer(port: number) {
+    private initializeServer(port: number): void {
         this.app = express();
         this.configureMiddlewares();
         this.configureRouter();
+        this.configureErrorHandler();
         let instance: Application = this;
         this.app.listen(port, "0.0.0.0", () => {
             console.log(`Server running at ${port}`);
         });
     }
 
-    private configureMiddlewares() {
+    private configureMiddlewares(): void {
         this.app.use(morgan("dev"));
-        this.app.use(bodyParser.urlencoded({ extended: false }))
-        this.app.use(bodyParser.json())
+        this.app.use(bodyParser.urlencoded({ extended: false }));
+        this.app.use(bodyParser.json());
     }
 
-    private configureRouter() {
+    private configureRouter(): void {
         this.register("api", PublicApiRouter);
         this.register("calculator", CalculatorRouter);
     }
 
-    private register<T extends BaseRouter>(rootPath: string, routerConfigurationConstructor: new () => T) {
+    private configureErrorHandler(): void {
+        this.app.use(ErrorHandler.handler);
+    }
+
+    private register<T extends BaseRouter>(rootPath: string, routerConfigurationConstructor: new () => T): void {
         let configuration = new routerConfigurationConstructor();
         this.app.use(`/${rootPath}`, configuration.router);
     }
