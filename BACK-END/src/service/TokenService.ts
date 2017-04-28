@@ -1,9 +1,12 @@
 import * as jwt from 'jsonwebtoken';
+import { FindOptions } from 'sequelize';
+
 import { readFileSync } from 'fs'
 
 import { SequelizeInstance } from '../../database/SequelizeInstance';
 
-import { ForbiddenException } from '../api/rethink/core';
+import { ForbiddenException, BadRequestException } from '../api/rethink/core';
+import { StringUtil } from '../api/rethink/util';
 
 import { User } from '../model/User';
 import { UserWrapper } from '../model/UserWrapper';
@@ -11,6 +14,9 @@ import { TokenWrapper } from '../model/TokenWrapper';
 import { AuthenticationWrapper } from '../model/AuthenticationWrapper';
 
 export class TokenService {
+
+    public static readonly AUTHORIZATION_HEADER: string = "authorization";
+    public static readonly TOKEN_PREFIX: string = "Bearer";
 
     private static defaultOptions: jwt.SignOptions = {
         algorithm: "RS256",
@@ -22,24 +28,13 @@ export class TokenService {
 
     public static authenticate(authenticationWrapper: AuthenticationWrapper): Promise<AuthenticationWrapper> {
         return new Promise<AuthenticationWrapper>((resolve, reject) => {
-            SequelizeInstance.UserModel.findOne(
-                {
-                    where: {
-                        username: authenticationWrapper.username,
-                        password: authenticationWrapper.password,
-                        active: true
-                    }
-                }).then((dbUser) => {
-                    if (dbUser) {
-                        authenticationWrapper.userWrapper = new UserWrapper(null, dbUser);
-                        authenticationWrapper.token = TokenService.signToken(authenticationWrapper.userWrapper).token;
-                        resolve(authenticationWrapper);
-                    } else {
-                        throw new ForbiddenException("Login Failure", -1);
-                    }
-                }).catch(error => {
-                    reject(error);
-                });
+            TokenService.retrieveUserByCredentials(authenticationWrapper.username, authenticationWrapper.password).then((user) => {
+                authenticationWrapper.userWrapper = new UserWrapper(null, user);
+                authenticationWrapper.token = TokenService.signToken(authenticationWrapper.userWrapper).token;
+                resolve(authenticationWrapper);
+            }).catch(error => {
+                reject(error);
+            });
         });
     }
 
@@ -53,19 +48,10 @@ export class TokenService {
         return new Promise<TokenWrapper>((resolve, reject) => {
             TokenService.isValid(tokenWrapper).then((isValid) => {
                 if (isValid) {
-                    let userId = TokenService.decodeToken(tokenWrapper.token).id;
-                    SequelizeInstance.UserModel.findById(userId, {
-                        where: {
-                            active: true
-                        }
-                    }).then((dbUser) => {
-                        if (dbUser) {
-                            resolve(TokenService.signToken(new UserWrapper(null, dbUser)));
-                        } else {
-                            throw new ForbiddenException("Login Failure", -1);
-                        }
-                    }).catch(error => {
-                        reject(error);
+                    let userId = TokenService.decodeToken(tokenWrapper).id;
+                    TokenService.retrieveUserById(userId).then((user) => {
+                        tokenWrapper = TokenService.signToken(new UserWrapper(null, user));
+                        resolve(tokenWrapper)
                     });
                 }
             }).catch(error => {
@@ -74,8 +60,50 @@ export class TokenService {
         });
     }
 
-    public static decodeToken(token: string): UserWrapper {
-        let decodedToken = jwt.decode(token);
+    public static retrieveUserById(userId: string, options?: FindOptions): Promise<any> {
+        return new Promise<any>((resolve, reject) => {
+            SequelizeInstance.UserModel.findById(userId, options).then((dbUser) => {
+                if (dbUser) {
+                    if (dbUser.active) {
+                        resolve(dbUser);
+                    } else {
+                        throw new ForbiddenException("User is not active.", -1);
+                    }
+                } else {
+                    throw new ForbiddenException("User not found.", -1);
+                }
+            }).catch(error => {
+                reject(error);
+            });
+        });
+    }
+
+    public static retrieveUserByCredentials(username: string, password: string): Promise<any> {
+        return new Promise<any>((resolve, reject) => {
+            SequelizeInstance.UserModel.find({
+                where: {
+                    username: username,
+                    password: password,
+                    active: true
+                }
+            }).then((dbUser) => {
+                if (dbUser) {
+                    if (dbUser.active) {
+                        resolve(dbUser);
+                    } else {
+                        throw new ForbiddenException("User is not active.", -1);
+                    }
+                } else {
+                    throw new ForbiddenException("User not found.", -1);
+                }
+            }).catch(error => {
+                reject(error);
+            });
+        });
+    }
+
+    public static decodeToken(tokenWrapper: TokenWrapper): UserWrapper {
+        let decodedToken = jwt.decode(tokenWrapper.token);
         let userWrapper: UserWrapper = new UserWrapper(null, null);
         userWrapper.id = decodedToken.id;
         userWrapper.username = decodedToken.username;
@@ -95,6 +123,18 @@ export class TokenService {
                 }
             });;
         });
+    }
+
+
+
+    public static validateAuthorizationHeader(authorizationToken: string): void {
+        if (StringUtil.isNullEmptyOrUndefined(authorizationToken)) {
+            throw new ForbiddenException("Missing Authorization Header", -1);
+        }
+        let splitedHeaderValue: string[] = authorizationToken.split(' ');
+        if (splitedHeaderValue[0] !== TokenService.TOKEN_PREFIX && StringUtil.isNullEmptyOrUndefined(splitedHeaderValue[1])) {
+            throw new ForbiddenException("Invalid Token Header", -1);
+        }
     }
 
     private static get privateKey(): Buffer {
