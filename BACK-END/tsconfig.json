@@ -5,7 +5,7 @@
         "module": "commonjs",
         "target": "es6",
         "noImplicitAny": false,
-        //"sourceMap": true
+        "sourceMap": true,
         "inlineSources": true
     },
     "outDir": "dest",
@@ -14,7 +14,7 @@
         "${workspaceRoot}/src/**/*.ts"
     ],
     "outFiles": [
-        "${workspaceRoot}/bin/**/*.js"
+        "${workspaceRoot}/backend/bin/**/*.js"
     ],
     "exclude": [
         "node_modules"
