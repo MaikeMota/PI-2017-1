@@ -91,7 +91,7 @@ export class TokenService {
                 if (!err) {
                     resolve(true);
                 } else {
-                    throw new ForbiddenException("JWT: Invalid Token.", -1);
+                    reject(new ForbiddenException("JWT: Invalid Token.", -1));
                 }
             });;
         });
