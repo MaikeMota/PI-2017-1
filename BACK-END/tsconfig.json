@@ -1,14 +1,22 @@
 {
     "compilerOptions": {
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
         "module": "commonjs",
-        "target": "es5",
+        "target": "es6",
         "noImplicitAny": false,
-        "sourceMap": true
+        //"sourceMap": true
+        "inlineSources": true
     },
+    "outDir": "dest",
+    "rootDir": "src",
     "includes": [
         "${workspaceRoot}/src/**/*.ts"
     ],
     "outFiles": [
         "${workspaceRoot}/bin/**/*.js"
+    ],
+    "exclude": [
+        "node_modules"
     ]
 }
