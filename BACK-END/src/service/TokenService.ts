@@ -21,7 +21,7 @@ export class TokenService {
     private static _publicKey: Buffer;
 
     public static authenticate(authenticationWrapper: AuthenticationWrapper): Promise<AuthenticationWrapper> {
-        return new Promise<any>((resolve, reject) => {
+        return new Promise<AuthenticationWrapper>((resolve, reject) => {
             SequelizeInstance.UserModel.findOne(
                 {
                     where: {
@@ -37,6 +37,8 @@ export class TokenService {
                     } else {
                         throw new ForbiddenException("Login Failure", -1);
                     }
+                }).catch(error => {
+                    reject(error);
                 });
         });
     }
@@ -60,9 +62,11 @@ export class TokenService {
                         if (dbUser) {
                             resolve(TokenService.signToken(new UserWrapper(null, dbUser)));
                         } else {
-                            throw new ForbiddenException("JWT Error: Invalid User", -1);
+                            throw new ForbiddenException("Login Failure", -1);
                         }
-                    });
+                    }).catch(error => {
+                        reject(error);
+                    });;
                 }
             });
         });
@@ -82,10 +86,10 @@ export class TokenService {
             jwt.verify(tokenWrapper.token, TokenService.publicKey, {
                 algorithms: [this.defaultOptions.algorithm]
             }, (err: jwt.JsonWebTokenError | jwt.TokenExpiredError | jwt.NotBeforeError, decoded) => {
-                if (err) {
-                    throw new ForbiddenException("JWT: Invalid Token.", -1);
-                } else {
+                if (!err) {
                     resolve(true);
+                } else {
+                    throw new ForbiddenException("JWT: Invalid Token.", -1);
                 }
             });;
         });
