@@ -5,11 +5,6 @@ import { User, UserAttributes } from '../interface/User';
 
 export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeStatic.Model<User, UserAttributes> {
     let user = sequelize.define<User, UserAttributes>('User', {
-        id: {
-            primaryKey: true,
-            type: dataTypes.UUID,
-            defaultValue: dataTypes.UUIDV4,
-        },
         username: {
             type: dataTypes.STRING,
             allowNull: false
@@ -33,5 +28,6 @@ export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeS
 
         }
     );
+
     return user;
 }
