@@ -11,8 +11,6 @@ import { Entity, EntityAttributes } from '../src/model/interface';
 
 export class SequelizeDataBase {
 
-    public static instance: SequelizeDataBase;
-
     private _sequelize: Sequelize;
     private _models: SequelizeModels = new SequelizeModels();
 
@@ -29,24 +27,21 @@ export class SequelizeDataBase {
             this._models[(model as any).name] = model;
         });
 
-        /* Object.keys(this.models).forEach((modelName: string) => {
-             if (typeof this.models[modelName].associate === "function") {
-                 this.models[modelName].associate(this.models);
-             }
-         })*/
+        /*
+
+        This piece of code looks like are something with migration, but the class Model does not has the associate function. So, for now, it'll stay commented.        
+        Object.keys(this._models).forEach((modelName: string) => {
+            if (typeof this._models[modelName].associate === "function") {
+                this._models[modelName].associate(this.models);
+            }
+            
+        })*/
 
         Object.keys(this._models).forEach((modelName) => {
             this._models[modelName].sync({ force: false });
         });
 
     }
-
-    /*    
-    return SequelizeInstance.UserModel.create({
-                username: 'system',
-                password: 'system1234SYSTEM!@#$'
-            });
-     */
 
     public static initializeDatabase() {
         let sequelizeDatabase = new SequelizeDataBase();
@@ -72,7 +67,7 @@ export class SequelizeDataBase {
         if (model) {
             return model;
         } else {
-            throw new UnregisteredModelException(`The 'model' ${modelName} was not registered.`, -1);
+            throw new UnregisteredModelException(`The model '${modelName}' was not registered.`, -1);
         }
     }
 
