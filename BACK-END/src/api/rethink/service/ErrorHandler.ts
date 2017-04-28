@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { RTKException, BadRequestException, ForbiddenException, ServerErrorException } from '../core';
+import { RTKException, BadRequestException, ForbiddenException, ServerErrorException, UnregisteredModelException } from '../core/exception';
 import { ResponseUtil, ObjectUtil } from '../util';
 
 export class ErrorHandler {
@@ -20,7 +20,13 @@ export class ErrorHandler {
                 break;
             }
             default: {
-                ResponseUtil.serverError(response, ObjectUtil.cast<ServerErrorException>(error));
+                ResponseUtil.serverError(response, new ServerErrorException("An unexpected error occurred.", -1));
+                if ((error as ServerErrorException).developerMessage) {
+                    console.log(`[Server Fault] - [${new Date()}] - ${(error as ServerErrorException).developerMessage}`);
+                }
+                if ((error as Error).stack) {
+                    console.log((error as Error).stack);
+                }
                 break;
             }
         }
