@@ -1,9 +1,12 @@
 import { Router, Request, RequestHandler, Response, NextFunction } from 'express';
+
+import { ForbiddenException } from '../api/rethink/core';
+import { ResponseUtil } from '../api/rethink/util';
+
+import { TokenService } from "../service";
+import { TokenRouter } from "./TokenRouter";
 import { BaseRouter } from './BaseRouter';
 import { CalculatorRouter } from './CalculatorRouter';
-
-import { RTKException } from '../api/rethink/core';
-import { ResponseUtil } from '../api/rethink/util';
 
 
 export class RestrictedApiRouter extends BaseRouter {
@@ -14,8 +17,8 @@ export class RestrictedApiRouter extends BaseRouter {
 
     protected configureMiddleware(): void {
         this.router.use((request: Request, response: Response, next: NextFunction) => {
-            if (!request.header('authorization')) {
-                ResponseUtil.forbidden(response, new RTKException("Missing Token Authorzation", -1));
+            if (!request.header(TokenRouter.AUTHORIZATION_HEADER)) {
+                throw new ForbiddenException("Missing Token Authorzation", -1);
             } else {
                 next();
             }
