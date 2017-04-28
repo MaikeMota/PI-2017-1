@@ -1,7 +1,8 @@
 import { Router, Request, RequestHandler, Response, NextFunction } from 'express';
 
 import { ForbiddenException } from '../api/rethink/core';
-import { ResponseUtil } from '../api/rethink/util';
+import { ErrorHandler } from '../api/rethink/service';
+import { StringUtil } from '../api/rethink/util';
 
 import { TokenService } from "../service";
 import { TokenRouter } from "./TokenRouter";
@@ -17,18 +18,21 @@ export class RestrictedApiRouter extends BaseRouter {
     }
 
     protected configureMiddleware(): void {
-        this.router.use((request: Request, response: Response, next: NextFunction) => {
-            let header: string = request.header(TokenRouter.AUTHORIZATION_HEADER);
-            if (!header) {
-                throw new ForbiddenException("Missing Token Authorzation", -1);
-            } else {
-                let token: string = header.replace("Bearer ", "");
-                if (TokenService.isValid(new TokenWrapper(token))) {
-                    next();
-                } else {
-                    throw new ForbiddenException("Invalid Token", -1);
-                }
-            }
+        this.router.use(RestrictedApiRouter.restriectedRouteMiddleware);
+    }
+
+    private static restriectedRouteMiddleware(request: Request, response: Response, next: NextFunction) {
+        let header: string = request.header(TokenService.AUTHORIZATION_HEADER);
+        TokenService.validateAuthorizationHeader(header);
+        let tokenWrapper: TokenWrapper = new TokenWrapper(header.split(' ')[1]);
+        TokenService.isValid(tokenWrapper).then(() => {
+            TokenService.retrieveUserById(TokenService.decodeToken(tokenWrapper).id).then((user) => {
+                next();
+            }).catch(error => {
+                ErrorHandler.handleError(response, error);
+            });
+        }).catch(error => {
+            ErrorHandler.handleError(response, error);
         });
     }
 }
