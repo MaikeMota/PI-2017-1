@@ -62,7 +62,7 @@ export class TokenService {
 
     public static retrieveUserById(userId: string, options?: FindOptions): Promise<User> {
         return new Promise<any>((resolve, reject) => {
-            sequelizeDB.getModel('user').findById(userId, options).then((dbUser) => {
+            sequelizeDB.getModel('User').findById(userId, options).then((dbUser) => {
                 if (dbUser) {
                     if (dbUser.dataValues.active) {
                         resolve(dbUser.dataValues);
@@ -80,7 +80,7 @@ export class TokenService {
 
     public static retrieveUserByCredentials(username: string, password: string): Promise<User> {
         return new Promise<any>((resolve, reject) => {
-            sequelizeDB.getModel('user').find({
+            sequelizeDB.getModel('User').find({
                 where: {
                     username: username,
                     password: password,
