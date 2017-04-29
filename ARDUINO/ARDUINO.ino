@@ -14,6 +14,20 @@
   ===============================================================================
 */
 
+typedef enum{
+  UNDER_HALF_VOLUME,
+  UNDER_MED_VOLUME,
+  UNDER_MIN_VOUME,
+  UNDER_DEFINID_VOLUME
+} OpenStreetWaterTriggerEnum;
+
+typedef enum {
+  ABOVE_HALF_VOLUME,
+  ABOVE_MED_VOLUME,
+  ABOVE_MIN_VOUME,
+  ABOVE_DEFINID_VOLUME
+}  CloseStreetWaterTriggerEnum;
+
 /*
   ===============================================================================
                               PROGRAM CONSTANTS
@@ -56,6 +70,18 @@ volatile long waterExitFrequency = 0;
                               GLOBAL VARIABLES
   ===============================================================================
 */
+
+unsigned int checkInterval = 1000; //Default Check Interval
+unsigned long lastCheckAt = 0;
+
+OpenStreetWaterTriggerEnum openStreetWaterTrigger = UNDER_MED_VOLUME;
+CloseStreetWaterTriggerEnum closeStreetWaterTrigger = 0;
+
+float openStreetWaterUnderLevel = 0;
+float closeStreetWaterAboveLevel = 0;
+
+bool isStreetWaterOpen = false;
+
 float recipientRadius = 10;
 float recipientHeight = 25.2;
 
@@ -68,13 +94,15 @@ float medWaterHeight = 0.0;
 float maxWaterLevel = 0.0;
 float maxWaterHeight = 0.0;
 
+float lastWaterLevel = 0;
+
 long lastTime = 0;
-long currentTime = 0;
+
 float lastStreetWaterFlux = 0;
 float lastWaterExitFlux = 0;
-unsigned long lastCheck = 0;
 unsigned long startedToFullFill = 0;
 unsigned long startedToEmpty = 0;
+
 Ultrasonic ultrasonic(TRIGGER_PIN, ECHO_PIN);
 
 /*
@@ -83,11 +111,16 @@ Ultrasonic ultrasonic(TRIGGER_PIN, ECHO_PIN);
   ===============================================================================
 */
 float readWaterHeight();
-float calculateActualWaterVolume();
+float calculateactualWaterLevel();
 float waterLevelToWaterHeight(float targetVolume);
 void setMinWaterLevel(float targetVolume);
 void setMedWaterLevel(float targetVolume);
 void setMaxWaterLevel(float targetVolume);
+void setOpenStreetWaterTrigger(OpenStreetWaterTriggerEnum trigger);
+void setCloseStreetWaterTrigger(CloseStreetWaterTriggerEnum trigger);
+void checkStreetWaterTrigger();
+void openStreetWater();
+void closeStreetWater();
 
 void setup()
 {
@@ -109,9 +142,9 @@ void setup()
 void loop()
 {
 
-  if (millis() >= (lastCheck + 1000))
+  if (millis() >= (lastCheckAt + 1000))
   {
-    float actualVolume = calculateActualWaterVolume();
+    float actualWaterLevel = calculateactualWaterLevel();
     float actualStreetWaterFlux = streetWaterFrequency / (7.5 * 60);
     float actualWaterExitFlux = waterExitFrequency / (7.5 * 60);
     streetWaterFrequency = 0;
@@ -119,7 +152,7 @@ void loop()
 
 #ifdef DEBUG
     Serial.print("Volume: ");
-    Serial.print(actualVolume);
+    Serial.print(actualWaterLevel);
     Serial.print(" L");
     Serial.print(" Vazao Agua Rua: ");
     Serial.print(actualStreetWaterFlux, PRECISION); // Liters per second
@@ -176,8 +209,9 @@ void loop()
 #endif
     }
 
-    lastWaterExitFlux = actualWaterExitFlux;
-    lastCheck = millis();
+    lastWaterExitFlux = actualWaterExitFlux;    
+    lastWaterLevel = actualWaterLevel;
+    lastCheckAt = millis();
   }
 }
 
@@ -190,7 +224,7 @@ void loop()
 * Calculates the actual water volume of the recipient in Liters.
 * @returns float the current water volume (L).
 */
-float calculateActualWaterVolume()
+float calculateactualWaterLevel()
 {
   float actualWaterHeight = readWaterHeight();
   float currentWaterVolume = (PI * pow(recipientRadius, 2) * (actualWaterHeight)); // V = PI * R^2 * H
@@ -262,6 +296,82 @@ void setMaxWaterLevel(float targetVolume)
   Serial.print(" maxWaterHeight: ");
   Serial.println(maxWaterHeight, PRECISION);
 #endif
+}
+
+
+void setOpenStreetWaterTrigger(OpenStreetWaterTriggerEnum trigger){
+  openStreetWaterTrigger = trigger;
+}
+
+void setCloseStreetWaterTrigger(CloseStreetWaterTriggerEnum trigger){
+  closeStreetWaterTrigger = trigger;
+}
+
+void checkStreetWaterTrigger(){
+    if(!isStreetWaterOpen){
+      switch(openStreetWaterTrigger){
+        
+        case UNDER_DEFINID_VOLUME: {
+          if(lastWaterLevel <= openStreetWaterUnderLevel)
+          break;
+        }
+        case UNDER_HALF_VOLUME: {
+          if(lastWaterLevel < (maxWaterLevel / 2)){
+            openStreetWater();
+          }
+          break;
+        }
+        case UNDER_MED_VOLUME: {
+          if(lastWaterLevel < medWaterLevel && lastWaterLevel <= maxWaterLevel){
+             openStreetWater();
+          }
+          break;
+        }
+        case UNDER_MIN_VOUME: {
+          if(lastWaterLevel <= minWaterLevel && lastWaterLevel <= medWaterLevel){
+              openStreetWater();
+          }
+          break;
+        } 
+      }
+    }else{
+      switch(closeStreetWaterTrigger){
+        case ABOVE_DEFINID_VOLUME: {
+          if(lastWaterLevel < maxWaterLevel ){
+            closeStreetWater();
+          }
+          break;
+        }  
+          case ABOVE_HALF_VOLUME: {
+          if(lastWaterLevel > (maxWaterLevel / 2)){
+            closeStreetWater();
+          }
+          break;
+        }
+        case ABOVE_MED_VOLUME: {
+          if(lastWaterLevel > medWaterLevel){
+            closeStreetWater();
+          }
+          break;
+        }
+        case ABOVE_MIN_VOUME: {
+          if(lastWaterLevel > minWaterLevel){
+            closeStreetWater();
+          }
+          break;
+        }
+      }
+    }
+}
+
+void openStreetWater() {  
+  digitalWrite(STREET_WATER_SOLENOIDE, HIGH);
+  isStreetWaterOpen = true;
+}
+
+void closeStreetWater() {
+  digitalWrite(STREET_WATER_SOLENOIDE, LOW);
+  isStreetWaterOpen = false;
 }
 
 /*
