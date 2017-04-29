@@ -11,4 +11,8 @@ export abstract class StringUtil {
         return !StringUtil.isNullEmptyOrUndefined(value);
     }
 
+    public static toInt(value: string): number {
+        return parseInt(value.replace(/\D/, ""));
+    }
+
 }

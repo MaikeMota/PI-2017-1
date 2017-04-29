@@ -1,6 +1,6 @@
 import { Router, Request, RequestHandler, Response, NextFunction } from 'express';
 
-import { ForbiddenException } from '../api/rethink/core';
+import { ForbiddenException } from '../api/rethink/core/exception';
 import { ErrorHandler } from '../api/rethink/service';
 import { StringUtil } from '../api/rethink/util';
 

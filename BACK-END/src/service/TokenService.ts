@@ -3,14 +3,14 @@ import { FindOptions } from 'sequelize';
 
 import { readFileSync } from 'fs'
 
-import { SequelizeInstance } from '../../database/SequelizeInstance';
+import { sequelizeDB } from '../../database/SequelizeDataBase';
 
-import { ForbiddenException, BadRequestException } from '../api/rethink/core';
+import { ForbiddenException, BadRequestException } from '../api/rethink/core/exception';
 import { StringUtil } from '../api/rethink/util';
 
-import { User } from '../model/User';
 import { UserWrapper } from '../model/UserWrapper';
 import { TokenWrapper } from '../model/TokenWrapper';
+import { User } from '../model/interface';
 import { AuthenticationWrapper } from '../model/AuthenticationWrapper';
 
 export class TokenService {
@@ -60,12 +60,12 @@ export class TokenService {
         });
     }
 
-    public static retrieveUserById(userId: string, options?: FindOptions): Promise<any> {
+    public static retrieveUserById(userId: string, options?: FindOptions): Promise<User> {
         return new Promise<any>((resolve, reject) => {
-            SequelizeInstance.UserModel.findById(userId, options).then((dbUser) => {
+            sequelizeDB.getModel('User').findById(userId, options).then((dbUser) => {
                 if (dbUser) {
-                    if (dbUser.active) {
-                        resolve(dbUser);
+                    if (dbUser.dataValues.active) {
+                        resolve(dbUser.dataValues);
                     } else {
                         throw new ForbiddenException("User is not active.", -1);
                     }
@@ -78,9 +78,9 @@ export class TokenService {
         });
     }
 
-    public static retrieveUserByCredentials(username: string, password: string): Promise<any> {
+    public static retrieveUserByCredentials(username: string, password: string): Promise<User> {
         return new Promise<any>((resolve, reject) => {
-            SequelizeInstance.UserModel.find({
+            sequelizeDB.getModel('User').find({
                 where: {
                     username: username,
                     password: password,
@@ -88,8 +88,8 @@ export class TokenService {
                 }
             }).then((dbUser) => {
                 if (dbUser) {
-                    if (dbUser.active) {
-                        resolve(dbUser);
+                    if (dbUser.dataValues.active) {
+                        resolve(dbUser.dataValues);
                     } else {
                         throw new ForbiddenException("User is not active.", -1);
                     }

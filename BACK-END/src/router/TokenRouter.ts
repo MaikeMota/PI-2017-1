@@ -7,8 +7,7 @@ import { TokenWrapper } from '../model/TokenWrapper';
 import { AuthenticationWrapper } from "../model/AuthenticationWrapper";
 import { UserWrapper } from "../model/UserWrapper";
 
-import { SequelizeInstance } from '../../database/SequelizeInstance';
-import { BadRequestException, ForbiddenException } from '../api/rethink/core';
+import { BadRequestException, ForbiddenException } from '../api/rethink/core/exception';
 import { StringUtil } from "../api/rethink/util";
 
 

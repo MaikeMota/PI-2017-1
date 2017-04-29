@@ -6,8 +6,9 @@ import * as bodyParser from 'body-parser';
 import { BaseRouter } from './router/BaseRouter';
 import { PublicApiRouter } from './router/PublicApiRouter';
 import { CalculatorRouter } from './router/CalculatorRouter';
-import { SequelizeInitializer } from '../database/SequelizeInitializer';
 import { ErrorHandler } from "./api/rethink/service/ErrorHandler";
+import { StringUtil } from './api/rethink/util';
+import { SequelizeDataBase } from "../database/SequelizeDataBase";
 
 export class Application {
 
@@ -15,7 +16,7 @@ export class Application {
 
     constructor(port: number) {
         this.initializeServer(port);
-        SequelizeInitializer.intialize();
+        SequelizeDataBase.initializeDatabase();
     }
 
     private initializeServer(port: number): void {
@@ -51,7 +52,7 @@ export class Application {
 
     public static run(port: number | string): Application {
         if (typeof port == 'string') {
-            port = parseInt(port.replace(/\D/, ""));
+            port = StringUtil.toInt(port);
         }
         return new Application(port);
     }
