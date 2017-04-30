@@ -16,7 +16,9 @@ export class Application {
 
     constructor(port: number) {
         this.initializeServer(port);
-        SequelizeDataBase.initializeDatabase();
+        SequelizeDataBase
+            .registerModelsFolder('./src/model/sequelize')
+            .initializeDatabase();
     }
 
     private initializeServer(port: number): void {
@@ -37,17 +39,17 @@ export class Application {
     }
 
     private configureRouter(): void {
-        this.register("api", PublicApiRouter);
-        this.register("calculator", CalculatorRouter);
+        this.register(PublicApiRouter);
+        this.register(CalculatorRouter);
     }
 
     private configureErrorHandler(): void {
         this.app.use(ErrorHandler.handler);
     }
 
-    private register<T extends BaseRouter>(rootPath: string, routerConfigurationConstructor: new () => T): void {
-        let configuration = new routerConfigurationConstructor();
-        this.app.use(`/${rootPath}`, configuration.router);
+    private register<T extends BaseRouter>(routerConstructor: new () => T): void {
+        let route = new routerConstructor();
+        this.app.use(`/${route.PATH}`, route.router);
     }
 
     public static run(port: number | string): Application {

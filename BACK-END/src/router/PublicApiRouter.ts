@@ -7,9 +7,15 @@ import { RestrictedApiRouter } from './RestrictedApiRouter';
 
 export class PublicApiRouter extends BaseRouter {
 
+    public static readonly ROOT_PATH: string = "api";
+
     protected configureRouter(): void {
-        this.register('token', TokenRouter);
-        this.register('echo', EchoRouter);
-        this.register('restricted', RestrictedApiRouter);
+        this.register(TokenRouter);
+        this.register(EchoRouter);
+        this.register(RestrictedApiRouter);
+    }
+
+    public get PATH(): string {
+        return PublicApiRouter.ROOT_PATH;
     }
 }
