@@ -14,7 +14,7 @@
   ===============================================================================
 */
 
-typedef enum{
+typedef enum {
   UNDER_HALF_VOLUME,
   UNDER_MED_VOLUME,
   UNDER_MIN_VOUME,
@@ -26,7 +26,7 @@ typedef enum {
   ABOVE_MED_VOLUME,
   ABOVE_MIN_VOUME,
   ABOVE_DEFINID_VOLUME
-}  CloseStreetWaterTriggerEnum;
+} CloseStreetWaterTriggerEnum;
 
 /*
   ===============================================================================
@@ -100,6 +100,7 @@ long lastTime = 0;
 
 float lastStreetWaterFlux = 0;
 float lastWaterExitFlux = 0;
+
 unsigned long startedToFullFill = 0;
 unsigned long startedToEmpty = 0;
 
@@ -209,7 +210,7 @@ void loop()
 #endif
     }
 
-    lastWaterExitFlux = actualWaterExitFlux;    
+    lastWaterExitFlux = actualWaterExitFlux;
     lastWaterLevel = actualWaterLevel;
     lastCheckAt = millis();
   }
@@ -258,7 +259,7 @@ float waterLevelToWaterHeight(float targetVolume)
   waterHeight = waterHeight * 1000;                                  // Convert L to cm
 
   //waterHeight = recipientHeight - waterHeight; // Revert the Heigth ( Because the needed value is the distance of the sensor
-                                               // [recipientHeight] and the waterHeight
+  // [recipientHeight] and the waterHeight
   return waterHeight;
 }
 
@@ -298,78 +299,105 @@ void setMaxWaterLevel(float targetVolume)
 #endif
 }
 
-
-void setOpenStreetWaterTrigger(OpenStreetWaterTriggerEnum trigger){
+void setOpenStreetWaterTrigger(OpenStreetWaterTriggerEnum trigger)
+{
   openStreetWaterTrigger = trigger;
 }
 
-void setCloseStreetWaterTrigger(CloseStreetWaterTriggerEnum trigger){
+void setCloseStreetWaterTrigger(CloseStreetWaterTriggerEnum trigger)
+{
   closeStreetWaterTrigger = trigger;
 }
 
-void checkStreetWaterTrigger(){
-    if(!isStreetWaterOpen){
-      switch(openStreetWaterTrigger){
-        
-        case UNDER_DEFINID_VOLUME: {
-          if(lastWaterLevel <= openStreetWaterUnderLevel)
-          break;
-        }
-        case UNDER_HALF_VOLUME: {
-          if(lastWaterLevel < (maxWaterLevel / 2)){
-            openStreetWater();
-          }
-          break;
-        }
-        case UNDER_MED_VOLUME: {
-          if(lastWaterLevel < medWaterLevel && lastWaterLevel <= maxWaterLevel){
-             openStreetWater();
-          }
-          break;
-        }
-        case UNDER_MIN_VOUME: {
-          if(lastWaterLevel <= minWaterLevel && lastWaterLevel <= medWaterLevel){
-              openStreetWater();
-          }
-          break;
-        } 
+void checkStreetWaterTrigger()
+{
+  if (!isStreetWaterOpen)
+  {
+    switch (openStreetWaterTrigger)
+    {
+
+    case UNDER_DEFINID_VOLUME:
+    {
+      if (lastWaterLevel <= openStreetWaterUnderLevel)
+      {
+        openStreetWater();
       }
-    }else{
-      switch(closeStreetWaterTrigger){
-        case ABOVE_DEFINID_VOLUME: {
-          if(lastWaterLevel < maxWaterLevel ){
-            closeStreetWater();
-          }
-          break;
-        }  
-          case ABOVE_HALF_VOLUME: {
-          if(lastWaterLevel > (maxWaterLevel / 2)){
-            closeStreetWater();
-          }
-          break;
-        }
-        case ABOVE_MED_VOLUME: {
-          if(lastWaterLevel > medWaterLevel){
-            closeStreetWater();
-          }
-          break;
-        }
-        case ABOVE_MIN_VOUME: {
-          if(lastWaterLevel > minWaterLevel){
-            closeStreetWater();
-          }
-          break;
-        }
-      }
+      break;
     }
+    case UNDER_HALF_VOLUME:
+    {
+      if (lastWaterLevel < (maxWaterLevel / 2))
+      {
+        openStreetWater();
+      }
+      break;
+    }
+    case UNDER_MED_VOLUME:
+    {
+      if (lastWaterLevel < medWaterLevel)
+      {
+        openStreetWater();
+      }
+      break;
+    }
+    case UNDER_MIN_VOUME:
+    {
+      if (lastWaterLevel <= minWaterLevel)
+      {
+        openStreetWater();
+      }
+      break;
+    }
+    }
+  }
+  else
+  {
+    switch (closeStreetWaterTrigger)
+    {
+    case ABOVE_DEFINID_VOLUME:
+    {
+      if (lastWaterLevel < maxWaterLevel)
+      {
+        closeStreetWater();
+      }
+      break;
+    }
+    case ABOVE_HALF_VOLUME:
+    {
+      if (lastWaterLevel > (maxWaterLevel / 2))
+      {
+        closeStreetWater();
+      }
+      break;
+    }
+    case ABOVE_MED_VOLUME:
+    {
+      if (lastWaterLevel > medWaterLevel)
+      {
+        closeStreetWater();
+      }
+      break;
+    }
+    case ABOVE_MIN_VOUME:
+    {
+      if (lastWaterLevel > minWaterLevel)
+      {
+        closeStreetWater();
+      }
+      break;
+    }
+    }
+  }
 }
 
-void openStreetWater() {  
+void openStreetWater()
+{
   digitalWrite(STREET_WATER_SOLENOIDE, HIGH);
   isStreetWaterOpen = true;
 }
 
-void closeStreetWater() {
+void closeStreetWater()
+{
   digitalWrite(STREET_WATER_SOLENOIDE, LOW);
   isStreetWaterOpen = false;
 }
