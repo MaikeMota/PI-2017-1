@@ -11,4 +11,12 @@ export abstract class ObjectUtil {
     public static isEmpty(obj: Object): boolean {
         return Object.keys(obj).length == 0;
     }
+
+    public static isBlank(obj: any): boolean {
+        return obj === undefined || obj === null;
+    }
+
+    public static isPresent(obj: any): boolean {
+        return obj !== undefined && obj !== null;
+    }
 }

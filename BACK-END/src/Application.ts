@@ -8,7 +8,8 @@ import { PublicApiRouter } from './router/PublicApiRouter';
 import { CalculatorRouter } from './router/CalculatorRouter';
 import { ErrorHandler } from "./api/rethink/service/ErrorHandler";
 import { StringUtil } from './api/rethink/util';
-import { SequelizeDataBase, } from "../database/SequelizeDataBase";
+import { SequelizeDataBase } from "../database/SequelizeDataBase";
+import { SocketService } from './service/SocketService';
 
 export class Application {
 
@@ -31,6 +32,9 @@ export class Application {
         this.app.listen(port, "0.0.0.0", () => {
             console.log(`Server running at ${port}`);
         });
+        SocketService.instance.app(this.app)
+        .serverPort(4000)
+        .listen();
     }
 
     private configureMiddlewares(): void {
