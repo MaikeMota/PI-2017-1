@@ -8,7 +8,7 @@ import { PublicApiRouter } from './router/PublicApiRouter';
 import { CalculatorRouter } from './router/CalculatorRouter';
 import { ErrorHandler } from "./api/rethink/service/ErrorHandler";
 import { StringUtil } from './api/rethink/util';
-import { SequelizeDataBase } from "../database/SequelizeDataBase";
+import { SequelizeDataBase, } from "../database/SequelizeDataBase";
 
 export class Application {
 
@@ -17,8 +17,9 @@ export class Application {
     constructor(port: number) {
         this.initializeServer(port);
         SequelizeDataBase
-            .registerModelsFolder('./src/model/sequelize')
+            .registerSequelizeModelsFolder('./src/model/sequelize')
             .initializeDatabase();
+
     }
 
     private initializeServer(port: number): void {
