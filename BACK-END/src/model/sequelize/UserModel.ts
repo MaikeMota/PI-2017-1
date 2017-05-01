@@ -1,7 +1,8 @@
 import * as SequelizeStatic from 'sequelize';
 import { DataTypes, Sequelize } from 'sequelize';
+import { SequelizeModels } from '../../../database/SequelizeDataBase';
 
-import { User, UserAttributes } from '../interface/User';
+import { User, UserAttributes, Device, DeviceAttributes } from "../interface";
 
 export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeStatic.Model<User, UserAttributes> {
     let user = sequelize.define<User, UserAttributes>('User', {
@@ -11,10 +12,6 @@ export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeS
         },
         password: {
             type: dataTypes.STRING
-        },
-        active: {
-            type: dataTypes.BOOLEAN,
-            defaultValue: true
         }
     }, {
             indexes: [
