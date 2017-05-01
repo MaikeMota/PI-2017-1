@@ -13,10 +13,16 @@ import { StringUtil } from "../api/rethink/util";
 
 export class TokenRouter extends BaseRouter {
 
+    public static readonly ROOT_PATH: string = "token";
+
     protected configureRouter(): void {
         this.router.post('/', TokenRouter.token);
         this.router.post('/renew', TokenRouter.renew); //maybe do a better way to configure new routes
     }
+
+    public get PATH(): string {
+        return TokenRouter.ROOT_PATH;
+    }  
 
     private static token(request: Request, response: Response, next: NextFunction): void {
         let authenticationWrapper: AuthenticationWrapper = request.body;

@@ -1,5 +1,5 @@
 import { Instance } from 'sequelize';
-import * as sequelize from 'sequelize';
+import * as SequelizeStatic from 'sequelize';
 
 export interface Entity<T extends EntityAttributes> extends Instance<T> {
     dataValues: T;
@@ -7,5 +7,7 @@ export interface Entity<T extends EntityAttributes> extends Instance<T> {
 
 export interface EntityAttributes {
     id: string;
-    active: boolean
+    active: boolean,
+    createdAt: Date,
+    updatedAt: Date
 }

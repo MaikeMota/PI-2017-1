@@ -1,3 +1,3 @@
 export { ResponseUtil } from './ResponseUtil';
 export { ObjectUtil } from './ObjectUtil';
-export { StringUtil } from './StringUtil';
+export { StringUtil, RandomStringType } from './StringUtil';

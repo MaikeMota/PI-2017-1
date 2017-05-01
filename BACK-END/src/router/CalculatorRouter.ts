@@ -5,8 +5,14 @@ import { Calculator } from '../service/Calculator';
 
 export class CalculatorRouter extends BaseRouter {
 
+    public static readonly ROOT_PATH: string = "calculator";
+
     protected configureRouter(): void {
         this.router.get('/:a/:b', CalculatorRouter.add);
+    }
+
+    public get PATH(): string {
+        return CalculatorRouter.ROOT_PATH;
     }
 
     private static add(request: Request, response: Response, next: NextFunction) {

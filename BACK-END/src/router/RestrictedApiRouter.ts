@@ -13,12 +13,18 @@ import { TokenWrapper } from '../model/TokenWrapper';
 
 export class RestrictedApiRouter extends BaseRouter {
 
+    public static readonly ROOT_PATH: string = "restricted";
+
     protected configureRouter(): void {
-        this.register('calculator', CalculatorRouter);
+        this.register(CalculatorRouter);
     }
 
     protected configureMiddleware(): void {
         this.router.use(RestrictedApiRouter.restriectedRouteMiddleware);
+    }
+
+    public get PATH(): string {
+        return RestrictedApiRouter.ROOT_PATH;
     }
 
     private static restriectedRouteMiddleware(request: Request, response: Response, next: NextFunction) {

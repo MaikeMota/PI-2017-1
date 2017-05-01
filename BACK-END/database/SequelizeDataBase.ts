@@ -14,33 +14,47 @@ export class SequelizeDataBase {
     private _sequelize: Sequelize;
     private _models: SequelizeModels = new SequelizeModels();
 
+    private static _modelsFolders: string[] = [];
+
     public constructor() {
     }
 
-    private registerDefaultModels(): void {
+    private bindModels(): void {
 
-        readdirSync('./src/model/sequelize').filter((file: string) => {
-            return (file !== path.basename(module.filename) && (file !== "interface"));
-        }).forEach((file: string) => {
-            let model: SequelizeStatic.Model<Entity<EntityAttributes>, EntityAttributes> =
-                this.sequelize.import<Entity<EntityAttributes>, EntityAttributes>(path.join('../src/model/sequelize', file));
-            this._models[(model as any).name] = model;
-        });
+        for (let pathToRegister of SequelizeDataBase._modelsFolders) {
 
-        /*
-
-        This piece of code looks like are something with migration, but the class Model does not has the associate function. So, for now, it'll stay commented.        
-        Object.keys(this._models).forEach((modelName: string) => {
-            if (typeof this._models[modelName].associate === "function") {
-                this._models[modelName].associate(this.models);
-            }
-            
-        })*/
+            readdirSync(pathToRegister)/*.filter((file: string) => {
+                return (file !== path.basename(module.filename) && (file !== "interface"));
+            })*/
+                .forEach((file: string) => {
+                    let model: SequelizeStatic.Model<Entity<EntityAttributes>, EntityAttributes> =
+                        this.sequelize.import<Entity<EntityAttributes>, EntityAttributes>(path.join('../', pathToRegister, file));
+                    this._models[(model as any).name] = model;
+                });
+            Object.keys(this._models).forEach((modelName: string) => {
+                if (typeof this._models[modelName]['associate'] === "function") {
+                    this._models[modelName]['associate'](this._models);
+                }
+            })
+        }
 
         Object.keys(this._models).forEach((modelName) => {
-            this._models[modelName].sync({ force: false });
+            this._models[modelName].sync({ force: true });
         });
 
+    }
+
+    public getModel<T extends Entity<E>, E extends EntityAttributes>(modelName: string): SequelizeStatic.Model<T, E> {
+        let model = this._models[modelName];
+        if (model) {
+            return <SequelizeStatic.Model<T, E>>model;
+        } else {
+            throw new UnregisteredModelException(`The model '${modelName}' was not registered.`, -1);
+        }
+    }
+
+    public get sequelize(): Sequelize {
+        return this._sequelize;
     }
 
     public static initializeDatabase() {
@@ -57,27 +71,25 @@ export class SequelizeDataBase {
             storage: './database/storage.db'
         });
 
-        sequelizeDatabase.registerDefaultModels();
+        sequelizeDatabase.bindModels();
 
         sequelizeDB = sequelizeDatabase;
     }
 
-    public getModel(modelName: string): SequelizeStatic.Model<Entity<EntityAttributes>, EntityAttributes> {
-        let model = this._models[modelName];
-        if (model) {
-            return model;
+    public static registerSequelizeModelsFolder(path: string) {
+        if (this._modelsFolders.indexOf(path) == -1) {
+            SequelizeDataBase._modelsFolders.push(path);
         } else {
-            throw new UnregisteredModelException(`The model '${modelName}' was not registered.`, -1);
+            console.warn(`The path '${path}' was registered before!`);
         }
+        return this;
     }
 
-    public get sequelize(): Sequelize {
-        return this._sequelize;
-    }
+
 }
 
-class SequelizeModels {
-    [key: string]: SequelizeStatic.Model<Entity<EntityAttributes>, EntityAttributes>;
+export class SequelizeModels {
+     [key: string]: SequelizeStatic.Model<any, any>;
 }
 
 export var sequelizeDB: SequelizeDataBase;

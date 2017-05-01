@@ -2,6 +2,8 @@ import { Router } from 'express';
 
 export abstract class BaseRouter {
 
+    public static readonly PATH: string;
+
     private _router: Router;
 
     public get router(): Router {
@@ -14,13 +16,15 @@ export abstract class BaseRouter {
     }
 
     protected abstract configureRouter(): void;
-    
+
     protected configureMiddleware(): void {
 
     }
 
-    protected register<T extends BaseRouter>(rootPath: string, routerConfigurationConstructor: new () => T) {
-        let configuration = new routerConfigurationConstructor();
-        this.router.use(`/${rootPath}`, configuration.router);
+    protected register<T extends BaseRouter>(routerConstructor: new () => T) {
+        let router = new routerConstructor();
+        this.router.use(`/${router.PATH}`, router.router);
     }
+
+    public abstract get PATH(): string;
 }
