@@ -9,6 +9,10 @@ export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeS
         username: {
             type: dataTypes.STRING,
             allowNull: false
+        }, active: {
+            type: dataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: true
         },
         password: {
             type: dataTypes.STRING

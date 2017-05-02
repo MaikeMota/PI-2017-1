@@ -39,7 +39,7 @@ export class SequelizeDataBase {
         }
 
         Object.keys(this._models).forEach((modelName) => {
-            this._models[modelName].sync({ force: true });
+            this._models[modelName].sync({ force: false });
         });
 
     }
