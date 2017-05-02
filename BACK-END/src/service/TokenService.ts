@@ -10,7 +10,7 @@ import { StringUtil } from '../api/rethink/util';
 
 import { UserWrapper } from '../model/UserWrapper';
 import { TokenWrapper } from '../model/TokenWrapper';
-import { User } from '../model/interface';
+import { User, UserInstance } from '../model/interface';
 import { AuthenticationWrapper } from '../model/AuthenticationWrapper';
 
 export class TokenService {
@@ -80,7 +80,7 @@ export class TokenService {
 
     public static retrieveUserByCredentials(username: string, password: string): Promise<User> {
         return new Promise<any>((resolve, reject) => {
-            sequelizeDB.getModel('User').find({
+            sequelizeDB.getModel<UserInstance, User>('User').find({
                 where: {
                     username: username,
                     password: password,

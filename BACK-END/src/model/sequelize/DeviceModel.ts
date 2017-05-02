@@ -3,10 +3,10 @@ import { DataTypes, Sequelize } from 'sequelize';
 
 import { SequelizeModels } from '../../../database/SequelizeDataBase';
 
-import { User, UserAttributes, Device, DeviceAttributes, WaterInLetOpenTrigger, WaterInLetCloseTrigger } from '../interface/';
+import { User, UserInstance, Device, DeviceInstance, WaterInLetOpenTrigger, WaterInLetCloseTrigger } from '../interface/';
 
-export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeStatic.Model<Device, DeviceAttributes> {
-    let device = sequelize.define<Device, DeviceAttributes>('Device', {
+export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeStatic.Model<DeviceInstance, Device> {
+    let device = sequelize.define<DeviceInstance, Device>('Device', {
         device_key: {
             type: dataTypes.STRING,
             allowNull: false

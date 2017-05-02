@@ -1,13 +1,17 @@
 import { Instance } from 'sequelize';
 import * as SequelizeStatic from 'sequelize';
 
-export interface Entity<T extends EntityAttributes> extends Instance<T> {
+export interface EntityInstance<T extends Entity> extends Instance<T> {
     dataValues: T;
 }
 
-export interface EntityAttributes {
+export abstract class Entity {
+
+    constructor() {
+    }
+
     id: string;
-    active: boolean,
-    createdAt: Date,
-    updatedAt: Date
+    active: boolean;
+    createdAt: Date;
+    updatedAt: Date;
 }

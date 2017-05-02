@@ -9,16 +9,21 @@ import { CalculatorRouter } from './router/CalculatorRouter';
 import { ErrorHandler } from "./api/rethink/service/ErrorHandler";
 import { StringUtil } from './api/rethink/util';
 import { SequelizeDataBase, } from "../database/SequelizeDataBase";
+import { Device, WaterInLetCloseTrigger, WaterInLetOpenTrigger, User } from "./model/interface";
 
 export class Application {
 
     private app: express.Express;
 
     constructor(port: number) {
-        this.initializeServer(port);
         SequelizeDataBase
             .registerSequelizeModelsFolder('./src/model/sequelize')
-            .initializeDatabase();
+            .initializeDatabase().then(sequelizeDB => {
+                this.initializeServer(port);
+            }).catch((error) => {
+                console.error("There is an error while initializing Database.");
+                console.error(error.stack);
+            });
 
     }
 

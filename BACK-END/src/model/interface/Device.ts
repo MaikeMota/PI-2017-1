@@ -1,10 +1,15 @@
 import { Enum } from '../../api/rethink/core';
-import { Entity, EntityAttributes, DeviceDataAttributes } from './';
+import { EntityInstance, Entity, DeviceData } from './';
 
-export interface Device extends Entity<DeviceAttributes> {
+export interface DeviceInstance extends EntityInstance<Device> {
 }
 
-export interface DeviceAttributes extends EntityAttributes {
+export class Device extends Entity {
+
+    constructor() {
+        super();
+    }
+
     deviceKey: string;
     description: string;
     minWaterLevel: number;
@@ -14,7 +19,7 @@ export interface DeviceAttributes extends EntityAttributes {
     recipientHeight: number;
     waterInletOpenTrigger: WaterInLetOpenTrigger;
     waterInletCloseTrigger: WaterInLetCloseTrigger;
-    deviceData: DeviceDataAttributes[];
+    deviceData?: DeviceData[];
 }
 
 export class WaterInLetOpenTrigger extends Enum {

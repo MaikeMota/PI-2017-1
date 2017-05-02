@@ -5,9 +5,7 @@ import * as SequelizeStatic from 'sequelize';
 import { Sequelize } from "sequelize";
 
 import { UnregisteredModelException } from '../src/api/rethink/core/exception'
-
-import { User, UserAttributes } from '../src/model/interface';
-import { Entity, EntityAttributes } from '../src/model/interface';
+import { EntityInstance, Entity } from '../src/model/interface';
 
 export class SequelizeDataBase {
 
@@ -19,32 +17,42 @@ export class SequelizeDataBase {
     public constructor() {
     }
 
-    private bindModels(): void {
+    private bindModels(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
 
-        for (let pathToRegister of SequelizeDataBase._modelsFolders) {
+            for (let pathToRegister of SequelizeDataBase._modelsFolders) {
 
-            readdirSync(pathToRegister)/*.filter((file: string) => {
-                return (file !== path.basename(module.filename) && (file !== "interface"));
-            })*/
-                .forEach((file: string) => {
-                    let model: SequelizeStatic.Model<Entity<EntityAttributes>, EntityAttributes> =
-                        this.sequelize.import<Entity<EntityAttributes>, EntityAttributes>(path.join('../', pathToRegister, file));
+                readdirSync(pathToRegister).forEach((file: string) => {
+                    let model: SequelizeStatic.Model<EntityInstance<Entity>, Entity> =
+                        this.sequelize.import<EntityInstance<Entity>, Entity>(path.join('../', pathToRegister, file));
                     this._models[(model as any).name] = model;
                 });
-            Object.keys(this._models).forEach((modelName: string) => {
-                if (typeof this._models[modelName]['associate'] === "function") {
-                    this._models[modelName]['associate'](this._models);
-                }
-            })
-        }
 
-        Object.keys(this._models).forEach((modelName) => {
-            this._models[modelName].sync({ force: true });
+                Object.keys(this._models).forEach((modelName: string) => {
+                    if (typeof this._models[modelName]['associate'] === "function") {
+                        this._models[modelName]['associate'](this._models);
+                    }
+                });
+            }
+
+            let syncPromises = [];
+
+            Object.keys(this._models).forEach((modelName) => {
+                syncPromises.push(
+                    this._models[modelName].sync({ force: false })
+                );
+            });
+
+            Promise.all(syncPromises).then(() => {
+                resolve()
+            }).catch(error => {
+                reject(error);
+            });
         });
 
     }
 
-    public getModel<T extends Entity<E>, E extends EntityAttributes>(modelName: string): SequelizeStatic.Model<T, E> {
+    public getModel<T extends EntityInstance<E>, E extends Entity>(modelName: string): SequelizeStatic.Model<T, E> {
         let model = this._models[modelName];
         if (model) {
             return <SequelizeStatic.Model<T, E>>model;
@@ -57,23 +65,27 @@ export class SequelizeDataBase {
         return this._sequelize;
     }
 
-    public static initializeDatabase() {
-        let sequelizeDatabase = new SequelizeDataBase();
-        sequelizeDatabase._sequelize = new SequelizeStatic('database', 'system', 'master1234MASTER!@#$', { // TODO Migrate to a config file
-            host: 'localhost',
-            dialect: 'sqlite',
-            pool: {
-                max: 5,
-                min: 1,
-                idle: 10000
-            },
-            // SQLite only
-            storage: './database/storage.db'
+    public static initializeDatabase(): Promise<SequelizeDataBase> {
+        return new Promise<SequelizeDataBase>((resolve, reject) => {
+            let sequelizeDatabase = new SequelizeDataBase();
+            sequelizeDatabase._sequelize = new SequelizeStatic('database', 'system', 'master1234MASTER!@#$', { // TODO Migrate to a config file
+                host: 'localhost',
+                dialect: 'sqlite',
+                pool: {
+                    max: 5,
+                    min: 1,
+                    idle: 10000
+                },
+                // SQLite only
+                storage: './database/storage.db'
+            });
+            sequelizeDatabase.bindModels().then(() => {
+                sequelizeDB = sequelizeDatabase;
+                resolve(sequelizeDB);
+            }).catch(error => {
+                reject(error);
+            });
         });
-
-        sequelizeDatabase.bindModels();
-
-        sequelizeDB = sequelizeDatabase;
     }
 
     public static registerSequelizeModelsFolder(path: string) {
@@ -84,12 +96,10 @@ export class SequelizeDataBase {
         }
         return this;
     }
-
-
 }
 
 export class SequelizeModels {
-     [key: string]: SequelizeStatic.Model<any, any>;
+    [key: string]: SequelizeStatic.Model<any, any>;
 }
 
 export var sequelizeDB: SequelizeDataBase;

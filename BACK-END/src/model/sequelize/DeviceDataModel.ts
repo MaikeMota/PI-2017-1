@@ -3,11 +3,11 @@ import { DataTypes, Sequelize } from 'sequelize';
 
 import { SequelizeModels } from '../../../database/SequelizeDataBase';
 
-import { DeviceData, DeviceDataAttributes } from '../interface/';
+import { DeviceData, DeviceInstance } from '../interface/';
 import { StringUtil } from "../../api/rethink/util/";
 
-export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeStatic.Model<DeviceData, DeviceDataAttributes> {
-    let deviceData = sequelize.define<DeviceData, DeviceDataAttributes>('DeviceData', {
+export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeStatic.Model<DeviceInstance, DeviceData> {
+    let deviceData = sequelize.define<DeviceInstance, DeviceData>('DeviceData', {
         water_level: {
             type: dataTypes.FLOAT,
             allowNull: false
