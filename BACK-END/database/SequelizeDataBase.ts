@@ -9,6 +9,8 @@ import { EntityInstance, Entity } from '../src/model/interface';
 
 export class SequelizeDataBase {
 
+    private static _instance: SequelizeDataBase;
+
     private _sequelize: Sequelize;
     private _models: SequelizeModels = new SequelizeModels();
 
@@ -21,7 +23,6 @@ export class SequelizeDataBase {
         return new Promise<void>((resolve, reject) => {
 
             for (let pathToRegister of SequelizeDataBase._modelsFolders) {
-
                 readdirSync(pathToRegister).forEach((file: string) => {
                     let model: SequelizeStatic.Model<EntityInstance<Entity>, Entity> =
                         this.sequelize.import<EntityInstance<Entity>, Entity>(path.join('../', pathToRegister, file));
@@ -80,8 +81,8 @@ export class SequelizeDataBase {
                 storage: './database/storage.db'
             });
             sequelizeDatabase.bindModels().then(() => {
-                sequelizeDB = sequelizeDatabase;
-                resolve(sequelizeDB);
+                this._instance = sequelizeDatabase;
+                resolve(this._instance);
             }).catch(error => {
                 reject(error);
             });
@@ -96,10 +97,15 @@ export class SequelizeDataBase {
         }
         return this;
     }
+
+    public static get instance(): SequelizeDataBase {
+        if (!this._instance) {
+            throw new Error('Cannot get SequelizeDataBase instance before call initializeDatabase method.');
+        }
+        return this._instance;
+    }
 }
 
 export class SequelizeModels {
     [key: string]: SequelizeStatic.Model<any, any>;
 }
-
-export var sequelizeDB: SequelizeDataBase;

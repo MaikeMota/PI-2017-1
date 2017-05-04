@@ -3,7 +3,7 @@ import { FindOptions } from 'sequelize';
 
 import { readFileSync } from 'fs'
 
-import { sequelizeDB } from '../../database/SequelizeDataBase';
+import { SequelizeDataBase } from '../../database/SequelizeDataBase';
 
 import { ForbiddenException, BadRequestException } from '../api/rethink/core/exception';
 import { StringUtil } from '../api/rethink/util';
@@ -62,7 +62,7 @@ export class TokenService {
 
     public static retrieveUserById(userId: string, options?: FindOptions): Promise<User> {
         return new Promise<any>((resolve, reject) => {
-            sequelizeDB.getModel('User').findById(userId, options).then((dbUser) => {
+            SequelizeDataBase.instance.getModel('User').findById(userId, options).then((dbUser) => {
                 if (dbUser) {
                     if (dbUser.dataValues.active) {
                         resolve(dbUser.dataValues);
@@ -80,7 +80,7 @@ export class TokenService {
 
     public static retrieveUserByCredentials(username: string, password: string): Promise<User> {
         return new Promise<any>((resolve, reject) => {
-            sequelizeDB.getModel<UserInstance, User>('User').find({
+            SequelizeDataBase.instance.getModel<UserInstance, User>('User').find({
                 where: {
                     username: username,
                     password: password,

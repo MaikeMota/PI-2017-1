@@ -8,6 +8,7 @@ import { TokenService } from "../service";
 import { TokenRouter } from "./TokenRouter";
 import { BaseRouter } from './BaseRouter';
 import { CalculatorRouter } from './CalculatorRouter';
+import { DeviceRouter } from './DeviceRouter';
 import { TokenWrapper } from '../model/TokenWrapper';
 
 
@@ -17,6 +18,7 @@ export class RestrictedApiRouter extends BaseRouter {
 
     protected configureRouter(): void {
         this.register(CalculatorRouter);
+        this.register(DeviceRouter);
     }
 
     protected configureMiddleware(): void {

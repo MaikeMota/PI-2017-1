@@ -1,11 +1,19 @@
-import { sequelizeDB } from './SequelizeDataBase';
+import { SequelizeDataBase } from './SequelizeDataBase';
 import { Entity, EntityInstance } from '../src/model/interface';
 import * as SequelizeStatic from 'sequelize';
 
-export class GenericDao<T extends EntityInstance<E>, E extends Entity> {
+export class GenericDao {
 
+    private static _instance: any;
 
-    public save(entity: E): Promise<E> {
+    public static get instance(): GenericDao {
+        if (!this._instance) {
+            this._instance = new GenericDao();
+        }
+        return this._instance;
+    }
+
+    public save<T extends EntityInstance<E>, E extends Entity>(entity: E): Promise<E> {
         return new Promise<E>((resolve, reject) => {
             this.resolveModelForEntity(entity).create(entity).then(savedInstance => {
                 resolve(savedInstance.dataValues);
@@ -15,9 +23,7 @@ export class GenericDao<T extends EntityInstance<E>, E extends Entity> {
         });
     }
 
-    private resolveModelForEntity(entity: E): SequelizeStatic.Model<T, E> {
-        return sequelizeDB.getModel<T, E>((entity as Object).constructor.name);
+    private resolveModelForEntity<T extends EntityInstance<E>, E extends Entity>(entity: E): SequelizeStatic.Model<T, E> {
+        return SequelizeDataBase.instance.getModel<T, E>((entity as Object).constructor.name);
     }
 }
-
-export var GenericDaoInstance = new GenericDao();

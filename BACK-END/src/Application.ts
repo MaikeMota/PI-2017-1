@@ -8,7 +8,7 @@ import { PublicApiRouter } from './router/PublicApiRouter';
 import { CalculatorRouter } from './router/CalculatorRouter';
 import { ErrorHandler } from "./api/rethink/service/ErrorHandler";
 import { StringUtil } from './api/rethink/util';
-import { SequelizeDataBase, } from "../database/SequelizeDataBase";
+import { SequelizeDataBase } from "../database/SequelizeDataBase";
 import { Device, WaterInLetCloseTrigger, WaterInLetOpenTrigger, User } from "./model/interface";
 
 export class Application {
