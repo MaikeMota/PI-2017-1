@@ -1,0 +1,26 @@
+<form (ngSubmit)="controller.login()">
+    <div class="container col s12 m10 l6 xl6">
+        <div class="row center">
+            <h2 class="header inverted-light-blue">Login</h2>
+        </div>
+
+        <div class="input-field">
+            <input (click)="dismissErrorMessage()" [(ngModel)]="controller.entity.username" required id="login" type="text" class="validate"
+                name="username">
+            <label for="login">Usuário</label>
+        </div>
+
+
+        <div class="input-field">
+            <input (click)="dismissErrorMessage()" [(ngModel)]="controller.entity.password" required id="password" type="password" class="validate"
+                name="password">
+            <label for="password">Senha</label>
+        </div>
+
+        <p *ngIf="showErrorMessage" style="color: red; text-align: center !important;"> O usuário e/ou a senha estão incorretos </p>
+
+        <div class="input-field">
+            <p class="margin center-align medium-small"> <button (click)="dismissErrorMessage()" [disabled]="controller.busy" type="submit" class="btn light-blue  waves-effect waves-light col s12"><span>Login</span></button></p>
+        </div>
+    </div>
+</form>
