@@ -23,8 +23,8 @@ export class EchoRouter extends BaseRouter {
         if (!request.body) {
             return response.sendStatus(400);
         }
-        response.contentType('text');
-        response.send(request.body.echoMe, );
+        console.log(JSON.stringify(request.body));
+        response.json(request.body);
     }
 
 }

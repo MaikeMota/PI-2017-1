@@ -80,10 +80,10 @@ volatile long waterExitFrequency = 0;
   ===============================================================================
 */
 
-const char* DEVICE_KEY = "{DEVICE_KEY}";
+String DEVICE_KEY("{DEVICE_KEY}");
 
-const char* DEVICE_DATA_ENDPOINT = "/api/device/data/";
-const char* DEVICE_CONFIGURATION_ENDPOINT = "/api/device/data/";
+String DEVICE_DATA_ENDPOINT("/api/device/data/");
+String DEVICE_CONFIGURATION_ENDPOINT("/api/device/config");
 
 unsigned int checkInterval = 1000; //Default Check Interval
 unsigned long lastCheckAt = 0;
@@ -162,6 +162,7 @@ void setup()
   setMinWaterLevel(1.5);
   setMedWaterLevel(4);
   setMaxWaterLevel(6);
+
   setOpenStreetWaterTrigger(UNDER_HALF_VOLUME);
   setCloseStreetWaterTrigger(ABOVE_HALF_VOLUME);
   setOpenStreetWaterUnderLevel(2);
@@ -249,7 +250,7 @@ void loop()
     lastWaterLevel = actualWaterLevel;
     checkStreetWaterTrigger();
     char *data = produceDataToSend();
-    int statusCode = client.post(, data, &response); //TODO APPEND STRINGS
+    int statusCode = client.post("", data, &response); //TODO APPEND STRINGS
 #ifdef DEBUG
     Serial.print(F("Status code from server: "));
     Serial.println(statusCode);
