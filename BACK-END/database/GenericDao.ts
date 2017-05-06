@@ -8,7 +8,7 @@ export class GenericDao<EI extends EntityInstance<E>, E extends Entity> {
 
     public static instance<E extends GenericDao<any, any>>(): E {
         if (!this._instance) {
-            this._instance = new GenericDao();
+            this._instance = new this();
         }
         return <E>this._instance;
     }
