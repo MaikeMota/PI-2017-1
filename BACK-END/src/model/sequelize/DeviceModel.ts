@@ -7,6 +7,11 @@ import { User, UserAttributes, Device, DeviceAttributes, WaterInLetOpenTrigger, 
 
 export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeStatic.Model<Device, DeviceAttributes> {
     let device = sequelize.define<Device, DeviceAttributes>('Device', {
+        device_id: {
+            type: dataTypes.UUID,
+            defaultValue: dataTypes.UUIDV1,
+            primaryKey: true
+        },
         device_key: {
             type: dataTypes.STRING,
             allowNull: false
