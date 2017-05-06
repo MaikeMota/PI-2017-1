@@ -20,14 +20,14 @@ typedef enum {
   UNDER_MED_VOLUME,
   UNDER_MIN_VOUME,
   UNDER_DEFINID_VOLUME
-} OpenStreetWaterTriggerEnum;
+} OpenWaterInletTriggerEnum;
 
 typedef enum {
   ABOVE_HALF_VOLUME,
   ABOVE_MED_VOLUME,
   ABOVE_MIN_VOUME,
   ABOVE_DEFINID_VOLUME
-} CloseStreetWaterTriggerEnum;
+} CloseWaterInletTriggerEnum;
 
 typedef enum {
   WATER_INLET_FLUX_STARTED,
@@ -43,9 +43,14 @@ typedef enum {
                               PROGRAM CONSTANTS
   ===============================================================================
 */
-#define PRECISION 3
+
 #define DEBUG
+
+#define PRECISION 3
 #define MAX_EVENTS 5
+
+#define DEVICE_DATA_ENDPOINT "/api/device/data/{DEVICE_KEY}"
+#define DEVICE_CONFIGURATION_ENDPOINT "/api/device/config/{DEVICE_KEY}"
 
 /*
   ===============================================================================
@@ -60,9 +65,9 @@ typedef enum {
       D10 is used to select the W5100 and cannot be used for general I/O.
       D4 is used for the SD card and can only be used for general I/O if the SD slot is not occupied.
 */
-#define STREET_WATER_FLUX_SENSOR 2
-#define WATER_EXIT_FLUX_SENSOR 3
-#define STREET_WATER_SOLENOIDE 7
+#define WATER_INLET_FLUX_SENSOR 2
+#define WATER_OUT_FLUX_SENSOR 3
+#define WATER_INLET_SOLENOIDE 7
 #define TRIGGER_PIN 8
 #define ECHO_PIN 9
 
@@ -71,8 +76,8 @@ typedef enum {
                               GLOBAL VARIABLES (INTERRUPTS)
   ===============================================================================
 */
-volatile long streetWaterFrequency = 0;
-volatile long waterExitFrequency = 0;
+volatile long waterInletFequency = 0;
+volatile long waterOutFrequency = 0;
 
 /*
   ===============================================================================
@@ -80,21 +85,17 @@ volatile long waterExitFrequency = 0;
   ===============================================================================
 */
 
-String DEVICE_KEY("{DEVICE_KEY}");
-
-String DEVICE_DATA_ENDPOINT("/api/device/data/");
-String DEVICE_CONFIGURATION_ENDPOINT("/api/device/config");
 
 unsigned int checkInterval = 1000; //Default Check Interval
 unsigned long lastCheckAt = 0;
 
-OpenStreetWaterTriggerEnum openStreetWaterTrigger;
-CloseStreetWaterTriggerEnum closeStreetWaterTrigger;
+OpenWaterInletTriggerEnum openWaterInletTrigger;
+CloseWaterInletTriggerEnum closeWaterInletTrigger;
 
-float openStreetWaterUnderLevel = 0;
-float closeStreetWaterAboveLevel = 0;
+float openWaterInletUnderLevel = 0;
+float closeWaterInletAboveLevel = 0;
 
-bool isStreetWaterOpen = false;
+bool isWaterInletOpen = false;
 
 float recipientRadius = 10;
 float recipientHeight = 25.2;
@@ -124,34 +125,39 @@ int eventsPosition = 0;
 Ultrasonic ultrasonic(TRIGGER_PIN, ECHO_PIN);
 RestClient client = RestClient("192.168.0.5", 3000);
 
+String response = "";
+
 /*
   ===============================================================================
                               FUNCTIONS PROTOTYPES
   ===============================================================================
 */
 float readWaterHeight();
-float calculateactualWaterLevel();
-float waterLevelToWaterHeight(float targetVolume);
-void setMinWaterLevel(float targetVolume);
-void setMedWaterLevel(float targetVolume);
-void setMaxWaterLevel(float targetVolume);
-void setOpenStreetWaterTrigger(OpenStreetWaterTriggerEnum trigger);
-void setCloseStreetWaterTrigger(CloseStreetWaterTriggerEnum trigger);
-void setOpenStreetWaterUnderLevel(float level);
+float calculateActualWaterLevel();
+float waterLevelToWaterHeight(float targetLevel);
+void setRecipientRadius(float radius);
+void setRecipientHeight(float height);
+void setMinWaterLevel(float targetLevel);
+void setMedWaterLevel(float targetLevel);
+void setMaxWaterLevel(float targetLevel);
+void setOpenWaterInletTrigger(OpenWaterInletTriggerEnum trigger);
+void setCloseWaterInletTrigger(CloseWaterInletTriggerEnum trigger);
+void setOpenWaterInletUnderLevel(float level);
 void setCloseStreetWaterUnderLevel(float level);
-void checkStreetWaterTrigger();
+void checkStreetWaterInletTrigger();
 void openStreetWater();
 void closeStreetWater();
 void addEvent(Event event);
 void resetEvents();
+void configureDevice(String* data);
 char* produceDataToSend();
 
 void setup()
 {
   pinMode(13, OUTPUT);
-  pinMode(STREET_WATER_FLUX_SENSOR, INPUT); // Configures STREET_WATER_FLUX_SENSOR as Input
-  pinMode(WATER_EXIT_FLUX_SENSOR, INPUT);   // Configures WATER_EXIT_FLUX_SENSOR as Input
-  pinMode(STREET_WATER_SOLENOIDE, OUTPUT);  // Configure STREET_WATER_SOLENOIDE as Output
+  pinMode(WATER_INLET_FLUX_SENSOR, INPUT); // Configures WATER_INLET_FLUX_SENSOR as Input
+  pinMode(WATER_OUT_FLUX_SENSOR, INPUT);   // Configures WATER_OUT_FLUX_SENSOR as Input
+  pinMode(WATER_INLET_SOLENOIDE, OUTPUT);  // Configure WATER_INLET_SOLENOIDE as Output
 
   Serial.begin(9600);
 
@@ -159,98 +165,80 @@ void setup()
   attachInterrupt(1, waterExitFlowInterrupt, RISING);   // Attachs waterExitFlowInterrupt function to INT1
   sei();                                                // Enables interrupts
 
-  setMinWaterLevel(1.5);
-  setMedWaterLevel(4);
-  setMaxWaterLevel(6);
 
-  setOpenStreetWaterTrigger(UNDER_HALF_VOLUME);
-  setCloseStreetWaterTrigger(ABOVE_HALF_VOLUME);
-  setOpenStreetWaterUnderLevel(2);
-  setCloseStreetWaterUnderLevel(4);
-
-#ifdef DEBUG
-  Serial.println(F("Connect to network"));
-#endif
   client.dhcp();
   client.setContentType("application/json");
+#ifdef DEBUG
+  Serial.println(F("Connected to network"));
+#endif
+  int statusCode = client.get(DEVICE_CONFIGURATION_ENDPOINT, &response);
+  configureDevice(&response);
 }
 
-String response = "";
 void loop()
 {
 
   if (millis() >= (lastCheckAt + checkInterval))
   {
-    float actualWaterLevel = calculateactualWaterLevel();
-    float actualStreetWaterFlux = streetWaterFrequency / (7.5 * 60);
-    float actualWaterExitFlux = waterExitFrequency / (7.5 * 60);
-    streetWaterFrequency = 0;
-    waterExitFrequency = 0;
+    float actualWaterLevel = calculateActualWaterLevel();
+    float actualWaterInletFlux = waterInletFequency / (7.5 * 60);
+    float actualWaterOutFlux = waterOutFrequency / (7.5 * 60);
+    waterInletFequency = 0;
+    waterOutFrequency = 0;
 
 #ifdef DEBUG
     Serial.print(F("Volume: "));
     Serial.print(actualWaterLevel);
     Serial.print(" L");
     Serial.print(F(" Vazao Agua Rua: "));
-    Serial.print(actualStreetWaterFlux, PRECISION); // Liters per second
+    Serial.print(actualWaterInletFlux, PRECISION); // Liters per second
     Serial.print(" l/s");
     Serial.print(F(" Vazao saida: "));
-    Serial.print(actualWaterExitFlux, PRECISION); // Liters per second
+    Serial.print(actualWaterOutFlux, PRECISION); // Liters per second
     Serial.println(F(" l/s"));
 #endif
 
-    if (lastStreetWaterInletFlux == 0 && actualStreetWaterFlux > 0)
+    if (lastStreetWaterInletFlux == 0 && actualWaterInletFlux > 0)
     {
       digitalWrite(13, HIGH);
-      startedToFullFill = millis();
       addEvent(WATER_INLET_FLUX_STARTED);
 #ifdef DEBUG
       Serial.println(F("WATER_INLET_FLUX_STARTED"));
 #endif
     }
-    else if (lastStreetWaterInletFlux > 0 && actualStreetWaterFlux == 0)
+    else if (lastStreetWaterInletFlux > 0 && actualWaterInletFlux == 0)
     {
       digitalWrite(13, LOW);
-      long fullFillTime = (millis() - startedToFullFill) / 1000;
       addEvent(WATER_INLET_FLUX_STOPED);
 #ifdef DEBUG
       Serial.println(F("WATER_INLET_FLUX_STOPED"));
-      Serial.print(F("Enchido em: "));
-      Serial.print(fullFillTime);
-      Serial.println(" s");
-      Serial.print(F(" Vazao Media: "));
 #endif
     }
 
-
-    if (lastWaterOutFlux == 0 && actualWaterExitFlux > 0)
+    if (lastWaterOutFlux == 0 && actualWaterOutFlux > 0)
     {
       digitalWrite(13, HIGH);
-      startedToEmpty = millis();
       addEvent(WATER_OUT_FLUX_STARTED);
 #ifdef DEBUG
       Serial.println(F("WATER_OUT_FLUX_STARTED"));
 #endif
     }
-    else if (lastWaterOutFlux > 0 && actualWaterExitFlux == 0)
+    else if (lastWaterOutFlux > 0 && actualWaterOutFlux == 0)
     {
       digitalWrite(13, LOW);
       long emptyTime = (millis() - startedToEmpty) / 1000;
       addEvent(WATER_OUT_FLUX_STOPED);
 #ifdef DEBUG
       Serial.println(F("WATER_OUT_FLUX_STOPED"));
-      Serial.print(F("Esvaziado em: "));
-      Serial.print(emptyTime);
-      Serial.println(F(" s"));
 #endif
     }
 
-    lastStreetWaterInletFlux = actualStreetWaterFlux;
-    lastWaterOutFlux = actualWaterExitFlux;
+    lastStreetWaterInletFlux = actualWaterInletFlux;
+    lastWaterOutFlux = actualWaterOutFlux;
     lastWaterLevel = actualWaterLevel;
-    checkStreetWaterTrigger();
+    checkStreetWaterInletTrigger();
     char *data = produceDataToSend();
-    int statusCode = client.post("", data, &response); //TODO APPEND STRINGS
+    int statusCode = client.post(DEVICE_DATA_ENDPOINT, data, &response); //TODO APPEND STRINGS
 #ifdef DEBUG
     Serial.print(F("Status code from server: "));
     Serial.println(statusCode);
@@ -272,7 +260,7 @@ void loop()
 * Calculates the actual water volume of the recipient in Liters.
 * @returns float the current water volume (L).
 */
-float calculateactualWaterLevel()
+float calculateActualWaterLevel()
 {
   float actualWaterHeight = readWaterHeight();
   float currentWaterVolume = (PI * pow(recipientRadius, 2) * (actualWaterHeight)); // V = PI * R^2 * H
@@ -298,10 +286,10 @@ float readWaterHeight()
   return cm;
 }
 
-float waterLevelToWaterHeight(float targetVolume)
+float waterLevelToWaterHeight(float targetLevel)
 {
 
-  float waterHeight = targetVolume / (PI * pow(recipientRadius, 2)); // H = V / (PI * R ^ 2);
+  float waterHeight = targetLevel / (PI * pow(recipientRadius, 2)); // H = V / (PI * R ^ 2);
                                                                      // R and H are in CM
   waterHeight = waterHeight * 1000;                                  // Convert L to cm
 
@@ -310,9 +298,25 @@ float waterLevelToWaterHeight(float targetVolume)
   return waterHeight;
 }
 
-void setMinWaterLevel(float targetVolume)
+
+void setRecipientRadius(float radius) {
+  recipientRadius = radius;
+#ifdef DEBUG
+  Serial.print(F("recipientRadius: "));
+  Serial.print(recipientRadius, PRECISION);
+#endif
+}
+void setRecipientHeight(float height){
+  recipientHeight = height;
+#ifdef DEBUG
+  Serial.print(F("recipientHeight: "));
+  Serial.print(recipientHeight, PRECISION);
+#endif
+}
+
+void setMinWaterLevel(float targetLevel)
 {
-  minWaterLevel = targetVolume;
+  minWaterLevel = targetLevel;
   minWaterHeight = waterLevelToWaterHeight(minWaterLevel);
 #ifdef DEBUG
   Serial.print(F("minWaterLevel: "));
@@ -322,9 +326,9 @@ void setMinWaterLevel(float targetVolume)
 #endif
 }
 
-void setMedWaterLevel(float targetVolume)
+void setMedWaterLevel(float targetLevel)
 {
-  medWaterLevel = targetVolume;
+  medWaterLevel = targetLevel;
   medWaterHeight = waterLevelToWaterHeight(medWaterLevel);
 #ifdef DEBUG
   Serial.print(F("medWaterLevel: "));
@@ -334,9 +338,9 @@ void setMedWaterLevel(float targetVolume)
 #endif
 }
 
-void setMaxWaterLevel(float targetVolume)
+void setMaxWaterLevel(float targetLevel)
 {
-  maxWaterLevel = targetVolume;
+  maxWaterLevel = targetLevel;
   maxWaterHeight = waterLevelToWaterHeight(maxWaterLevel);
 #ifdef DEBUG
   Serial.print(F("maxWaterLevel: "));
@@ -346,26 +350,26 @@ void setMaxWaterLevel(float targetVolume)
 #endif
 }
 
-void setOpenStreetWaterTrigger(OpenStreetWaterTriggerEnum trigger)
+void setOpenWaterInletTrigger(OpenWaterInletTriggerEnum trigger)
 {
-  openStreetWaterTrigger = trigger;
+  openWaterInletTrigger = trigger;
 }
 
-void setCloseStreetWaterTrigger(CloseStreetWaterTriggerEnum trigger)
+void setCloseWaterInletTrigger(CloseWaterInletTriggerEnum trigger)
 {
-  closeStreetWaterTrigger = trigger;
+  closeWaterInletTrigger = trigger;
 }
 
-void checkStreetWaterTrigger()
+void checkStreetWaterInletTrigger()
 {
-  if (!isStreetWaterOpen)
+  if (!isWaterInletOpen)
   {
-    switch (openStreetWaterTrigger)
+    switch (openWaterInletTrigger)
     {
 
     case UNDER_DEFINID_VOLUME:
     {
-      if (lastWaterLevel <= openStreetWaterUnderLevel)
+      if (lastWaterLevel <= openWaterInletUnderLevel)
       {
         openStreetWater();
       }
@@ -399,11 +403,11 @@ void checkStreetWaterTrigger()
   }
   else
   {
-    switch (closeStreetWaterTrigger)
+    switch (closeWaterInletTrigger)
     {
     case ABOVE_DEFINID_VOLUME:
     {
-      if (lastWaterLevel >= closeStreetWaterAboveLevel)
+      if (lastWaterLevel >= closeWaterInletAboveLevel)
       {
         closeStreetWater();
       }
@@ -437,19 +441,19 @@ void checkStreetWaterTrigger()
   }
 }
 
-void setOpenStreetWaterUnderLevel(float level)
+void setOpenWaterInletUnderLevel(float level)
 {
-  openStreetWaterUnderLevel = level;
+  openWaterInletUnderLevel = level;
 }
 void setCloseStreetWaterUnderLevel(float level)
 {
-  closeStreetWaterAboveLevel = level;
+  closeWaterInletAboveLevel = level;
 }
 
 void openStreetWater()
 {
-  digitalWrite(STREET_WATER_SOLENOIDE, HIGH);
-  isStreetWaterOpen = true;
+  digitalWrite(WATER_INLET_SOLENOIDE, HIGH);
+  isWaterInletOpen = true;
   addEvent(WATER_INLET_TRIGGERED);
 #ifdef DEBUG
   Serial.println(F("WATER_INLET_TRIGGERED"));
@@ -458,8 +462,8 @@ void openStreetWater()
 
 void closeStreetWater()
 {
-  digitalWrite(STREET_WATER_SOLENOIDE, LOW);
-  isStreetWaterOpen = false;
+  digitalWrite(WATER_INLET_SOLENOIDE, LOW);
+  isWaterInletOpen = false;
   addEvent(WATER_OUT_TRIGGERED);
 #ifdef DEBUG
   Serial.println(F("WATER_OUT_TRIGGERED"));
@@ -481,6 +485,23 @@ void resetEvents()
     events[i] = NULL;
   }
   eventsPosition = 0;
+}
+
+void configureDevice(String* data){
+
+  //TODO PROCESS DATA
+  
+  setRecipientRadius(10);
+  setRecipientHeight(25.2);
+  setMinWaterLevel(1.5);
+  setMedWaterLevel(4);
+  setMaxWaterLevel(6);
+
+  setOpenWaterInletTrigger(UNDER_HALF_VOLUME);
+  setCloseWaterInletTrigger(ABOVE_HALF_VOLUME);
+  setOpenWaterInletUnderLevel(2);
+  setCloseStreetWaterUnderLevel(4);
+
 }
 
 char* produceDataToSend()
@@ -522,9 +543,9 @@ char* produceDataToSend()
 */
 void streetWaterFlowInterrupt()
 {
-  streetWaterFrequency++;
+  waterInletFequency++;
 }
 void waterExitFlowInterrupt()
 {
-  waterExitFrequency++;
+  waterOutFrequency++;
 }
