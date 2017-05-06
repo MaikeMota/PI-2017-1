@@ -2,28 +2,84 @@ import { SequelizeDataBase } from './SequelizeDataBase';
 import { Entity, EntityInstance } from '../src/model/interface';
 import * as SequelizeStatic from 'sequelize';
 
-export class GenericDao {
+export class GenericDao<EI extends EntityInstance<E>, E extends Entity> {
 
-    private static _instance: any;
+    private static _instance: GenericDao<any, any>;
 
-    public static get instance(): GenericDao {
+    public static instance<E extends GenericDao<any, any>>(): E {
         if (!this._instance) {
             this._instance = new GenericDao();
         }
-        return this._instance;
+        return <E>this._instance;
     }
 
-    public save<T extends EntityInstance<E>, E extends Entity>(entity: E): Promise<E> {
+    public save(classConstructor: new () => E, entity: E): Promise<E> {
         return new Promise<E>((resolve, reject) => {
-            this.resolveModelForEntity(entity).create(entity).then(savedInstance => {
-                resolve(savedInstance.dataValues);
+            this.getModelForEntity(classConstructor).create(entity).then(savedInstance => {
+                resolve(entity = savedInstance.dataValues);
             }).catch(error => {
                 reject(error);
             });
         });
     }
 
-    private resolveModelForEntity<T extends EntityInstance<E>, E extends Entity>(entity: E): SequelizeStatic.Model<T, E> {
-        return SequelizeDataBase.instance.getModel<T, E>((entity as Object).constructor.name);
+    public update(classConstructor: new () => E, entity: E): Promise<E> {
+        return new Promise<E>((resolve, reject) => {
+            this.getModelForEntity(classConstructor).find({
+                where: {
+                    id: entity.id
+                }
+            }).then((entityRegister) => {
+                entityRegister.updateAttributes(entity).then(() => {
+                    resolve(entity = entityRegister.dataValues)
+                });
+            }).catch(error => {
+                reject(error);
+            })
+        });
+    }
+
+    public delete(classConstructor: new () => E, entity: E): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this.getModelForEntity(classConstructor).destroy({
+                where: {
+                    id: entity.id
+                }
+            }).then(() => {
+                resolve();
+            }).catch(error => {
+                reject(error);
+            })
+        });
+    }
+
+    public byId(classConstructor: new () => E, id: string): Promise<E> {
+        return new Promise<E>((resolve, reject) => {
+            this.getModelForEntity(classConstructor).findByPrimary(id).then((entity) => {
+                resolve(entity.dataValues);
+            }).catch(error => { reject(error) });
+        });
+    }
+
+    public list(classConstructor: new () => E, offset: number = 0, limit: number = 10): Promise<E[]> {
+        return new Promise<E[]>((resolve, reject) => {
+            this.getModelForEntity(classConstructor).findAll({
+                where: {
+                    active: true
+                },
+                offset: offset,
+                limit: limit
+            }).then((results) => {
+                let entities: E[] = [];
+                results.forEach((instance) => {
+                    entities.push(instance.dataValues);
+                });
+                resolve(entities);
+            })
+        });
+    }
+
+    protected getModelForEntity(classConstructor: new () => E): SequelizeStatic.Model<EI, E> {
+        return SequelizeDataBase.instance.getModel<EI, E>(classConstructor);
     }
 }

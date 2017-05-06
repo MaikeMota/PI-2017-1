@@ -9,17 +9,16 @@ export class Device extends Entity {
     constructor() {
         super();
     }
-
-    deviceKey: string;
+    
+    device_key: string;
     description: string;
-    minWaterLevel: number;
-    medWaterLevel: number;
-    maxWaterLevel: number;
-    recipientRadius: number;
-    recipientHeight: number;
-    waterInletOpenTrigger: WaterInLetOpenTrigger;
-    waterInletCloseTrigger: WaterInLetCloseTrigger;
-    deviceData?: DeviceData[];
+    min_water_level: number;
+    med_water_level: number;
+    max_water_level: number;
+    recipient_radius: number;
+    recipient_height: number;
+    water_inlet_open_trigger: WaterInLetOpenTrigger;
+    water_inlet_close_trigger: WaterInLetCloseTrigger;
 }
 
 export class WaterInLetOpenTrigger extends Enum {

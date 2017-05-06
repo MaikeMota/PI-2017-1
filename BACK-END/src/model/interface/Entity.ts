@@ -5,7 +5,7 @@ export interface EntityInstance<T extends Entity> extends Instance<T> {
     dataValues: T;
 }
 
-export abstract class Entity {
+export class Entity {
 
     constructor() {
     }
@@ -17,5 +17,9 @@ export abstract class Entity {
 
     public get isUpdating(): boolean {
         return this.id == undefined;
+    }
+
+    public static get className(): string {
+        return (this as Object).constructor.name;
     }
 }

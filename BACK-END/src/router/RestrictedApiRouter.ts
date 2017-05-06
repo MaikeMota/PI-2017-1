@@ -4,7 +4,7 @@ import { ForbiddenException } from '../api/rethink/core/exception';
 import { ErrorHandler } from '../api/rethink/service';
 import { StringUtil } from '../api/rethink/util';
 
-import { TokenService } from "../service";
+import { TokenService, UserService } from "../service";
 import { TokenRouter } from "./TokenRouter";
 import { BaseRouter } from './BaseRouter';
 import { CalculatorRouter } from './CalculatorRouter';
@@ -34,7 +34,7 @@ export class RestrictedApiRouter extends BaseRouter {
         TokenService.validateAuthorizationHeader(header);
         let tokenWrapper: TokenWrapper = new TokenWrapper(header.split(' ')[1]);
         TokenService.isValid(tokenWrapper).then(() => {
-            TokenService.retrieveUserById(TokenService.decodeToken(tokenWrapper).id).then((user) => {
+            UserService.instance().byId(TokenService.decodeToken(tokenWrapper).id).then((user) => {
                 next();
             }).catch(error => {
                 ErrorHandler.handleError(response, error);

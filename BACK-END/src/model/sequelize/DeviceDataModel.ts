@@ -28,18 +28,7 @@ export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeS
             tableName: "device_data",
             timestamps: true,
             createdAt: "created_at",
-            updatedAt: "updated_at",
-            getterMethods: {
-                waterLevel: () => { return this.getDataValue('water_level') },
-                waterInletFlux: () => { return this.getDataValue('water_inlet_flux') },
-                waterOutFlux: () => { return this.getDataValue('water_out_flux') }
-            },
-            setterMethods: {
-                waterLevel: (value: number) => { return this.setDataValue('water_level', value) },
-                waterInletFlux: (value: number) => { return this.setDataValue('water_inlet_flux', value) },
-                waterOutFlux: (value: number) => { return this.setDataValue('water_out_flux', value) }
-
-            }
+            updatedAt: "updated_at"
         }
     );
 

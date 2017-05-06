@@ -12,6 +12,8 @@ import { UserWrapper } from '../model/UserWrapper';
 import { TokenWrapper } from '../model/TokenWrapper';
 import { User, UserInstance } from '../model/interface';
 import { AuthenticationWrapper } from '../model/AuthenticationWrapper';
+import { UserDao } from "../../database/UserDao";
+import { UserService } from "./";
 
 export class TokenService {
 
@@ -28,7 +30,8 @@ export class TokenService {
 
     public static authenticate(authenticationWrapper: AuthenticationWrapper): Promise<AuthenticationWrapper> {
         return new Promise<AuthenticationWrapper>((resolve, reject) => {
-            TokenService.retrieveUserByCredentials(authenticationWrapper.username, authenticationWrapper.password).then((user) => {
+            let instance = UserService.instance();
+            instance.byCredentials(authenticationWrapper.username, authenticationWrapper.password).then((user) => {
                 authenticationWrapper.userWrapper = new UserWrapper(null, user);
                 authenticationWrapper.token = TokenService.signToken(authenticationWrapper.userWrapper).token;
                 resolve(authenticationWrapper);
@@ -49,52 +52,10 @@ export class TokenService {
             TokenService.isValid(tokenWrapper).then((isValid) => {
                 if (isValid) {
                     let userId = TokenService.decodeToken(tokenWrapper).id;
-                    TokenService.retrieveUserById(userId).then((user) => {
+                    UserService.instance().byId(userId).then((user) => {
                         tokenWrapper = TokenService.signToken(new UserWrapper(null, user));
                         resolve(tokenWrapper)
                     });
-                }
-            }).catch(error => {
-                reject(error);
-            });
-        });
-    }
-
-    public static retrieveUserById(userId: string, options?: FindOptions): Promise<User> {
-        return new Promise<any>((resolve, reject) => {
-            SequelizeDataBase.instance.getModel('User').findById(userId, options).then((dbUser) => {
-                if (dbUser) {
-                    if (dbUser.dataValues.active) {
-                        resolve(dbUser.dataValues);
-                    } else {
-                        throw new ForbiddenException("User is not active.", -1);
-                    }
-                } else {
-                    throw new ForbiddenException("User not found.", -1);
-                }
-            }).catch(error => {
-                reject(error);
-            });
-        });
-    }
-
-    public static retrieveUserByCredentials(username: string, password: string): Promise<User> {
-        return new Promise<any>((resolve, reject) => {
-            SequelizeDataBase.instance.getModel<UserInstance, User>('User').find({
-                where: {
-                    username: username,
-                    password: password,
-                    active: true
-                }
-            }).then((dbUser) => {
-                if (dbUser) {
-                    if (dbUser.dataValues.active) {
-                        resolve(dbUser.dataValues);
-                    } else {
-                        throw new ForbiddenException("User is not active.", -1);
-                    }
-                } else {
-                    throw new ForbiddenException("User not found.", -1);
                 }
             }).catch(error => {
                 reject(error);

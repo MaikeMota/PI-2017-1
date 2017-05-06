@@ -53,12 +53,12 @@ export class SequelizeDataBase {
 
     }
 
-    public getModel<T extends EntityInstance<E>, E extends Entity>(modelName: string): SequelizeStatic.Model<T, E> {
-        let model = this._models[modelName];
+    public getModel<EI extends EntityInstance<E>, E extends Entity>(classConstructor: new () => E): SequelizeStatic.Model<EI, E> {
+        let model = this._models[classConstructor.name];
         if (model) {
-            return <SequelizeStatic.Model<T, E>>model;
+            return <SequelizeStatic.Model<EI, E>>model;
         } else {
-            throw new UnregisteredModelException(`The model '${modelName}' was not registered.`, -1);
+            throw new UnregisteredModelException(`The model '${classConstructor.name}' was not registered.`, -1);
         }
     }
 
