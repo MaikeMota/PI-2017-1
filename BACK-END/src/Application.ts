@@ -8,8 +8,8 @@ import { TokenService } from './service'
 import { BaseRouter } from './router/BaseRouter';
 import { PublicApiRouter } from './router/PublicApiRouter';
 import { CalculatorRouter } from './router/CalculatorRouter';
-import { ErrorHandler } from "./api/rethink/service/ErrorHandler";
-import { StringUtil } from './api/rethink/util';
+import { ErrorHandler } from "../../RETHINK/service/ErrorHandler";
+import { StringUtil } from '../../RETHINK/util';
 import { SequelizeDataBase } from "../database/SequelizeDataBase";
 
 export class Application {

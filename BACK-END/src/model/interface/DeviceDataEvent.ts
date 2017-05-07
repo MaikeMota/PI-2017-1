@@ -1,5 +1,5 @@
-import { Enum } from '../../api/rethink/core';
-import { EntityInstance, Entity, DeviceData } from './';
+import { Enum, Entity } from '../../../../RETHINK/core';
+import { EntityInstance, DeviceData } from './';
 import { DeviceDataEventEnum } from '../DeviceEventEnum'
 
 export interface DeviceDataEventInstance extends EntityInstance<DeviceDataEvent> {

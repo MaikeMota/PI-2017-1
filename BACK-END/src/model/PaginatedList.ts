@@ -1,4 +1,4 @@
-import { Entity } from "./interface";
+import { Entity } from '../../../RETHINK/core';
 
 export class PaginatedList<T extends Entity> {
 

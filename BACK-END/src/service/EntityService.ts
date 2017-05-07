@@ -1,5 +1,5 @@
 import { GenericDao } from '../../database/GenericDao';
-import { Entity } from "../model/interface";
+import { Entity } from '../../../RETHINK/core';
 import { PaginatedList } from "../model/";
 
 export class EntityService<T extends Entity> {
