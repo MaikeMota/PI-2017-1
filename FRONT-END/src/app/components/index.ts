@@ -1,4 +1,5 @@
 import { DashboardController } from './dashboard/controller';
+import { HomeComponent } from './home/HomeComponent';
 import { LoginController } from './login/controller';
 
 import { DashboardComponent } from './dashboard/DashboardComponent';
@@ -11,5 +12,6 @@ export const SERVICES: any[] = [
 
 export const COMPONENTS: any[] = [
     DashboardComponent,
+    HomeComponent,
     LoginComponent
 ];

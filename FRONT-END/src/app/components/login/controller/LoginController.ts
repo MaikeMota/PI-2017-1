@@ -19,7 +19,7 @@ export class LoginController extends Controller<User> {
     public login(): void {
         this.http.post(Definitions.SERVER_ADDRESS+"/"+LoginController.ENDPOINT, this.entity).toPromise().then(response => {
             this.userInfoService.token = response.json().token;
-            this.router.navigate(['dashboard']);
+            this.router.navigate(['home','dashboard']);
         }).catch(error => {
             console.error(error);
         });
