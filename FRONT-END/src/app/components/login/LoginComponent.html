@@ -8,7 +8,7 @@
             <div id="content" class="center">
                 <div class="row center-align">
                     <div class="input-field center-align col s10">
-                        <input  #username="ngModel" (click)="dismissErrorMessage()" [(ngModel)]="controller.entity.username" required id="login" type="text" class="validate"
+                        <input #username="ngModel" (click)="dismissErrorMessage()" [(ngModel)]="controller.entity.username" required id="login" type="text" class="validate"
                             name="username">
                         <label [class.active]="username.value?.length > 0" class="white-text text-darken-2" for="login">Usuário</label>
                     </div>
