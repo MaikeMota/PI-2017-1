@@ -17,23 +17,32 @@ import { UserService } from "./";
 
 export class TokenService {
 
+    private static _instance: TokenService;
+
+    public static get instance(): TokenService {
+        if (!this._instance) {
+            this._instance = new TokenService();
+        }
+        return this._instance;
+    }
+
     public static readonly AUTHORIZATION_HEADER: string = "authorization";
     public static readonly TOKEN_PREFIX: string = "Bearer";
 
-    private static defaultOptions: jwt.SignOptions = {
+    private defaultOptions: jwt.SignOptions = {
         algorithm: "RS256",
         expiresIn: "7d"
     };
 
-    private static _privateKey: Buffer;
-    private static _publicKey: Buffer;
+    private _privateKey: Buffer;
+    private _publicKey: Buffer;
 
-    public static authenticate(authenticationWrapper: AuthenticationWrapper): Promise<AuthenticationWrapper> {
+    public authenticate(authenticationWrapper: AuthenticationWrapper): Promise<AuthenticationWrapper> {
         return new Promise<AuthenticationWrapper>((resolve, reject) => {
             let instance = UserService.instance();
             instance.byCredentials(authenticationWrapper.username, authenticationWrapper.password).then((user) => {
                 authenticationWrapper.userWrapper = new UserWrapper(null, user);
-                authenticationWrapper.token = TokenService.signToken(authenticationWrapper.userWrapper).token;
+                authenticationWrapper.token = this.signToken(authenticationWrapper.userWrapper).token;
                 resolve(authenticationWrapper);
             }).catch(error => {
                 reject(error);
@@ -41,19 +50,19 @@ export class TokenService {
         });
     }
 
-    public static signToken(userWrapper: UserWrapper): TokenWrapper {
-        let signedToken: string = jwt.sign(userWrapper, TokenService.privateKey, TokenService.defaultOptions);
+    public signToken(userWrapper: UserWrapper): TokenWrapper {
+        let signedToken: string = jwt.sign(userWrapper, this.privateKey, this.defaultOptions);
         let tokenWrapper: TokenWrapper = new TokenWrapper(signedToken);
         return tokenWrapper;
     }
 
-    public static renewToken(tokenWrapper: TokenWrapper): Promise<TokenWrapper> {
+    public renewToken(tokenWrapper: TokenWrapper): Promise<TokenWrapper> {
         return new Promise<TokenWrapper>((resolve, reject) => {
-            TokenService.isValid(tokenWrapper).then((isValid) => {
+            this.isValid(tokenWrapper).then((isValid) => {
                 if (isValid) {
-                    let userId = TokenService.decodeToken(tokenWrapper).id;
+                    let userId = this.decodeToken(tokenWrapper).id;
                     UserService.instance().byId(userId).then((user) => {
-                        tokenWrapper = TokenService.signToken(new UserWrapper(null, user));
+                        tokenWrapper = this.signToken(new UserWrapper(null, user));
                         resolve(tokenWrapper)
                     });
                 }
@@ -63,7 +72,7 @@ export class TokenService {
         });
     }
 
-    public static decodeToken(tokenWrapper: TokenWrapper): UserWrapper {
+    public decodeToken(tokenWrapper: TokenWrapper): UserWrapper {
         let decodedToken = jwt.decode(tokenWrapper.token);
         let userWrapper: UserWrapper = new UserWrapper(null, null);
         userWrapper.id = decodedToken.id;
@@ -72,9 +81,9 @@ export class TokenService {
         return userWrapper;
     }
 
-    public static isValid(tokenWrapper: TokenWrapper): Promise<boolean> {
+    public isValid(tokenWrapper: TokenWrapper): Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
-            jwt.verify(tokenWrapper.token, TokenService.publicKey, {
+            jwt.verify(tokenWrapper.token, this.publicKey, {
                 algorithms: [this.defaultOptions.algorithm]
             }, (err: jwt.JsonWebTokenError | jwt.TokenExpiredError | jwt.NotBeforeError, decoded) => {
                 if (!err) {
@@ -88,7 +97,7 @@ export class TokenService {
 
 
 
-    public static validateAuthorizationHeader(authorizationToken: string): void {
+    public validateAuthorizationHeader(authorizationToken: string): void {
         if (StringUtil.isNullEmptyOrUndefined(authorizationToken)) {
             throw new ForbiddenException("Missing Authorization Header", -1);
         }
@@ -98,18 +107,18 @@ export class TokenService {
         }
     }
 
-    private static get privateKey(): Buffer {
-        if (!TokenService._privateKey) {
-            TokenService._privateKey = readFileSync('./resources/privateKey.key');
+    private get privateKey(): Buffer {
+        if (!this._privateKey) {
+            this._privateKey = readFileSync('./resources/privateKey.key');
         }
-        return TokenService._privateKey;
+        return this._privateKey;
     }
 
-    private static get publicKey(): Buffer {
-        if (!TokenService._publicKey) {
-            TokenService._publicKey = readFileSync('./resources/publicKey.pem');
+    private get publicKey(): Buffer {
+        if (!this._publicKey) {
+            this._publicKey = readFileSync('./resources/publicKey.pem');
         }
-        return TokenService._publicKey;
+        return this._publicKey;
     }
 
 }
