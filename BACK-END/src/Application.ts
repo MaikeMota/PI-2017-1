@@ -3,13 +3,14 @@ import * as process from 'process';
 import * as morgan from 'morgan';
 import * as bodyParser from 'body-parser';
 
+import { TokenService } from './service'
+
 import { BaseRouter } from './router/BaseRouter';
 import { PublicApiRouter } from './router/PublicApiRouter';
 import { CalculatorRouter } from './router/CalculatorRouter';
 import { ErrorHandler } from "./api/rethink/service/ErrorHandler";
 import { StringUtil } from './api/rethink/util';
 import { SequelizeDataBase } from "../database/SequelizeDataBase";
-import { Device, WaterInLetCloseTrigger, WaterInLetOpenTrigger, User } from "./model/interface";
 
 export class Application {
 
@@ -28,6 +29,7 @@ export class Application {
     }
 
     private initializeServer(port: number): void {
+        TokenService.AUTHORIZATION_HEADER;
         this.app = express();
         this.configureMiddlewares();
         this.configureRouter();

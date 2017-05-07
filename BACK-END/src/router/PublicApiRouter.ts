@@ -10,9 +10,9 @@ export class PublicApiRouter extends BaseRouter {
     public static readonly ROOT_PATH: string = "api";
 
     protected configureRouter(): void {
+        this.register(RestrictedApiRouter);
         this.register(TokenRouter);
         this.register(EchoRouter);
-        this.register(RestrictedApiRouter);
     }
 
     public get PATH(): string {
