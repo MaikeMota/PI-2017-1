@@ -13,4 +13,9 @@ export class DeviceDao extends GenericDao<DeviceInstance, Device> {
             });
         });
     }
+
+    protected getClass(): new () => Device {
+        return Device;
+    };
+
 }
