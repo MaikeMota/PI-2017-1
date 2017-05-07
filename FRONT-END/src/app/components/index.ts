@@ -1,12 +1,14 @@
 import { DashboardController } from './dashboard/controller';
-import { HomeComponent } from './home/HomeComponent';
+import { HomeController } from './home/controller';
 import { LoginController } from './login/controller';
 
 import { DashboardComponent } from './dashboard/DashboardComponent';
+import { HomeComponent } from './home/HomeComponent';
 import { LoginComponent } from './login/LoginComponent';
 
 export const SERVICES: any[] = [
     DashboardController,
+    HomeController,
     LoginController
 ];
 

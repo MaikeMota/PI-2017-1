@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { HomeController } from './controller';
 
 @Component({
 	selector: 'home',
@@ -7,4 +8,8 @@ import { Component } from '@angular/core';
 })
 export class HomeComponent {
 	title = 'Home';
+
+    constructor(public controller: HomeController) {
+
+    }
 }
