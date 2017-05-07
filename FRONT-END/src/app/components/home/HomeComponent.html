@@ -1,15 +1,15 @@
 <nav class="nav-extended">
     <div class="nav-wrapper">
         <a href="#" class="brand-logo"></a>
-        <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
         <ul class="right">
             <li><a (click)="controller.logout()">Logout</a></li>
         </ul>
     </div>
     <div class="nav-content">
-        <ul class="tabs tabs-transparent">
-            <li><a href="#test1"></a></li>
-        </ul>
+        <span class="nav-title">Dashboard</span>
+        <a class="btn-floating btn-large halfway-fab waves-effect waves-light teal">
+            <i class="material-icons">add</i>
+        </a>
     </div>
 </nav>
 <router-outlet></router-outlet>
