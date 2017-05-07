@@ -4,6 +4,8 @@ import { Calculator } from '../service/Calculator';
 import { Entity, Device } from "../model/interface";
 import { DeviceService, EntityService } from '../service';
 
+import { StringUtil } from '../api/rethink/util';
+
 
 export class DeviceRouter extends BaseRouter {
 
@@ -22,13 +24,18 @@ export class DeviceRouter extends BaseRouter {
     }
 
     private static byId(request: Request, response: Response, next: NextFunction) {
-        DeviceService.instance().byId(request.param('id')).then((device) => {
+        DeviceService.instance().byId(request.query('id')).then((device) => {
             response.json(device);
         }).catch(next);
     }
 
-
     private static list(request: Request, response: Response, next: NextFunction) {
+        let offset: number = StringUtil.toInt(request.query['offset']);
+        let limit: number = StringUtil.toInt(request.query['limit']);
+
+        DeviceService.instance().list(offset, limit).then((deviceList) => {
+            response.json(deviceList);
+        }).catch(next);
     }
 
     private static create<T extends Entity>(request: Request, response: Response, next: NextFunction) {
@@ -39,8 +46,16 @@ export class DeviceRouter extends BaseRouter {
     }
 
     private static update(request: Request, response: Response, next: NextFunction) {
+        let requestDevice: Device = request.body;
+        requestDevice.id = request.param('id');
+        DeviceService.instance().update(requestDevice).then(() => {
+            response.json();
+        }).catch(next);
     }
 
     private static delete(request: Request, response: Response, next: NextFunction) {
+        DeviceService.instance().delete(request.param('id')).then(() => {
+            response.json();
+        }).catch(next);
     }
 }
