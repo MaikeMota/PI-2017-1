@@ -1,9 +1,9 @@
-import { BadRequestException } from './BadRequestException';
+import { RTKException } from './RTKException';
 
-export class EntityNotFoundException extends BadRequestException {
+export class EntityNotFoundException extends RTKException {
 
     constructor(developerMessage: string, code: number) {
-        super(developerMessage, code);
+        super(developerMessage, code, 404);
     }
 
 }
