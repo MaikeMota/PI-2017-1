@@ -12,6 +12,11 @@ export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeS
         },
         password: {
             type: dataTypes.STRING
+        },
+        active: {
+            type: dataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: true
         }
     }, {
             indexes: [

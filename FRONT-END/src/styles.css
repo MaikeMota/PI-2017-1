@@ -1,1 +1,13 @@
 /* You can add global styles to this file, and also import other style files */
+#login-container {
+    background-image: url("./assets/login-min.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 100vw !important;
+    height: 100vh !important;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}

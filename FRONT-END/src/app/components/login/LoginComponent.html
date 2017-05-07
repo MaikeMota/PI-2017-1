@@ -1,0 +1,35 @@
+<div id="login-container" class="col s12 fullh">
+    <div class="valign-wrapper">
+        <form (ngSubmit)="controller.login()" class="container center-align">
+            <div class="row center-align">
+                <h2 class="header white-text text-darken-3">Login</h2>
+            </div>
+
+            <div id="content" class="center">
+                <div class="row center-align">
+                    <div class="input-field center-align col s10">
+                        <input #username="ngModel" (click)="dismissErrorMessage()" [(ngModel)]="controller.entity.username" required id="login" type="text" class="validate"
+                            name="username">
+                        <label [class.active]="username.value?.length > 0" class="white-text text-darken-2" for="login">Usuário</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-field col s10">
+                        <input #password (click)="dismissErrorMessage()" [(ngModel)]="controller.entity.password" required id="password" type="password" class="validate"
+                            name="password">
+                        <label [class.active]="password.value?.length > 0" class="white-text text-darken-2" for="password">Senha</label>
+                    </div>
+                </div>
+
+                <p *ngIf="showErrorMessage" style="color: red; text-align: center !important;"> O usuário e/ou a senha estão incorretos </p>
+
+                <div class="row">
+                    <div class="input-field col s10">
+                        <p class="margin center-align medium-small"> <button (click)="dismissErrorMessage()" [disabled]="controller.busy" type="submit" class="btn light-blue  waves-effect waves-light col s12"><span class="white-text text-darken-3">Login</span></button></p>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
