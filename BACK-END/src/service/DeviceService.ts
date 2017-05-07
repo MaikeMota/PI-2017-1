@@ -8,8 +8,12 @@ export class DeviceService extends EntityService<Device> {
         return DeviceDao.instance<DeviceDao>().byDeviceKey(deviceKey);
     }
 
-    protected get class(): new ()=> Device {
+    protected get class(): new () => Device {
         return Device;
+    }
+
+    protected get dao(): DeviceDao {
+        return DeviceDao.instance<DeviceDao>();
     }
 
 }

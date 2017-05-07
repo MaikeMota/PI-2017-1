@@ -24,4 +24,8 @@ export class UserDao extends GenericDao<UserInstance, User> {
             });
         });
     }
+
+    public getClass(): new () => User {
+        return User;
+    }
 }
