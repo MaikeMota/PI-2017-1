@@ -4,8 +4,9 @@ import * as path from 'path';
 import * as SequelizeStatic from 'sequelize';
 import { Sequelize } from "sequelize";
 
-import { UnregisteredModelException } from '../src/api/rethink/core/exception'
-import { EntityInstance, Entity } from '../src/model/interface';
+import { UnregisteredModelException } from '../../RETHINK/core/exception';
+import { Entity } from '../../RETHINK/core';
+import { EntityInstance } from '../src/model/interface';
 
 export class SequelizeDataBase {
 

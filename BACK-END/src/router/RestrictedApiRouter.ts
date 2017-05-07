@@ -2,8 +2,8 @@ import { Router, Request, RequestHandler, Response, NextFunction } from 'express
 
 import { validateJWTAuthentication } from '../middleware/RestriectedRouteMiddleware';
 
-import { ForbiddenException } from '../api/rethink/core/exception';
-import { StringUtil } from '../api/rethink/util';
+import { ForbiddenException } from '../../../RETHINK/core/exception';
+import { StringUtil } from '../../../RETHINK/util';
 
 import { TokenService, UserService } from "../service";
 import { BaseRouter } from './BaseRouter';

@@ -1,7 +1,7 @@
 import { Device, DeviceInstance } from "../model/interface/";
 import { DeviceDao } from "../../database/DeviceDao";
 import { EntityService } from "./";
-import { StringUtil } from "../api";
+import { StringUtil } from "../../../RETHINK/util";
 
 export class DeviceService extends EntityService<Device> {
 

@@ -1,4 +1,5 @@
-import { EntityInstance, Entity, Device } from './';
+import { EntityInstance, Device } from './';
+import { Enum, Entity } from '../../../../RETHINK/core';
 
 export interface DeviceDataInstance extends EntityInstance<DeviceData> {
 }

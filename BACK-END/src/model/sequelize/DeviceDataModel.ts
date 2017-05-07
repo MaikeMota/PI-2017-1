@@ -4,7 +4,7 @@ import { DataTypes, Sequelize } from 'sequelize';
 import { SequelizeModels } from '../../../database/SequelizeDataBase';
 
 import { DeviceData, DeviceInstance } from '../interface/';
-import { StringUtil } from "../../api/rethink/util/";
+import { StringUtil } from "../../../../RETHINK/util/";
 
 export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeStatic.Model<DeviceInstance, DeviceData> {
     let deviceData = sequelize.define<DeviceInstance, DeviceData>('DeviceData', {

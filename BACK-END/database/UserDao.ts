@@ -1,6 +1,6 @@
 
 import { GenericDao } from "./GenericDao";
-import { ForbiddenException } from "../src/api/rethink/core/exception";
+import { ForbiddenException } from "../../RETHINK/core/exception";
 import { User, UserInstance } from "../src/model/interface";
 
 export class UserDao extends GenericDao<UserInstance, User> {

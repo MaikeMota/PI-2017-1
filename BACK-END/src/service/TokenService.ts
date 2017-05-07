@@ -5,8 +5,8 @@ import { readFileSync } from 'fs'
 
 import { SequelizeDataBase } from '../../database/SequelizeDataBase';
 
-import { ForbiddenException, BadRequestException } from '../api/rethink/core/exception';
-import { StringUtil } from '../api/rethink/util';
+import { ForbiddenException, BadRequestException } from '../../../RETHINK/core/exception';
+import { StringUtil } from '../../../RETHINK/util';
 
 import { UserWrapper } from '../model/UserWrapper';
 import { TokenWrapper } from '../model/TokenWrapper';

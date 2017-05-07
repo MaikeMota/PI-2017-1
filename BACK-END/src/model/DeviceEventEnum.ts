@@ -1,4 +1,4 @@
-import { Enum } from "../api/rethink/core";
+import { Enum } from "../../../RETHINK/core";
 
 export class DeviceDataEventEnum extends Enum {
 

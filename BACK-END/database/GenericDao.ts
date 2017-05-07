@@ -1,7 +1,8 @@
 import { SequelizeDataBase } from './SequelizeDataBase';
-import { Entity, EntityInstance } from '../src/model/interface';
+import { EntityInstance } from '../src/model/interface';
+import { Entity } from '../../RETHINK/core';
 import * as SequelizeStatic from 'sequelize';
-import { EntityNotFoundException, UnprocessableEntityException } from "../src/api/rethink/core/exception/";
+import { EntityNotFoundException, UnprocessableEntityException } from "../../RETHINK/core/exception/";
 
 export class GenericDao<EI extends EntityInstance<E>, E extends Entity> {
 

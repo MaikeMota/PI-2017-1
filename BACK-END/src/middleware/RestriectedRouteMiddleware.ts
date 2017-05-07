@@ -1,7 +1,7 @@
 import { Router, Request, RequestHandler, Response, NextFunction } from 'express';
 import { TokenService, UserService } from "../service";
 import { TokenWrapper } from '../model/TokenWrapper';
-import { ErrorHandler } from '../api/rethink/service';
+import { ErrorHandler } from '../../../RETHINK/service';
 
 export function validateJWTAuthentication(request: Request, response: Response, next: NextFunction) {
     let header: string = request.header(TokenService.AUTHORIZATION_HEADER);

@@ -7,8 +7,8 @@ import { TokenWrapper } from '../model/TokenWrapper';
 import { AuthenticationWrapper } from "../model/AuthenticationWrapper";
 import { UserWrapper } from "../model/UserWrapper";
 
-import { BadRequestException, ForbiddenException } from '../api/rethink/core/exception';
-import { StringUtil } from "../api/rethink/util";
+import { BadRequestException, ForbiddenException } from '../../../RETHINK/core/exception';
+import { StringUtil } from "../../../RETHINK/util";
 
 
 export class TokenRouter extends BaseRouter {

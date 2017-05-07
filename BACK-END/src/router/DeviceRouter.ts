@@ -1,10 +1,11 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { BaseRouter } from './BaseRouter';
 import { Calculator } from '../service/Calculator';
-import { Entity, Device } from "../model/interface";
+import { Device } from "../model/interface";
 import { DeviceService, EntityService } from '../service';
 
-import { StringUtil } from '../api/rethink/util';
+import { StringUtil } from '../../../RETHINK/util';
+import { Entity } from '../../../RETHINK/core';
 
 
 export class DeviceRouter extends BaseRouter {
