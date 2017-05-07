@@ -1,12 +1,17 @@
-import { Entity, EntityAttributes, Device } from './';
+import { EntityInstance, Entity, Device } from './';
 
-export interface DeviceData extends Entity<DeviceDataAttributes> {
+export interface DeviceDataInstance extends EntityInstance<DeviceData> {
 }
 
-export interface DeviceDataAttributes extends EntityAttributes {
-    waterLevel: number;
-    waterInletFlux: number;
-    waterOutFlux: number;
-    device: Device;
+export class DeviceData extends Entity {
+
+    constructor() {
+        super();
+    }
+    
+    public water_level: number;
+    public water_inlet_flux: number;
+    public water_out_flux: number;
+    public device: Device;
 }
 

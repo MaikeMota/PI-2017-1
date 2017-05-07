@@ -3,10 +3,10 @@ import { DataTypes, Sequelize } from 'sequelize';
 
 import { SequelizeModels } from '../../../database/SequelizeDataBase';
 
-import { DeviceData, DeviceDataAttributes } from '../interface/';
+import { DeviceData, DeviceDataInstance } from '../interface/';
 
-export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeStatic.Model<DeviceData, DeviceDataAttributes> {
-    let deviceData = sequelize.define<DeviceData, DeviceDataAttributes>('DeviceDataEvent', {
+export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeStatic.Model<DeviceDataInstance, DeviceData> {
+    let deviceData = sequelize.define<DeviceDataInstance, DeviceData>('DeviceDataEvent', {
 
     }, {
             indexes: [

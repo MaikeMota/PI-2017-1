@@ -1,7 +1,7 @@
-import { Entity, EntityAttributes, } from './';
+import { EntityInstance, Entity, } from './';
 
-export interface UserDevice extends Entity<UserDeviceAttributes> {
+export interface UserDeviceInstance extends EntityInstance<UserDevice> {
 }
 
-export interface UserDeviceAttributes extends EntityAttributes {
+export class UserDevice extends Entity {
 }

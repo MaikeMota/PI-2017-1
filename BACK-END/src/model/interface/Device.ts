@@ -1,20 +1,24 @@
 import { Enum } from '../../api/rethink/core';
-import { Entity, EntityAttributes, DeviceDataAttributes } from './';
+import { EntityInstance, Entity, DeviceData } from './';
 
-export interface Device extends Entity<DeviceAttributes> {
+export interface DeviceInstance extends EntityInstance<Device> {
 }
 
-export interface DeviceAttributes extends EntityAttributes {
-    deviceKey: string;
+export class Device extends Entity {
+
+    constructor() {
+        super();
+    }
+    
+    device_key: string;
     description: string;
-    minWaterLevel: number;
-    medWaterLevel: number;
-    maxWaterLevel: number;
-    recipientRadius: number;
-    recipientHeight: number;
-    waterInletOpenTrigger: WaterInLetOpenTrigger;
-    waterInletCloseTrigger: WaterInLetCloseTrigger;
-    deviceData: DeviceDataAttributes[];
+    min_water_level: number;
+    med_water_level: number;
+    max_water_level: number;
+    recipient_radius: number;
+    recipient_height: number;
+    water_inlet_open_trigger: WaterInLetOpenTrigger;
+    water_inlet_close_trigger: WaterInLetCloseTrigger;
 }
 
 export class WaterInLetOpenTrigger extends Enum {
@@ -30,8 +34,8 @@ export class WaterInLetOpenTrigger extends Enum {
 
     public static values(): WaterInLetOpenTrigger[] {
         return [
-            WaterInLetOpenTrigger.UNDER_DEFINID_VOLUME,
             WaterInLetOpenTrigger.UNDER_HALF_VOLUME,
+            WaterInLetOpenTrigger.UNDER_MED_VOLUME,
             WaterInLetOpenTrigger.UNDER_MIN_VOUME,
             WaterInLetOpenTrigger.UNDER_DEFINID_VOLUME,
         ]

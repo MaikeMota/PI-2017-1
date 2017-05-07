@@ -1,5 +1,5 @@
-export { Entity, EntityAttributes } from './Entity';
-export { User, UserAttributes } from './User';
-export { Device, DeviceAttributes, WaterInLetOpenTrigger, WaterInLetCloseTrigger } from './Device';
-export { DeviceData, DeviceDataAttributes } from './DeviceData';
-export { UserDevice, UserDeviceAttributes } from './UserDevice';
+export { EntityInstance, Entity } from './Entity';
+export { User, UserInstance } from './User';
+export { Device, DeviceInstance, WaterInLetOpenTrigger, WaterInLetCloseTrigger } from './Device';
+export { DeviceData, DeviceDataInstance } from './DeviceData';
+export { UserDevice, UserDeviceInstance } from './UserDevice';

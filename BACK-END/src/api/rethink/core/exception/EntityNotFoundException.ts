@@ -1,9 +1,9 @@
 import { RTKException } from './RTKException';
 
-export class ServerErrorException extends RTKException {
+export class EntityNotFoundException extends RTKException {
 
     constructor(developerMessage: string, code: number) {
-        super(developerMessage, code, 500);
+        super(developerMessage, code, 404);
     }
 
 }

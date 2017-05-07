@@ -3,26 +3,33 @@ import * as process from 'process';
 import * as morgan from 'morgan';
 import * as bodyParser from 'body-parser';
 
+import { TokenService } from './service'
+
 import { BaseRouter } from './router/BaseRouter';
 import { PublicApiRouter } from './router/PublicApiRouter';
 import { CalculatorRouter } from './router/CalculatorRouter';
 import { ErrorHandler } from "./api/rethink/service/ErrorHandler";
 import { StringUtil } from './api/rethink/util';
-import { SequelizeDataBase, } from "../database/SequelizeDataBase";
+import { SequelizeDataBase } from "../database/SequelizeDataBase";
 
 export class Application {
 
     private app: express.Express;
 
     constructor(port: number) {
-        this.initializeServer(port);
         SequelizeDataBase
             .registerSequelizeModelsFolder('./src/model/sequelize')
-            .initializeDatabase();
+            .initializeDatabase().then(sequelizeDB => {
+                this.initializeServer(port);
+            }).catch((error) => {
+                console.error("There is an error while initializing Database.");
+                console.error(error.stack);
+            });
 
     }
 
     private initializeServer(port: number): void {
+        TokenService.AUTHORIZATION_HEADER;
         this.app = express();
         this.app.use(function (req, res, next) {
             res.header("Access-Control-Allow-Origin", "*");

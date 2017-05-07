@@ -2,10 +2,10 @@ import * as SequelizeStatic from 'sequelize';
 import { DataTypes, Sequelize } from 'sequelize';
 import { SequelizeModels } from '../../../database/SequelizeDataBase';
 
-import { User, UserAttributes, Device, DeviceAttributes } from "../interface";
+import { User, UserInstance, Device, DeviceInstance } from "../interface";
 
-export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeStatic.Model<User, UserAttributes> {
-    let user = sequelize.define<User, UserAttributes>('User', {
+export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeStatic.Model<UserInstance, User> {
+    let user = sequelize.define<UserInstance, User>('User', {
         username: {
             type: dataTypes.STRING,
             allowNull: false
@@ -26,10 +26,8 @@ export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeS
             tableName: "user",
             timestamps: true,
             createdAt: "created_at",
-            updatedAt: "updated_at",
-
+            updatedAt: "updated_at"
         }
     );
-
     return user;
 }

@@ -3,10 +3,10 @@ import { DataTypes, Sequelize } from 'sequelize';
 
 import { SequelizeModels } from '../../../database/SequelizeDataBase';
 
-import { UserDevice, UserDeviceAttributes } from '../interface/';
+import { UserDevice, UserDeviceInstance } from '../interface/';
 
-export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeStatic.Model<UserDevice, UserDeviceAttributes> {
-    let userDevice = sequelize.define<UserDevice, UserDeviceAttributes>('UserDevice', {
+export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeStatic.Model<UserDeviceInstance, UserDevice> {
+    let userDevice = sequelize.define<UserDeviceInstance, UserDevice>('UserDevice', {
         active: {
             type: dataTypes.BOOLEAN
         }
@@ -20,8 +20,6 @@ export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeS
             updatedAt: "updated_at",
         }
     );
-
-
     userDevice['associate'] = (models: SequelizeModels) => {
         models['User'].belongsToMany(models['Device'], {
             as: 'devices',

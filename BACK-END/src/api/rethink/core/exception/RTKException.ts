@@ -17,6 +17,10 @@ export class RTKException {
         return this._code;
     }
 
+    public get statusCode(): number {
+        return this._statusCode;
+    }
+
     toJSON(): any {
         return {
             developerMessage: this.developerMessage,
