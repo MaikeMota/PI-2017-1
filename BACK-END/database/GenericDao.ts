@@ -1,6 +1,7 @@
 import { SequelizeDataBase } from './SequelizeDataBase';
 import { Entity, EntityInstance } from '../src/model/interface';
 import * as SequelizeStatic from 'sequelize';
+import { EntityNotFoundException } from "../src/api/rethink/core/exception/index";
 
 export class GenericDao<EI extends EntityInstance<E>, E extends Entity> {
 
@@ -56,7 +57,11 @@ export class GenericDao<EI extends EntityInstance<E>, E extends Entity> {
     public byId(classConstructor: new () => E, id: string): Promise<E> {
         return new Promise<E>((resolve, reject) => {
             this.getModelForEntity(classConstructor).findByPrimary(id).then((entity) => {
-                resolve(entity.dataValues);
+                if (entity) {
+                    resolve(entity.dataValues);
+                } else {
+                    throw new EntityNotFoundException(`Cannot find a register for the class '${(classConstructor as Function).name}' with id '${id}'`, -1);
+                }
             }).catch(error => { reject(error) });
         });
     }
