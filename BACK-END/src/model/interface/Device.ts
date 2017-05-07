@@ -34,8 +34,8 @@ export class WaterInLetOpenTrigger extends Enum {
 
     public static values(): WaterInLetOpenTrigger[] {
         return [
-            WaterInLetOpenTrigger.UNDER_DEFINID_VOLUME,
             WaterInLetOpenTrigger.UNDER_HALF_VOLUME,
+            WaterInLetOpenTrigger.UNDER_MED_VOLUME,
             WaterInLetOpenTrigger.UNDER_MIN_VOUME,
             WaterInLetOpenTrigger.UNDER_DEFINID_VOLUME,
         ]
