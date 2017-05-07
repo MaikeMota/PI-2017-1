@@ -1,0 +1,26 @@
+html, body { 
+  margin:0; 
+  padding:0; 
+  height:100%;
+}
+
+.row, .col {
+    margin-bottom: 0;
+}
+
+.fullh {
+    height: 100vh;
+}
+
+.valign-wrapper {
+    height: 100vh;
+}
+
+#content {
+    margin-left: 16%;
+    margin-bottom: 5%;
+}
+
+.container {    
+    background: rgba(50, 50, 50, 0.2);
+}
