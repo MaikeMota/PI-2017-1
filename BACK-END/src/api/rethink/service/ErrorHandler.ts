@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { RTKException, BadRequestException, ForbiddenException, ServerErrorException, UnregisteredModelException } from '../core/exception';
+import { RTKException, BadRequestException, ForbiddenException, ServerErrorException, UnregisteredModelException, EntityNotFoundException } from '../core/exception';
 import { ResponseUtil, ObjectUtil } from '../util';
 
 export class ErrorHandler {
@@ -11,6 +11,7 @@ export class ErrorHandler {
 
     public static handleError(response: Response, error: Error | RTKException): void {// TODO Register Expected Errors
         switch (error.constructor.name) {
+            case EntityNotFoundException.name:
             case BadRequestException.name: {
                 ResponseUtil.badRequest(response, ObjectUtil.cast<BadRequestException>(error));
                 break;
