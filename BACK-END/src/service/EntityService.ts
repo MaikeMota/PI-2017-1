@@ -1,5 +1,6 @@
 import { GenericDao } from '../../database/GenericDao';
 import { Entity } from "../model/interface";
+import { PaginatedList } from "../model/";
 
 export class EntityService<T extends Entity> {
 
@@ -20,20 +21,44 @@ export class EntityService<T extends Entity> {
         return this.dao.save(this.class, entity);
     }
 
-    public update<T>(entity: T): Promise<T> {
+    public update<T>(entity: T): Promise<void> {
         return this.dao.update(this.class, entity);
     }
 
-    public delete<T>(entity: T): Promise<void> {
-        return this.dao.delete(this.class, entity);
+    public delete<T>(id: string): Promise<void> {
+        return this.dao.delete(this.class, id);
     }
 
     public byId<T>(id: string): Promise<T> {
         return this.dao.byId(this.class, id);
     }
 
-    public list<T>(offset: number = 0, limit: number = 10): Promise<T[]> {
-        return this.dao.list(this.class);
+    public list<T>(offset: number = 0, limit: number = 10): Promise<PaginatedList<any>> {
+        return new Promise<PaginatedList<any>>((resolve, reject) => {
+            let promises = [];
+
+            let list: PaginatedList<any> = new PaginatedList();
+            list.limit = limit;
+            list.offset = offset;
+
+            promises.push(
+                this.dao.count(this.class).then((totalResults) => {
+                    list.totalResults = totalResults;
+                })
+            );
+
+            promises.push(
+                this.dao.list(this.class).then((entities: T[]) => {
+                    list.items = entities;
+                })
+            );
+
+            Promise.all(promises).then(() => {
+                resolve(list);
+            }).catch((error) => {
+                reject(error)
+            });
+        });
     }
 
     protected get class(): new () => T {
