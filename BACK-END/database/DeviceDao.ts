@@ -1,4 +1,3 @@
-
 import { GenericDao } from "./GenericDao";
 import { Device, DeviceInstance } from "../src/model/interface";
 
@@ -14,7 +13,7 @@ export class DeviceDao extends GenericDao<DeviceInstance, Device> {
         });
     }
 
-    protected getClass(): new () => Device {
+    protected get class(): new () => Device {
         return Device;
     };
 
