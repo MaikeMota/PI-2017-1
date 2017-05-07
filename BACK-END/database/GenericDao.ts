@@ -1,7 +1,7 @@
 import { SequelizeDataBase } from './SequelizeDataBase';
 import { Entity, EntityInstance } from '../src/model/interface';
 import * as SequelizeStatic from 'sequelize';
-import { EntityNotFoundException } from "../src/api/rethink/core/exception/index";
+import { EntityNotFoundException, UnprocessableEntityException } from "../src/api/rethink/core/exception/";
 
 export class GenericDao<EI extends EntityInstance<E>, E extends Entity> {
 
@@ -18,39 +18,39 @@ export class GenericDao<EI extends EntityInstance<E>, E extends Entity> {
         return new Promise<E>((resolve, reject) => {
             this.getModelForEntity(classConstructor).create(entity).then(savedInstance => {
                 resolve(entity = savedInstance.dataValues);
-            }).catch(error => {
-                reject(error);
+            }).catch((error) => {
+                this.handleError(error, reject);
             });
         });
     }
 
-    public update(classConstructor: new () => E, entity: E): Promise<E> {
-        return new Promise<E>((resolve, reject) => {
+    public update(classConstructor: new () => E, entity: E): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
             this.getModelForEntity(classConstructor).find({
                 where: {
                     id: entity.id
                 }
             }).then((entityRegister) => {
                 entityRegister.updateAttributes(entity).then(() => {
-                    resolve(entity = entityRegister.dataValues)
+                    resolve();
                 });
-            }).catch(error => {
-                reject(error);
-            })
+            }).catch((error) => {
+                this.handleError(error, reject);
+            });
         });
     }
 
-    public delete(classConstructor: new () => E, entity: E): Promise<void> {
+    public delete(classConstructor: new () => E, id: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             this.getModelForEntity(classConstructor).destroy({
                 where: {
-                    id: entity.id
+                    id: id
                 }
             }).then(() => {
                 resolve();
-            }).catch(error => {
-                reject(error);
-            })
+            }).catch((error) => {
+                this.handleError(error, reject);
+            });
         });
     }
 
@@ -62,7 +62,9 @@ export class GenericDao<EI extends EntityInstance<E>, E extends Entity> {
                 } else {
                     throw new EntityNotFoundException(`Cannot find a register for the class '${(classConstructor as Function).name}' with id '${id}'`, -1);
                 }
-            }).catch(error => { reject(error) });
+            }).catch((error) => {
+                this.handleError(error, reject);
+            });
         });
     }
 
@@ -80,11 +82,35 @@ export class GenericDao<EI extends EntityInstance<E>, E extends Entity> {
                     entities.push(instance.dataValues);
                 });
                 resolve(entities);
-            })
+            }).catch((error) => {
+                this.handleError(error, reject);
+            });
+        });
+    }
+
+    public count(classConstructor: new () => E): Promise<number> {
+        return new Promise<number>((resolve, reject) => {
+            this.getModelForEntity(classConstructor).count().then((totalResults) => {
+                resolve(totalResults);
+            }).catch((error) => {
+                this.handleError(error, reject);
+            });
         });
     }
 
     protected getModelForEntity(classConstructor: new () => E): SequelizeStatic.Model<EI, E> {
         return SequelizeDataBase.instance.getModel<EI, E>(classConstructor);
+    }
+
+    public handleError(error, reject: (error) => void): void {
+        let errorMessage: string = "";
+        if ((error as any).errors) { // sequelize errors
+            for (let e of (error as any).errors) {
+                errorMessage += `${e.type} - ${e.message}. `;
+            }
+            reject(new UnprocessableEntityException(errorMessage, -1));
+        } else {
+            reject(error);
+        }
     }
 }
