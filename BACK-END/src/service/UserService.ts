@@ -5,15 +5,19 @@ import { EntityService } from "./";
 export class UserService extends EntityService<User> {
 
     public byCredentials(username: string, password: string): Promise<User> {
-        return UserDao.instance<UserDao>().byCredentials(username, password);
+        return this.dao.byCredentials(username, password);
     }
 
     public static instance(): UserService {
         return super.instance<UserService>();
     }
 
-    protected getClass(): new () => User {
+    protected get class(): new () => User {
         return User;
     };
+
+    protected get dao(): UserDao {
+        return UserDao.instance<UserDao>();
+    }
 
 }

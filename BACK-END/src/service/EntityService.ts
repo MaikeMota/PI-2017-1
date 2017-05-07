@@ -17,26 +17,26 @@ export class EntityService<T extends Entity> {
     }
 
     public save<T>(entity: T): Promise<T> {
-        return this.dao.save(this.getClass(), entity);
+        return this.dao.save(this.class, entity);
     }
 
     public update<T>(entity: T): Promise<T> {
-        return this.dao.update(this.getClass(), entity);
+        return this.dao.update(this.class, entity);
     }
 
     public delete<T>(entity: T): Promise<void> {
-        return this.dao.delete(this.getClass(), entity);
+        return this.dao.delete(this.class, entity);
     }
 
     public byId<T>(id: string): Promise<T> {
-        return this.dao.byId(this.getClass(), id);
+        return this.dao.byId(this.class, id);
     }
 
     public list<T>(offset: number = 0, limit: number = 10): Promise<T[]> {
-        return this.dao.list(this.getClass());
+        return this.dao.list(this.class);
     }
 
-    protected getClass(): new () => T {
+    protected get class(): new () => T {
         return undefined;
     };
 }

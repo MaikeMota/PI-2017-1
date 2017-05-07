@@ -5,7 +5,7 @@ import { EntityService } from "./";
 export class DeviceService extends EntityService<Device> {
 
     public byDeviceKey(deviceKey: string): Promise<Device> {
-        return DeviceDao.instance<DeviceDao>().byDeviceKey(deviceKey);
+        return this.dao.byDeviceKey(deviceKey);
     }
 
     protected get class(): new () => Device {
