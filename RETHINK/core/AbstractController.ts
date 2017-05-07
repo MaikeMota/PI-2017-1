@@ -1,6 +1,6 @@
 import { Entity } from './Entity';
 
-export abstract class Controller<T extends Entity> {
+export abstract class AbstractController<T extends Entity> {
     public entity: T;
     public busy: boolean;
 

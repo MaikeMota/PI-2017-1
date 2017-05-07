@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Controller } from '../../../shared/Controller';
+import { AbstractController } from '../../../../../../RETHINK/core';
 import { UserInfoService } from '../../../services/UserInfoService';
 
 @Injectable()
-export class HomeController extends Controller<any> {
+export class HomeController extends AbstractController<any> {
 
     constructor(private userInfoService: UserInfoService, private router: Router) {
         super();
