@@ -2,39 +2,52 @@ import * as express from 'express';
 import * as process from 'process';
 import * as morgan from 'morgan';
 import * as bodyParser from 'body-parser';
+import * as http from "http";
+
+import { TokenService } from './service'
 
 import { BaseRouter } from './router/BaseRouter';
 import { PublicApiRouter } from './router/PublicApiRouter';
 import { CalculatorRouter } from './router/CalculatorRouter';
-import { ErrorHandler } from "./api/rethink/service/ErrorHandler";
-import { StringUtil } from './api/rethink/util';
 import { SequelizeDataBase } from "../database/SequelizeDataBase";
 import { SocketService } from './service/SocketService';
+import { ErrorHandler } from "../../RETHINK/service";
+import { StringUtil } from "../../RETHINK/util";
 
 export class Application {
 
     private app: express.Express;
+    private httpServer: http.Server;
 
     constructor(port: number) {
-        this.initializeServer(port);
         SequelizeDataBase
             .registerSequelizeModelsFolder('./src/model/sequelize')
-            .initializeDatabase();
+            .initializeDatabase().then(sequelizeDB => {
+                this.initializeServer(port);
+            }).catch((error) => {
+                console.error("There is an error while initializing Database.");
+                console.error(error.stack);
+            });
 
     }
 
     private initializeServer(port: number): void {
+        TokenService.AUTHORIZATION_HEADER;
         this.app = express();
+        this.httpServer = http.createServer(this.app);
+        this.app.use(function (req, res, next) {
+            res.header("Access-Control-Allow-Origin", "*");
+            res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+            next();
+        });
         this.configureMiddlewares();
         this.configureRouter();
         this.configureErrorHandler();
         let instance: Application = this;
-        this.app.listen(port, "0.0.0.0", () => {
+        SocketService.instance.enableSocket(this.httpServer);        
+        this.httpServer.listen(port, "0.0.0.0", () => {
             console.log(`Server running at ${port}`);
         });
-        SocketService.instance.app(this.app)
-        .serverPort(4000)
-        .listen();
     }
 
     private configureMiddlewares(): void {
@@ -58,10 +71,17 @@ export class Application {
     }
 
     public static run(port: number | string): Application {
+        let usePort: number;
         if (typeof port == 'string') {
-            port = StringUtil.toInt(port);
+            usePort = StringUtil.toInt(port);
+        } else {
+            usePort = <number>port;
         }
-        return new Application(port);
+        return new Application(usePort);
+    }
+
+    public get appInstance(): express.Express {
+        return this.app;
     }
 
 }

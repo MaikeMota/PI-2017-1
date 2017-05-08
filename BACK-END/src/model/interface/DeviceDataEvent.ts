@@ -1,13 +1,16 @@
-import { Enum } from '../../api/rethink/core';
-import { Entity, EntityAttributes, DeviceData } from './';
+import { Enum, Entity } from '../../../../RETHINK/core';
+import { EntityInstance, DeviceData } from './';
 import { DeviceDataEventEnum } from '../DeviceEventEnum'
 
-export interface DeviceDataEvent extends Entity<DeviceDataEventAttributes> {
+export interface DeviceDataEventInstance extends EntityInstance<DeviceDataEvent> {
 }
 
-export interface DeviceDataEventAttributes extends EntityAttributes {
-    deviceData: DeviceData,
-    event: DeviceDataEventEnum;
+export class DeviceDataEvent extends Entity {
+    constructor() {
+        super();
+    }
+    device_data_id: string;
+    event: string;
 }
 
 

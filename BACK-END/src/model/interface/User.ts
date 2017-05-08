@@ -1,9 +1,15 @@
-import { Entity, EntityAttributes } from './Entity';
+import { EntityInstance } from './EntityInstance';
+import { Entity } from '../../../../RETHINK/core';
 
-export interface User extends Entity<UserAttributes> {
+export interface UserInstance extends EntityInstance<User> {
 }
 
-export interface UserAttributes extends EntityAttributes {
+export class User extends Entity {
+
+    constructor() {
+        super();
+    }
+    
     username: string;
     password: string;
 }
