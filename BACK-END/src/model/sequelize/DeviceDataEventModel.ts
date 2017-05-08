@@ -7,16 +7,25 @@ import { DeviceData, DeviceDataInstance } from '../interface/';
 
 export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeStatic.Model<DeviceDataInstance, DeviceData> {
     let deviceData = sequelize.define<DeviceDataInstance, DeviceData>('DeviceDataEvent', {
-
+        water_level: {
+            type: dataTypes.NUMBER,
+            allowNull: false
+        },
+        water_inlet_flux: {
+            type: dataTypes.NUMBER,
+            allowNull: false
+        },
+        water_out_flux: {
+            type: dataTypes.NUMBER,
+            allowNull: false
+        }
     }, {
             indexes: [
                 // { unique: true, fields: ['Devicename'] }
             ],
             classMethods: {},
             tableName: "device_data_event",
-            timestamps: true,
-            createdAt: "created_at",
-            updatedAt: "updated_at",
+            timestamps: false
 
         }
     );
