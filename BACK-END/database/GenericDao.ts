@@ -72,9 +72,6 @@ export class GenericDao<EI extends EntityInstance<E>, E extends Entity> {
     public list(classConstructor: new () => E, offset: number = 0, limit: number = 10): Promise<E[]> {
         return new Promise<E[]>((resolve, reject) => {
             this.getModelForEntity(classConstructor).findAll({
-                where: {
-                    active: true
-                },
                 offset: offset,
                 limit: limit
             }).then((results) => {

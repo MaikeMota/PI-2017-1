@@ -26,9 +26,7 @@ export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeS
             classMethods: {
             },
             tableName: "device_data",
-            timestamps: true,
-            createdAt: "created_at",
-            updatedAt: "updated_at"
+            timestamps: false
         }
     );
 
