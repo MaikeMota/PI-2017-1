@@ -24,7 +24,7 @@ export class DeviceDataWrapper {
         deviceData.water_level = this.waterLevel;
         deviceData.water_inlet_flux = this.waterInletFlux;
         deviceData.water_out_flux = this.waterOutFlux;
-        this.events = [];
+        deviceData.events = [];
         if (this.events) {
             for (let e of this.events) {
                 let event = new DeviceDataEvent();
