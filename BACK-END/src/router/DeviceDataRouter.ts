@@ -14,8 +14,8 @@ export class DeviceDataRouter extends BaseRouter {
     public static readonly DEVICE_KEY_PARAM = "device_key"
 
     protected configureRouter(): void {
-        this.router.post('/device/data/:device_key', DeviceDataRouter.receiveData);
-        this.router.get('/device/config/:deice_key', DeviceDataRouter.retrieveDeviceConfig);
+        this.router.post('/data/:device_key', DeviceDataRouter.receiveData);
+        this.router.get('/config/:deice_key', DeviceDataRouter.retrieveDeviceConfig);
     }
 
     protected configureMiddleware(): void {
@@ -26,8 +26,7 @@ export class DeviceDataRouter extends BaseRouter {
     }
 
     private static receiveData(request: Request, response: Response, next: NextFunction): void {
-        let deviceDataWrapper: DeviceDataWrapper = request.body;
-        deviceDataWrapper.device_key = request.param(DeviceDataRouter.DEVICE_KEY_PARAM);
+        let deviceDataWrapper: DeviceDataWrapper = new DeviceDataWrapper(request.param(DeviceDataRouter.DEVICE_KEY_PARAM), request.body);
         DeviceDataService.instance().save(deviceDataWrapper).then(() => {
             response.json();
         }).catch(next);
