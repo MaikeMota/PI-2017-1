@@ -3,8 +3,6 @@ import { ObjectUtil } from '../util/ObjectUtil';
 import { StringUtil } from '../util/StringUtil';
 import { Enum } from './Enum';
 
-var Reflect = window['Reflect'];
-
 export class Entity extends RTKObject {
 
     constructor() {
@@ -36,11 +34,11 @@ export class Entity extends RTKObject {
         for (let propertyName in json) {
             let value: any = json[propertyName];
 
-            if(ObjectUtil.isBlank(value) || ObjectUtil.isBlank(value.id)) {
+            if(ObjectUtil.isBlank(value) || ObjectUtil.isPresent(value.id)) {
                 continue;
             }
 
-            let type = Reflect.getMetadata("design:type", this, propertyName);
+            let type = (Reflect as any).getMetadata("design:type", this, propertyName);
 
             if(ObjectUtil.isPresent(type) && type.prototype instanceof Enum){
                 value = type.parse(json[propertyName]);

@@ -3,7 +3,7 @@
   "version": "0.0.0-alpha.1",
   "description": "",
   "main": "index.js",
-  "scripts": { },
+  "scripts": {},
   "author": "",
   "license": "ISC",
   "devDependencies": {
@@ -11,6 +11,7 @@
     "typescript": "^2.1.4"
   },
   "dependencies": {
-    "express": "^4.14.0"
+    "express": "^4.14.0",
+    "reflect-metadata": "0.1.10"
   }
 }
