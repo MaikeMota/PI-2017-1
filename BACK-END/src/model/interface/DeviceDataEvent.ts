@@ -9,8 +9,8 @@ export class DeviceDataEvent extends Entity {
     constructor() {
         super();
     }
-    deviceData: DeviceData;
-    event: DeviceDataEventEnum;
+    device_data_id: string;
+    event: string;
 }
 
 
