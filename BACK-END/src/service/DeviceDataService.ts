@@ -20,9 +20,12 @@ export class DeviceDataService extends EntityService<DeviceData> {
                 this.dao.save(this.class, entity).then((deviceData) => {
                     let promises = [];
                     if (entity.events) {
+                        deviceData.events = [];
                         for (let e of entity.events) {
                             e.device_data_id = device.id
-                            promises.push(GenericDao.instance().save(DeviceDataEvent, e));
+                            promises.push(GenericDao.instance().save(DeviceDataEvent, e).then(ev => {
+                                deviceData.events.push(ev);
+                            }));
                         }
                     }
                     Promise.all(promises).then(() => {

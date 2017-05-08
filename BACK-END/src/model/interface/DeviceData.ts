@@ -15,7 +15,7 @@ export class DeviceData extends Entity {
     public water_inlet_flux: number;
     public water_out_flux: number;
     public device_id: string;
-    public events: DeviceDataEvent[];
+    public events: DeviceDataEvent[] = [];
 
 }
 
