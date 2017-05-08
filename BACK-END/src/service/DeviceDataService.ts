@@ -43,9 +43,8 @@ export class DeviceDataService extends EntityService<DeviceData> {
     protected get class(): new () => DeviceData {
         return DeviceData;
     }
-
+    
     protected get dao(): DeviceDataDao {
         return DeviceDataDao.instance<DeviceDataDao>();
     }
-
 }

@@ -19,8 +19,9 @@ export abstract class Enum {
         return this[name];
     }
 
-    public static fromIndex<T extends Enum>(index: number): T {
+    public static fromOrdinal<T extends Enum>(index: number): T {
         let key: string = Object.keys(this)[index];
         return ObjectUtil.cast<T>(this[key]);
     }
+
 }
