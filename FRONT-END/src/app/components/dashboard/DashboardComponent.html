@@ -1,15 +1,32 @@
 <div class="row col">
-     <div class="row"></div>
+    <div class="row"></div>
     <div class="row">
         <div *ngFor="let device of devices" class="col s6 m4 l3">
             <div class="card">
-                <div class="card-image">
-                    <img src="http://materializecss.com/images/sample-1.jpg">
-                    <span class="card-title">Card Title</span>
-                    <a class="btn-floating halfway-fab waves-effect waves-light blue"><i class="material-icons">edit</i></a>
+                <div class="card-image waves-effect waves-block waves-light">
+                    <img class="activator" src="http://materializecss.com/images/office.jpg">
                 </div>
                 <div class="card-content">
-                    <p>{{ device.description }}</p>
+                    <ul>
+                        <span class="card-title activator grey-text text-darken-4"><i class="material-icons right">more_vert</i></span>
+                        <li><label>Descrição</label>: {{ device.description }}</li>
+                        <li><label>Nível Mínimo de Água</label>: {{ device.min_water_level }}</li>
+                        <li><label>Nível Médio de Água</label>: {{ device.med_water_level }}</li>
+                        <li><label>Nível Máximo de Água</label>: {{ device.max_water_level }}</li>
+                    </ul>
+                </div>
+                <div class="card-reveal">
+                    <span class="card-title grey-text text-darken-4"><i class="material-icons right">close</i></span>
+                    <ul>
+                        <li><label>Descrição</label>: {{ device.description }}</li>
+                        <li><label>Nível Mínimo de Água</label>: {{ device.min_water_level }}</li>
+                        <li><label>Nível Médio de Água</label>: {{ device.med_water_level }}</li>
+                        <li><label>Nível Máximo de Água</label>: {{ device.max_water_level }}</li>
+                        <li><label>Raio do Recipiente</label>: {{ device.recipient_radius }}</li>
+                        <li><label>Aktura do Recipiente</label>: {{ device.recipient_height }}</li>
+                        <li><label>Trigger de Entrada de Água</label>: {{ device.water_inlet_open_trigger.label }}</li>
+                        <li><label>Trigger de Saída de Água</label>: {{ device.water_inlet_close_trigger.label }}</li>
+                    </ul>
                 </div>
             </div>
         </div>

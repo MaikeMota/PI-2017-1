@@ -1,17 +1,25 @@
 import { ObjectUtil } from '../util/ObjectUtil';
 import { RTKObject } from './RTKObject';
 
+const language: string = "pt-BR";
+
 export abstract class Enum extends RTKObject {
     private _name: string;
+    private enumInfo: EnumInfo;
     private static _values: Map<new(...args) => any, Enum[]> = new Map<new(...args) => any, Enum[]>();
 
-    constructor(name: string) {
+    constructor(name: string, enumInfo: EnumInfo) {
         super();
         this._name = name;
+        this.enumInfo = enumInfo;
     }
 
     public get name(): string {
         return this._name;
+    }
+
+    public get label(): string {
+        return this.enumInfo[language];
     }
 
     public static values<T extends Enum>(): T[] {
@@ -48,7 +56,7 @@ export abstract class Enum extends RTKObject {
                 return type as any;
             }
         }
-        
+
         return undefined;
     }
 
@@ -56,4 +64,8 @@ export abstract class Enum extends RTKObject {
         let key: string = Object.keys(this)[index];
         return ObjectUtil.cast<T>(this[key]);
     }
+}
+
+export interface EnumInfo {
+    [key: string]: string;
 }
