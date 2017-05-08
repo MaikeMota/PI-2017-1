@@ -12,11 +12,6 @@ export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeS
         },
         password: {
             type: dataTypes.STRING
-        },
-        active: {
-            type: dataTypes.BOOLEAN,
-            allowNull: false,
-            defaultValue: true
         }
     }, {
             indexes: [
@@ -24,9 +19,7 @@ export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeS
             ],
             classMethods: {},
             tableName: "user",
-            timestamps: true,
-            createdAt: "created_at",
-            updatedAt: "updated_at"
+            timestamps: false
         }
     );
     return user;

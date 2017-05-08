@@ -10,8 +10,7 @@ export class UserDao extends GenericDao<UserInstance, User> {
             this.getModelForEntity(User).find({
                 where: {
                     username: username,
-                    password: password,
-                    active: true
+                    password: password
                 }
             }).then((dbUser) => {
                 if (dbUser) {

@@ -18,7 +18,8 @@ export class GenericDao<EI extends EntityInstance<E>, E extends Entity> {
     public save(classConstructor: new () => E, entity: E): Promise<E> {
         return new Promise<E>((resolve, reject) => {
             this.getModelForEntity(classConstructor).create(entity).then(savedInstance => {
-                resolve(entity = savedInstance.dataValues);
+                entity = savedInstance.dataValues;
+                resolve(entity);
             }).catch((error) => {
                 this.handleError(error, reject);
             });
@@ -72,9 +73,6 @@ export class GenericDao<EI extends EntityInstance<E>, E extends Entity> {
     public list(classConstructor: new () => E, offset: number = 0, limit: number = 10): Promise<E[]> {
         return new Promise<E[]>((resolve, reject) => {
             this.getModelForEntity(classConstructor).findAll({
-                where: {
-                    active: true
-                },
                 offset: offset,
                 limit: limit
             }).then((results) => {

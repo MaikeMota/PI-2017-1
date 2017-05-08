@@ -59,11 +59,6 @@ export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeS
         water_inlet_close_trigger: {
             type: dataTypes.ENUM(WaterInLetCloseTrigger.valuesAsString()),
             allowNull: false
-        },
-        active: {
-            type: dataTypes.BOOLEAN,
-            allowNull: false,
-            defaultValue: true
         }
     }, {
             indexes: [
@@ -71,11 +66,19 @@ export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeS
             ],
             classMethods: {},
             tableName: "device",
-            timestamps: true,
-            createdAt: "created_at",
-            updatedAt: "updated_at"
+            timestamps: false
         }
     );
+
+    device['associate'] = (models: SequelizeModels) => {
+        device.hasMany(models['DeviceData'], {
+            as: 'data',
+            foreignKey: {
+                name: 'device_id',
+                allowNull: false
+            }
+        });
+    }
 
     return device;
 }

@@ -4,6 +4,7 @@ import { BaseRouter } from './BaseRouter';
 import { TokenRouter } from './TokenRouter';
 import { EchoRouter } from './EchoRouter';
 import { RestrictedApiRouter } from './RestrictedApiRouter';
+import { DeviceDataRouter } from './DeviceDataRouter';
 
 export class PublicApiRouter extends BaseRouter {
 
@@ -11,6 +12,7 @@ export class PublicApiRouter extends BaseRouter {
 
     protected configureRouter(): void {
         this.register(RestrictedApiRouter);
+        this.register(DeviceDataRouter);
         this.register(TokenRouter);
         this.register(EchoRouter);
     }

@@ -3,30 +3,25 @@ import { DataTypes, Sequelize } from 'sequelize';
 
 import { SequelizeModels } from '../../../database/SequelizeDataBase';
 
-import { DeviceData, DeviceDataInstance } from '../interface/';
+import { DeviceDataEvent, DeviceDataEventInstance } from '../interface/';
+import { DeviceDataEventEnum } from "../DeviceEventEnum";
 
-export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeStatic.Model<DeviceDataInstance, DeviceData> {
-    let deviceData = sequelize.define<DeviceDataInstance, DeviceData>('DeviceDataEvent', {
-
+export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeStatic.Model<DeviceDataEventInstance, DeviceDataEvent> {
+    let deviceDataEvent = sequelize.define<DeviceDataEventInstance, DeviceDataEvent>('DeviceDataEvent', {
+        event: {
+            type: dataTypes.ENUM(DeviceDataEventEnum.valuesAsString()),
+            allowNull: false
+        }
     }, {
             indexes: [
                 // { unique: true, fields: ['Devicename'] }
             ],
             classMethods: {},
             tableName: "device_data_event",
-            timestamps: true,
-            createdAt: "created_at",
-            updatedAt: "updated_at",
+            timestamps: false
 
         }
     );
 
-    deviceData['associate'] = (models: SequelizeModels) => {
-        deviceData.belongsTo(models['DeviceData'], {
-            as: 'deviceData',
-            foreignKey: 'device_data_id'
-        });
-    }
-
-    return deviceData;
+    return deviceDataEvent;
 }

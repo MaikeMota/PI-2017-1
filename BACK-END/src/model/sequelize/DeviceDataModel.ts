@@ -26,16 +26,20 @@ export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeS
             classMethods: {
             },
             tableName: "device_data",
-            timestamps: true,
-            createdAt: "created_at",
-            updatedAt: "updated_at"
+            timestamps: false
         }
     );
 
+
+
+
     deviceData['associate'] = (models: SequelizeModels) => {
-        deviceData.belongsTo(models['Device'], {
-            as: 'device',
-            foreignKey: 'device_id'
+        deviceData.hasMany(models['DeviceDataEvent'], {
+            as: 'events',
+            foreignKey: {
+                name: 'device_data_id',
+                allowNull: false
+            }
         });
     }
 
