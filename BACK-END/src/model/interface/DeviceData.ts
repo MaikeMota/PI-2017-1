@@ -1,5 +1,6 @@
 import { EntityInstance, Device } from './';
 import { Enum, Entity } from '../../../../RETHINK/core';
+import { DeviceDataEvent } from "./DeviceDataEvent";
 
 export interface DeviceDataInstance extends EntityInstance<DeviceData> {
 }
@@ -14,5 +15,7 @@ export class DeviceData extends Entity {
     public water_inlet_flux: number;
     public water_out_flux: number;
     public device: Device;
+    public events: DeviceDataEvent[];
+
 }
 
