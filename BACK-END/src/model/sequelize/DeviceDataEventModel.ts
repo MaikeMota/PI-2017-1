@@ -8,15 +8,15 @@ import { DeviceData, DeviceDataInstance } from '../interface/';
 export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeStatic.Model<DeviceDataInstance, DeviceData> {
     let deviceData = sequelize.define<DeviceDataInstance, DeviceData>('DeviceDataEvent', {
         water_level: {
-            type: dataTypes.NUMBER,
+            type: dataTypes.FLOAT,
             allowNull: false
         },
         water_inlet_flux: {
-            type: dataTypes.NUMBER,
+            type: dataTypes.FLOAT,
             allowNull: false
         },
         water_out_flux: {
-            type: dataTypes.NUMBER,
+            type: dataTypes.FLOAT,
             allowNull: false
         }
     }, {
