@@ -70,5 +70,15 @@ export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeS
         }
     );
 
+    device['associate'] = (models: SequelizeModels) => {
+        device.hasMany(models['DeviceData'], {
+            as: 'data',
+            foreignKey: {
+                name: 'device_id',
+                allowNull: false
+            }
+        });
+    }
+
     return device;
 }

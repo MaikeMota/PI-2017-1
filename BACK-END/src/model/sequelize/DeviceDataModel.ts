@@ -30,10 +30,16 @@ export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeS
         }
     );
 
+
+
+
     deviceData['associate'] = (models: SequelizeModels) => {
-        deviceData.belongsTo(models['Device'], {
-            as: 'device',
-            foreignKey: 'device_id'
+        deviceData.hasMany(models['DeviceDataEvent'], {
+            as: 'events',
+            foreignKey: {
+                name: 'device_data_id',
+                allowNull: false
+            }
         });
     }
 
