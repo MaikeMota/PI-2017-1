@@ -1,3 +1,4 @@
+
 import { Enum } from "../../../RETHINK/core";
 
 export class DeviceDataEventEnum extends Enum {
@@ -13,7 +14,7 @@ export class DeviceDataEventEnum extends Enum {
     public static readonly WATER_INLET_TRIGGERED: DeviceDataEventEnum = new DeviceDataEventEnum('WATER_INLET_TRIGGERED');
     public static readonly WATER_OUT_FLUX_TRIGGERED: DeviceDataEventEnum = new DeviceDataEventEnum('WATER_OUT_FLUX_TRIGGERED');
 
-    public static value(): DeviceDataEventEnum[] {
+    public static values(): DeviceDataEventEnum[] {
         return [
             DeviceDataEventEnum.WATER_INLET_FLUX_STARTED,
             DeviceDataEventEnum.WATER_INLET_FLUX_STOPED,
@@ -22,5 +23,11 @@ export class DeviceDataEventEnum extends Enum {
             DeviceDataEventEnum.WATER_INLET_TRIGGERED,
             DeviceDataEventEnum.WATER_OUT_FLUX_TRIGGERED
         ];
+    }
+
+    public static valuesAsString(): string[] {
+        return this.values().map((value) => {
+            return value.name;
+        });
     }
 }
