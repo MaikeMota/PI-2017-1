@@ -59,6 +59,12 @@ export default function (sequelize: Sequelize, dataTypes: DataTypes): SequelizeS
         water_inlet_close_trigger: {
             type: dataTypes.ENUM(WaterInLetCloseTrigger.valuesAsString()),
             allowNull: false
+        },
+        open_water_inlet_under_level: {
+            type: dataTypes.FLOAT
+        },
+        close_water_inlet_above_level: {
+            type: dataTypes.FLOAT
         }
     }, {
             indexes: [

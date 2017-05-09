@@ -18,14 +18,16 @@ export class Device extends Entity {
     recipient_radius: number;
     recipient_height: number;
     water_inlet_open_trigger: string;
-    water_inlet_close_trigger: string;
+    water_inlet_close_trigger: string;    
+    open_water_inlet_under_level: number;
+    close_water_inlet_above_level: number;
 
     public static extractConfig(device: Device): string {
         let config: string = "";
 
         config = `${device.min_water_level},${device.med_water_level},${device.max_water_level},${device.recipient_radius}`
-        config = `${config},${device.recipient_height},${WaterInLetOpenTrigger.ordinal(device.water_inlet_open_trigger)}`
-        config = `${config},${WaterInLetCloseTrigger.ordinal(device.water_inlet_close_trigger)}`;
+        config = `${config},${device.recipient_height},${device.open_water_inlet_under_level}, ${device.close_water_inlet_above_level}`;
+        config = `${config},${WaterInLetOpenTrigger.ordinal(device.water_inlet_open_trigger)},${WaterInLetCloseTrigger.ordinal(device.water_inlet_close_trigger)}`;
 
         return config;
     }
