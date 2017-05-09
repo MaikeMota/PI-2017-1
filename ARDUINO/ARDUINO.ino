@@ -49,8 +49,8 @@ typedef enum {
 #define PRECISION 3
 #define MAX_EVENTS 5
 
-#define DEVICE_DATA_ENDPOINT "/api/device/data/4JLgWKto9NlNTJOwp8uXC0xuW"
-#define DEVICE_CONFIGURATION_ENDPOINT "/api/device/config/4JLgWKto9NlNTJOwp8uXC0xuW"
+#define DEVICE_DATA_ENDPOINT "/api/device/data/1NhYEOABMRR2vhW38kGMxfA6r"
+#define DEVICE_CONFIGURATION_ENDPOINT "/api/device/config/1NhYEOABMRR2vhW38kGMxfA6r"
 
 /*
   ===============================================================================
@@ -143,7 +143,7 @@ void setMaxWaterLevel(float targetLevel);
 void setOpenWaterInletTrigger(OpenWaterInletTriggerEnum trigger);
 void setCloseWaterInletTrigger(CloseWaterInletTriggerEnum trigger);
 void setOpenWaterInletUnderLevel(float level);
-void setCloseStreetWaterUnderLevel(float level);
+void setCloseStreetWaterAboveLevel(float level);
 void checkStreetWaterInletTrigger();
 void openStreetWater();
 void closeStreetWater();
@@ -167,6 +167,7 @@ void setup()
 
 
   client.dhcp();
+  delay(1500);
   client.setContentType("application/json");
 #ifdef DEBUG
   Serial.println(F("Connected to network"));
@@ -178,11 +179,12 @@ void setup()
 void loop()
 {
 
-  /*if (millis() >= (lastCheckAt + checkInterval))
+  if (millis() >= (lastCheckAt + checkInterval))
   {
+    cli();
     float actualWaterLevel = calculateActualWaterLevel();
-    float actualWaterInletFlux = waterInletFequency / (7.5 * 60);
-    float actualWaterOutFlux = waterOutFrequency / (7.5 * 60);
+    float actualWaterInletFlux = (waterInletFequency/60) / 5.5;
+    float actualWaterOutFlux = (waterOutFrequency / 60)  / 5.5;
     waterInletFequency = 0;
     waterOutFrequency = 0;
 
@@ -248,7 +250,8 @@ void loop()
     response = "";
     resetEvents();
     lastCheckAt = millis();
-  }*/
+    sei();
+  }
 }
 
 /*
@@ -268,8 +271,12 @@ float calculateActualWaterLevel()
   currentWaterVolume = currentWaterVolume / 1000;                                  // Convert cm³ to L
 
 #ifdef DEBUG
-  Serial.print(F("actualWaterHeight: "));
-  Serial.println(actualWaterHeight);
+  Serial.print(F("PI * "));
+  Serial.print(recipientRadius, PRECISION);  
+  Serial.print(F("^2 * "));
+  Serial.print(actualWaterHeight, PRECISION);  
+  Serial.print(F(" = "));
+  Serial.println(currentWaterVolume, PRECISION);  
 #endif
   return currentWaterVolume;
 }
@@ -281,8 +288,15 @@ float calculateActualWaterLevel()
 float readWaterHeight()
 {
   long echoTiming = ultrasonic.timing();
-  float cm = ultrasonic.convert(echoTiming, Ultrasonic::CM);
-  cm = recipientHeight - cm;
+  float value = ultrasonic.convert(echoTiming, Ultrasonic::CM);
+  float cm = recipientHeight - value;
+  #ifdef DEBUG  
+  Serial.print(recipientHeight, PRECISION);  
+  Serial.print(F(" - "));
+  Serial.print(value, PRECISION);  
+  Serial.print(F(" = "));
+  Serial.println(cm, PRECISION);
+  #endif
   return cm;
 }
 
@@ -303,14 +317,15 @@ void setRecipientRadius(float radius) {
   recipientRadius = radius;
 #ifdef DEBUG
   Serial.print(F("recipientRadius: "));
-  Serial.print(recipientRadius, PRECISION);
+  Serial.println(recipientRadius, PRECISION);
 #endif
 }
+
 void setRecipientHeight(float height){
   recipientHeight = height;
 #ifdef DEBUG
   Serial.print(F("recipientHeight: "));
-  Serial.print(recipientHeight, PRECISION);
+  Serial.println(recipientHeight, PRECISION);
 #endif
 }
 
@@ -320,8 +335,8 @@ void setMinWaterLevel(float targetLevel)
   minWaterHeight = waterLevelToWaterHeight(minWaterLevel);
 #ifdef DEBUG
   Serial.print(F("minWaterLevel: "));
-  Serial.print(minWaterLevel, PRECISION);
-  Serial.print(F(" minWaterHeight: "));
+  Serial.println(minWaterLevel, PRECISION);
+  Serial.print(F("minWaterHeight: "));
   Serial.println(minWaterHeight, PRECISION);
 #endif
 }
@@ -332,8 +347,8 @@ void setMedWaterLevel(float targetLevel)
   medWaterHeight = waterLevelToWaterHeight(medWaterLevel);
 #ifdef DEBUG
   Serial.print(F("medWaterLevel: "));
-  Serial.print(medWaterLevel, PRECISION);
-  Serial.print(F(" medWaterHeight: "));
+  Serial.println(medWaterLevel, PRECISION);
+  Serial.print(F("medWaterHeight: "));
   Serial.println(medWaterHeight, PRECISION);
 #endif
 }
@@ -344,8 +359,8 @@ void setMaxWaterLevel(float targetLevel)
   maxWaterHeight = waterLevelToWaterHeight(maxWaterLevel);
 #ifdef DEBUG
   Serial.print(F("maxWaterLevel: "));
-  Serial.print(maxWaterLevel, PRECISION);
-  Serial.print(F(" maxWaterHeight: "));
+  Serial.println(maxWaterLevel, PRECISION);
+  Serial.print(F("maxWaterHeight: "));
   Serial.println(maxWaterHeight, PRECISION);
 #endif
 }
@@ -355,7 +370,7 @@ void setOpenWaterInletTrigger(OpenWaterInletTriggerEnum trigger)
   openWaterInletTrigger = trigger;
 #ifdef DEBUG
   Serial.print(F("openWaterInletTrigger: "));
-  Serial.print(openWaterInletTrigger);
+  Serial.println(openWaterInletTrigger);
 #endif
 }
 
@@ -364,7 +379,7 @@ void setCloseWaterInletTrigger(CloseWaterInletTriggerEnum trigger)
   closeWaterInletTrigger = trigger;
 #ifdef DEBUG
   Serial.print(F("closeWaterInletTrigger: "));
-  Serial.print(closeWaterInletTrigger);
+  Serial.println(closeWaterInletTrigger);
 #endif
 }
 
@@ -385,7 +400,7 @@ void checkStreetWaterInletTrigger()
     }
     case UNDER_HALF_VOLUME:
     {
-      if (lastWaterLevel < (maxWaterLevel / 2))
+      if (lastWaterLevel < ((maxWaterLevel - min) / 2)) // util volume
       {
         openStreetWater();
       }
@@ -423,7 +438,7 @@ void checkStreetWaterInletTrigger()
     }
     case ABOVE_HALF_VOLUME:
     {
-      if (lastWaterLevel > (maxWaterLevel / 2))
+      if (lastWaterLevel > ((maxWaterLevel - min) / 2)) // util volume
       {
         closeStreetWater();
       }
@@ -454,15 +469,16 @@ void setOpenWaterInletUnderLevel(float level)
   openWaterInletUnderLevel = level;
 #ifdef DEBUG
   Serial.print(F("openWaterInletUnderLevel: "));
-  Serial.print(openWaterInletUnderLevel, PRECISION);
+  Serial.println(openWaterInletUnderLevel, PRECISION);
 #endif
 }
-void setCloseStreetWaterUnderLevel(float level)
+
+void setCloseStreetWaterAboveLevel(float level)
 {
   closeWaterInletAboveLevel = level;
 #ifdef DEBUG
   Serial.print(F("closeWaterInletAboveLevel: "));
-  Serial.print(closeWaterInletAboveLevel, PRECISION);
+  Serial.println(closeWaterInletAboveLevel, PRECISION);
 #endif
 }
 
@@ -504,13 +520,8 @@ void resetEvents()
 }
 
 void configureDevice(String* data){
-
-#ifdef DEBUG
-  Serial.println(*data);
-#endif
   int start = 0;
   int end = data->indexOf(',') + 1; 
-  
   setMinWaterLevel(data->substring(start, end).toFloat());
   data->remove(start, (end - start));
   end = data->indexOf(',') + 1;
@@ -526,14 +537,17 @@ void configureDevice(String* data){
   setRecipientHeight(data->substring(start, end).toFloat());
   data->remove(start, (end - start));
   end = data->indexOf(',') + 1;
+  setOpenWaterInletUnderLevel(data->substring(start, end).toFloat());  
+  data->remove(start, (end - start));
+  end = data->indexOf(',') + 1;
+  setCloseStreetWaterAboveLevel(data->substring(start, end).toFloat());
+  data->remove(start, (end - start));
+  end = data->indexOf(',') + 1;
   setOpenWaterInletTrigger(data->substring(start, end).toInt());
   data->remove(start, (end - start));
   end = data->length();
-  setCloseStreetWaterUnderLevel(data->substring(start, end).toInt());
+  setCloseWaterInletTrigger(data->substring(start, end).toInt());
   *data = "";
-
-  setOpenWaterInletUnderLevel(2); //TODO
-  setCloseStreetWaterUnderLevel(4); // TODO
 
 }
 
