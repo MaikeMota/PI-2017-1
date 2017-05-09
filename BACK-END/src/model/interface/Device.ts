@@ -23,7 +23,7 @@ export class Device extends Entity {
     public static extractConfig(device: Device): string {
         let config: string = "";
 
-        config = `${device.min_water_level},${device.med_water_level},,${device.max_water_level},${device.recipient_radius}`
+        config = `${device.min_water_level},${device.med_water_level},${device.max_water_level},${device.recipient_radius}`
         config = `${config},${device.recipient_height},${WaterInLetOpenTrigger.ordinal(device.water_inlet_open_trigger)}`
         config = `${config},${WaterInLetCloseTrigger.ordinal(device.water_inlet_close_trigger)}`;
 
