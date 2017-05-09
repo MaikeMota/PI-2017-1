@@ -64,6 +64,10 @@ export abstract class Enum extends RTKObject {
         let key: string = Object.keys(this)[index];
         return ObjectUtil.cast<T>(this[key]);
     }
+
+    public json(): string {
+        return this._name;
+    }
 }
 
 export interface EnumInfo {

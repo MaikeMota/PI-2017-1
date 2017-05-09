@@ -71,4 +71,34 @@ export abstract class RTKObject {
     public instanceOf<T extends RTKObject>(clazz: new (...args) => T) {
         return this instanceof clazz;
     }
+
+    public json(interceptor?: (key: string, value: any) => any): string {
+        
+        return JSON.stringify(this, (key: string, value: any) => {
+            if ("" === key) {
+                return value;
+            }
+            
+            if (value === '') {
+                return null;
+            }
+
+            if(ObjectUtil.isPresent(interceptor)) {
+                let interceptedValue: string = interceptor(key, value);
+                if(StringUtil.isNotNullNotEmptyOrUndefined(interceptedValue)) {
+                    return interceptedValue;
+                }
+            }
+
+            if (value instanceof RTKObject) {
+                return value.json();
+            }
+            
+            if (value instanceof Date) {
+                return (<Date>value).getTime();
+            }
+
+            return value;
+        });
+    }
 }

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { Device } from '../../model/entities/Device';
-import { DeviceDataCrudTests } from '../../../../tests/DeviceDataCrudTests';
+import { Device } from '../../../model/entities/Device';
+import { DeviceDataCrudTests } from '../../../../../tests/DeviceDataCrudTests';
 
 @Component({
 	selector: 'dashboard',

@@ -34,17 +34,25 @@ export class Entity extends RTKObject {
         for (let propertyName in json) {
             let value: any = json[propertyName];
 
-            if(ObjectUtil.isBlank(value) || ObjectUtil.isPresent(value.id)) {
+            if (ObjectUtil.isBlank(value) || ObjectUtil.isPresent(value.id)) {
                 continue;
             }
 
             let type = (Reflect as any).getMetadata("design:type", this, propertyName);
 
-            if(ObjectUtil.isPresent(type) && type.prototype instanceof Enum){
+            if (ObjectUtil.isPresent(type) && type.prototype instanceof Enum) {
                 value = type.parse(json[propertyName]);
             }
 
             this[propertyName] = value;
         }
+    }
+
+    public json(): string {
+        return super.json((key, value) => {
+            if (value instanceof Entity) {
+                return StringUtil.isNullEmptyOrUndefined(value.id) ? null : value.id;
+            }
+        });
     }
 }

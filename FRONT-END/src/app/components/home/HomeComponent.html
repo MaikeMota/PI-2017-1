@@ -8,8 +8,9 @@
     <div class="nav-content">
         <span class="nav-title">Dashboard</span>
         <a class="btn-floating btn-large halfway-fab waves-effect waves-light teal">
-            <i class="material-icons">add</i>
+            <i (click)="addDevice()" class="material-icons">add</i>
         </a>
     </div>
 </nav>
 <router-outlet></router-outlet>
+<modal></modal>
