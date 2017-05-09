@@ -9,9 +9,16 @@ import { BaseRouter } from './BaseRouter';
  */
 export class EchoRouter extends BaseRouter {
 
+    public static readonly ROOT_PATH: string = 'echo';
+
+
     protected configureRouter(): void {
         this.router.get('/:echoMe', EchoRouter.GET);
         this.router.post('/', EchoRouter.POST);
+    }
+
+    public get PATH(): string {
+        return EchoRouter.ROOT_PATH;
     }
 
     private static GET(request: Request, response: Response, next: NextFunction) {
