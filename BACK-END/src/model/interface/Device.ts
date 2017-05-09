@@ -24,8 +24,8 @@ export class Device extends Entity {
         let config: string = "";
 
         config = `${device.min_water_level},${device.med_water_level},${device.recipient_radius}`
-        config = `${config},${device.recipient_height},${WaterInLetOpenTrigger.parse(device.water_inlet_open_trigger).ordinal}`
-        config = `${config},${WaterInLetCloseTrigger.parse(device.water_inlet_open_trigger).ordinal}`;
+        config = `${config},${device.recipient_height},${WaterInLetOpenTrigger.ordinal(device.water_inlet_open_trigger)}`
+        config = `${config},${WaterInLetCloseTrigger.ordinal(device.water_inlet_close_trigger)}`;
 
         return config;
     }
@@ -39,15 +39,15 @@ export class WaterInLetOpenTrigger extends Enum {
 
     public static readonly UNDER_HALF_VOLUME: WaterInLetOpenTrigger = new WaterInLetOpenTrigger('UNDER_HALF_VOLUME');
     public static readonly UNDER_MED_VOLUME: WaterInLetOpenTrigger = new WaterInLetOpenTrigger('UNDER_MED_VOLUME');
-    public static readonly UNDER_MIN_VOUME: WaterInLetOpenTrigger = new WaterInLetOpenTrigger('UNDER_MIN_VOUME');
-    public static readonly UNDER_DEFINID_VOLUME: WaterInLetOpenTrigger = new WaterInLetOpenTrigger('UNDER_DEFINID_VOLUME');
+    public static readonly UNDER_MIN_VOLUME: WaterInLetOpenTrigger = new WaterInLetOpenTrigger('UNDER_MIN_VOLUME');
+    public static readonly UNDER_DEFINED_VOLUME: WaterInLetOpenTrigger = new WaterInLetOpenTrigger('UNDER_DEFINED_VOLUME');
 
     public static values(): WaterInLetOpenTrigger[] {
         return [
             WaterInLetOpenTrigger.UNDER_HALF_VOLUME,
             WaterInLetOpenTrigger.UNDER_MED_VOLUME,
-            WaterInLetOpenTrigger.UNDER_MIN_VOUME,
-            WaterInLetOpenTrigger.UNDER_DEFINID_VOLUME,
+            WaterInLetOpenTrigger.UNDER_MIN_VOLUME,
+            WaterInLetOpenTrigger.UNDER_DEFINED_VOLUME,
         ]
     }
 
@@ -65,15 +65,15 @@ export class WaterInLetCloseTrigger extends Enum {
 
     public static readonly ABOVE_HALF_VOLUME: WaterInLetCloseTrigger = new WaterInLetCloseTrigger('ABOVE_HALF_VOLUME');
     public static readonly ABOVE_MED_VOLUME: WaterInLetCloseTrigger = new WaterInLetCloseTrigger('ABOVE_MED_VOLUME');
-    public static readonly ABOVE_MIN_VOUME: WaterInLetCloseTrigger = new WaterInLetCloseTrigger('ABOVE_MIN_VOUME');
-    public static readonly ABOVE_DEFINID_VOLUME: WaterInLetCloseTrigger = new WaterInLetCloseTrigger('ABOVE_DEFINID_VOLUME');
+    public static readonly ABOVE_MIN_VOLUME: WaterInLetCloseTrigger = new WaterInLetCloseTrigger('ABOVE_MIN_VOLUME');
+    public static readonly ABOVE_DEFINED_VOLUME: WaterInLetCloseTrigger = new WaterInLetCloseTrigger('ABOVE_DEFINED_VOLUME');
 
     public static values(): WaterInLetCloseTrigger[] {
         return [
             WaterInLetCloseTrigger.ABOVE_HALF_VOLUME,
             WaterInLetCloseTrigger.ABOVE_MED_VOLUME,
-            WaterInLetCloseTrigger.ABOVE_MIN_VOUME,
-            WaterInLetCloseTrigger.ABOVE_DEFINID_VOLUME,
+            WaterInLetCloseTrigger.ABOVE_MIN_VOLUME,
+            WaterInLetCloseTrigger.ABOVE_DEFINED_VOLUME,
         ]
     }
 
@@ -81,9 +81,5 @@ export class WaterInLetCloseTrigger extends Enum {
         return this.values().map((value) => {
             return value.name;
         });
-    }  
-
-    public get ordinal(): number {
-        return Object.keys(this).indexOf(this.name);
     }
 }
