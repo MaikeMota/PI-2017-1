@@ -28,7 +28,7 @@ export class DeviceDataWrapper {
         if (this.events) {
             for (let e of this.events) {
                 let event = new DeviceDataEvent();
-                event.event = DeviceDataEventEnum.fromIndex(e).name;
+                event.event = DeviceDataEventEnum.fromOrdinal(e).name;
                 deviceData.events.push(event);
             }
         }

@@ -15,12 +15,30 @@ export abstract class Enum {
         return [];
     }
 
-    public static parse<T extends Enum>(name: string): T {
-        return this[name];
+    public static parse<T extends Enum>(value: string): T {
+        for (let type of this.values<T>()) {
+            if (type.name === value) {
+                return type;
+            }
+        }
+        return undefined;
     }
 
-    public static fromIndex<T extends Enum>(index: number): T {
+    public static fromOrdinal<T extends Enum>(index: number): T {
         let key: string = Object.keys(this)[index];
         return ObjectUtil.cast<T>(this[key]);
     }
+
+    public static ordinal<T extends Enum>(value: string): number {
+        let index: number = 0;
+        for (let type of this.values<T>()) {
+            if (type.name === value) {
+                return index;
+            }else {
+                index++;
+            }
+        }
+        return -1;
+    }
+
 }
