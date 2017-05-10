@@ -48,7 +48,7 @@
         </div>
     </div>
     <div class="modal-footer">
-        <a (click)="controller.create()" class="modal-action modal-close waves-effect waves-green btn-flat">
+        <a (click)="controller?.entity?.isUpdating ? controller.update() : controller.create()" class="modal-action modal-close waves-effect waves-green btn-flat">
             <a *ngIf="controller?.entity?.isUpdating">Atualizar</a>
             <a *ngIf="!controller?.entity?.isUpdating">Criar</a>
         </a>

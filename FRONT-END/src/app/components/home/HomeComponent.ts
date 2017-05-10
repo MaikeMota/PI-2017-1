@@ -1,5 +1,7 @@
 import { Component, AfterViewInit } from '@angular/core';
 import { HomeController } from './controller';
+import { DashboardController } from '../dashboard/main/controller';
+
 import 'jquery';
 
 @Component({
@@ -10,7 +12,7 @@ import 'jquery';
 export class HomeComponent implements AfterViewInit {
 	title = 'Home';
 
-	constructor(public controller: HomeController) {
+	constructor(public controller: HomeController, public dashboardController: DashboardController) {
 	}
 
 	ngAfterViewInit() {

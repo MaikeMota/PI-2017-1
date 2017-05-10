@@ -12,5 +12,16 @@ export class DashboardComponent {
 
 	constructor(public controller: DashboardController) {
 		this.controller.retrieveAll();
+		jQuery('#deleteModal').modal();
+	}
+
+	public update(device: Device) {
+		this.controller.entity = device;
+		jQuery('#modal').modal('open');
+	}
+
+	public delete(device: Device) {
+		this.controller.entity = device;
+		jQuery('#deleteModal').modal('open');
 	}
 }

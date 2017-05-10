@@ -18,7 +18,7 @@ export class Entity extends RTKObject {
      * Returns a boolean representing if a entity is updating or not
      */
     public get isUpdating(): boolean {
-        return StringUtil.isNotNullNotEmptyOrUndefined(this.id);
+        return ObjectUtil.isPresent(this.id);
     }
 
     /**

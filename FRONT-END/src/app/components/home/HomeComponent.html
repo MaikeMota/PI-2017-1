@@ -14,3 +14,23 @@
 </nav>
 <router-outlet></router-outlet>
 <modal></modal>
+<div id="deleteModal" class="modal modal-fixed-footer">
+    <div class="modal-content">
+        <h4>Exclusão</h4>
+        <p>Você tem certeza que deseja excluir esse dispositivo?</p>
+        <div class="row"></div>
+        <ul>
+            <li><label>Descrição</label>: {{ dashboardController.entity.description }}</li>
+            <li><label>Nível Mínimo de Água</label>: {{ dashboardController.entity.min_water_level }}</li>
+            <li><label>Nível Médio de Água</label>: {{ dashboardController.entity.med_water_level }}</li>
+            <li><label>Nível Máximo de Água</label>: {{ dashboardController.entity.max_water_level }}</li>
+            <li><label>Raio do Recipiente</label>: {{ dashboardController.entity.recipient_radius }}</li>
+            <li><label>Aktura do Recipiente</label>: {{ dashboardController.entity.recipient_height }}</li>
+            <li><label>Trigger de Entrada de Água</label>: {{ dashboardController.entity.water_inlet_open_trigger?.label }}</li>
+            <li><label>Trigger de Saída de Água</label>: {{ dashboardController.entity.water_inlet_close_trigger?.label }}</li>
+        </ul>
+    </div>
+    <div class="modal-footer">
+        <a class="pointer" (click)="dashboardController.delete()" class="red modal-action modal-close waves-effect waves btn-flat">Excluir</a>
+    </div>
+</div>
