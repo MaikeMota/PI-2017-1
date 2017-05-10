@@ -2,7 +2,7 @@ import { Component, Output, Input, EventEmitter } from '@angular/core';
 import { Device } from '../../../model/entities/Device';
 import { WaterInLetOpenTrigger } from '../../../model/enum/WaterInLetOpenTrigger';
 import { WaterInLetCloseTrigger } from '../../../model/enum/WaterInLetCloseTrigger';
-import { ModalController } from './controller';
+import { DashboardController } from '../main/controller';
 
 @Component({
 	selector: 'modal',
@@ -19,7 +19,7 @@ export class ModalComponent {
 		return WaterInLetCloseTrigger.values();
 	}
 
-	constructor(public controller: ModalController) {
+	constructor(public controller: DashboardController) {
         
 	}
 }

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Device } from '../../../model/entities/Device';
-import { DeviceDataCrudTests } from '../../../../../tests/DeviceDataCrudTests';
+import { DashboardController } from './controller';
 
 @Component({
 	selector: 'dashboard',
@@ -10,10 +10,7 @@ import { DeviceDataCrudTests } from '../../../../../tests/DeviceDataCrudTests';
 export class DashboardComponent {
 	title = 'Controle de Cisternas Híbridas';
 
-	public devices: Device[];
-
-	constructor(deviceDataCrudTests: DeviceDataCrudTests) {
-		this.devices = deviceDataCrudTests.devices;
-		console.log(this.devices);
+	constructor(public controller: DashboardController) {
+		this.controller.retrieveAll();
 	}
 }
