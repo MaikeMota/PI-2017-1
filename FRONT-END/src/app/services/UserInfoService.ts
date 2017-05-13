@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { StringUtil } from '../../../../RETHINK/util';
 
 @Injectable()
 export class UserInfoService {
@@ -24,7 +25,13 @@ export class UserInfoService {
     }
 
     public recover(): void {
-        let info: UserInfoService = JSON.parse(sessionStorage.getItem(UserInfoService.CLASS_NAME));
+        let token: string = sessionStorage.getItem(UserInfoService.CLASS_NAME);
+
+        if(StringUtil.isNullEmptyOrUndefined(token)) {
+            return;
+        }
+
+        let info: UserInfoService = JSON.parse(token);
         this._token = info._token;
     }
 }

@@ -129,7 +129,14 @@ export class DashboardController extends AbstractController<Device> {
             let httpRequest: Request = new Request(requestOptions);
 
             this.http.request(httpRequest).toPromise().then(response => {
-                resolve(response.json());
+                resolve((response as any)._body ? response.json() : null);
+                let index: number = -1;
+                for(let i = 0; i < this.devices.length; i++) {
+                    if(this.devices[i].id === this.entity.id) {
+                        index = i;
+                    }
+                }
+                this.devices[index] = this.entity;
                 this.entity = new Device();
             }).catch(error => {
                 reject(error);

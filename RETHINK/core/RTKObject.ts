@@ -1,5 +1,6 @@
 import { RandomStringType, StringUtil } from '../util/StringUtil';
 import { ObjectUtil } from "../util/ObjectUtil";
+import * as _ from 'lodash';
 
 export abstract class RTKObject {
     private static _obj_id: number = 0;
@@ -14,12 +15,21 @@ export abstract class RTKObject {
     /**
      * Initializes this object with the necessary values to generate the hashcode
      */
-    public _initialize() {
+    public _initialize(): RTKObject {
         if (ObjectUtil.isBlank(this.obj_id) || StringUtil.isNullEmptyOrUndefined(this.randonString)) {
             RTKObject._obj_id++;
             this.obj_id = RTKObject._obj_id;
             this.randonString = StringUtil.randomString(16, RandomStringType.ALPHANUMERIC);
         }
+        return this;
+    }
+
+    public cast<T>(): T {
+        return RTKObject.cast<T>(this);
+    }
+
+    public static cast<T>(obj: any): T {
+        return obj as T;
     }
 
     /**
@@ -35,6 +45,14 @@ export abstract class RTKObject {
         }
 
         return this._hashcode;
+    }
+
+    public deepClone<T extends RTKObject>(): T {
+        return RTKObject.cast<T>(_.cloneDeepWith(this, (element) => {
+            if (element != this && element instanceof RTKObject) {
+                return element.deepClone();
+            }
+        })._initialize());
     }
 
     /**

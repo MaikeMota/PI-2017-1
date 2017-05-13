@@ -5,7 +5,6 @@ import { HttpModule } from '@angular/http';
 
 import { AppComponent } from './application/AppComponent';
 import { routes } from './Routes';
-import { DeviceDataCrudTests } from '../../tests/DeviceDataCrudTests';
 
 import { COMPONENTS, SERVICES } from './index';
 
@@ -21,8 +20,7 @@ import { COMPONENTS, SERVICES } from './index';
     routes
   ],
   providers: [
-    ...SERVICES,
-    DeviceDataCrudTests
+    ...SERVICES
   ],
   bootstrap: [AppComponent]
 })

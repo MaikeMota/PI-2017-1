@@ -16,12 +16,12 @@ export class DashboardComponent {
 	}
 
 	public update(device: Device) {
-		this.controller.entity = device;
+		this.controller.entity = device.deepClone<Device>();
 		jQuery('#modal').modal('open');
 	}
 
 	public delete(device: Device) {
-		this.controller.entity = device;
+		this.controller.entity = device.deepClone<Device>();
 		jQuery('#deleteModal').modal('open');
 	}
 }

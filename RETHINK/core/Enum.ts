@@ -68,6 +68,10 @@ export abstract class Enum extends RTKObject {
     public json(): string {
         return this._name;
     }
+
+    public deepClone(): Enum {
+        return this;
+    }
 }
 
 export interface EnumInfo {
