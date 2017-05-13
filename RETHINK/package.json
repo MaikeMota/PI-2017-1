@@ -3,14 +3,17 @@
   "version": "0.0.0-alpha.1",
   "description": "",
   "main": "index.js",
-  "scripts": { },
+  "scripts": {},
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/express": "^4.0.34",
+    "@types/lodash": "^4.14.64",
     "typescript": "^2.1.4"
   },
   "dependencies": {
-    "express": "^4.14.0"
+    "express": "^4.14.0",
+    "lodash": "^4.17.4",
+    "reflect-metadata": "0.1.10"
   }
 }

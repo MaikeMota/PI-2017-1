@@ -1,19 +1,18 @@
-import { DashboardController } from './dashboard/controller';
+import { COMPONENTS as DASHBOARD_COMPONENTS, SERVICES as DASHBOARD_SERVICES } from './dashboard/definitions';
 import { HomeController } from './home/controller';
 import { LoginController } from './login/controller';
 
-import { DashboardComponent } from './dashboard/DashboardComponent';
 import { HomeComponent } from './home/HomeComponent';
 import { LoginComponent } from './login/LoginComponent';
 
 export const SERVICES: any[] = [
-    DashboardController,
+    ...DASHBOARD_SERVICES,
     HomeController,
     LoginController
 ];
 
 export const COMPONENTS: any[] = [
-    DashboardComponent,
+    ...DASHBOARD_COMPONENTS,
     HomeComponent,
     LoginComponent
 ];

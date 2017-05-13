@@ -35,23 +35,18 @@ export class Device extends Entity {
 
 export class WaterInLetOpenTrigger extends Enum {
 
-    constructor(name: string) {
-        super(name);
-    }
-
-    public static readonly UNDER_HALF_VOLUME: WaterInLetOpenTrigger = new WaterInLetOpenTrigger('UNDER_HALF_VOLUME');
-    public static readonly UNDER_MED_VOLUME: WaterInLetOpenTrigger = new WaterInLetOpenTrigger('UNDER_MED_VOLUME');
-    public static readonly UNDER_MIN_VOLUME: WaterInLetOpenTrigger = new WaterInLetOpenTrigger('UNDER_MIN_VOLUME');
-    public static readonly UNDER_DEFINED_VOLUME: WaterInLetOpenTrigger = new WaterInLetOpenTrigger('UNDER_DEFINED_VOLUME');
-
-    public static values(): WaterInLetOpenTrigger[] {
-        return [
-            WaterInLetOpenTrigger.UNDER_HALF_VOLUME,
-            WaterInLetOpenTrigger.UNDER_MED_VOLUME,
-            WaterInLetOpenTrigger.UNDER_MIN_VOLUME,
-            WaterInLetOpenTrigger.UNDER_DEFINED_VOLUME,
-        ]
-    }
+    public static readonly UNDER_HALF_VOLUME: WaterInLetOpenTrigger = new WaterInLetOpenTrigger('UNDER_HALF_VOLUME', {
+        "pt-BR": "Abaixo da Metade do Volume"
+    });
+    public static readonly UNDER_MED_VOLUME: WaterInLetOpenTrigger = new WaterInLetOpenTrigger('UNDER_MED_VOLUME', {
+        "pt-BR": "Abaixo do Volume Médio"
+    });
+    public static readonly UNDER_MIN_VOUME: WaterInLetOpenTrigger = new WaterInLetOpenTrigger('UNDER_MIN_VOUME', {
+        "pt-BR": "Abaixo do Volume Mínimo"
+    });
+    public static readonly UNDER_DEFINID_VOLUME: WaterInLetOpenTrigger = new WaterInLetOpenTrigger('UNDER_DEFINID_VOLUME', {
+        "pt-BR": "Abaixo do Volume Definido"
+    });
 
     public static valuesAsString(): string[] {
         return this.values().map((value) => {
@@ -61,23 +56,19 @@ export class WaterInLetOpenTrigger extends Enum {
 
 }
 export class WaterInLetCloseTrigger extends Enum {
-    constructor(name: string) {
-        super(name);
-    }
-
-    public static readonly ABOVE_HALF_VOLUME: WaterInLetCloseTrigger = new WaterInLetCloseTrigger('ABOVE_HALF_VOLUME');
-    public static readonly ABOVE_MED_VOLUME: WaterInLetCloseTrigger = new WaterInLetCloseTrigger('ABOVE_MED_VOLUME');
-    public static readonly ABOVE_MIN_VOLUME: WaterInLetCloseTrigger = new WaterInLetCloseTrigger('ABOVE_MIN_VOLUME');
-    public static readonly ABOVE_DEFINED_VOLUME: WaterInLetCloseTrigger = new WaterInLetCloseTrigger('ABOVE_DEFINED_VOLUME');
-
-    public static values(): WaterInLetCloseTrigger[] {
-        return [
-            WaterInLetCloseTrigger.ABOVE_HALF_VOLUME,
-            WaterInLetCloseTrigger.ABOVE_MED_VOLUME,
-            WaterInLetCloseTrigger.ABOVE_MIN_VOLUME,
-            WaterInLetCloseTrigger.ABOVE_DEFINED_VOLUME,
-        ]
-    }
+    
+    public static readonly ABOVE_HALF_VOLUME: WaterInLetCloseTrigger = new WaterInLetCloseTrigger('ABOVE_HALF_VOLUME', {
+        "pt-BR": "Acima da Metade do Volume"
+    });
+    public static readonly ABOVE_MED_VOLUME: WaterInLetCloseTrigger = new WaterInLetCloseTrigger('ABOVE_MED_VOLUME', {
+        "pt-BR": "Acima do Volume Médio"
+    });
+    public static readonly ABOVE_MIN_VOUME: WaterInLetCloseTrigger = new WaterInLetCloseTrigger('ABOVE_MIN_VOUME', {
+        "pt-BR": "Acima do Volume Mínimo"
+    });
+    public static readonly ABOVE_DEFINID_VOLUME: WaterInLetCloseTrigger = new WaterInLetCloseTrigger('ABOVE_DEFINID_VOLUME', {
+        "pt-BR": "Acima do Volume Definido"
+    });
 
     public static valuesAsString(): string[] {
         return this.values().map((value) => {

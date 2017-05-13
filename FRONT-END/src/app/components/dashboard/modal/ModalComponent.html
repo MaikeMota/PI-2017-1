@@ -1,0 +1,56 @@
+<!-- Modal Structure -->
+<div id="modal" class="modal modal-fixed-footer">
+    <div class="modal-content">
+        <h4 *ngIf="controller?.entity?.isUpdating"> Atualizar Dispositivo </h4>
+        <h4 *ngIf="!controller?.entity?.isUpdating"> Criar Dispositivo </h4>
+        <div class="row"></div>
+        <form class="center" ng>
+            <div class="input-field col s10">
+                <input required #description [(ngModel)]="controller.entity.description" id="description" required type="text" class="validate" name="description">
+                <label [class.active]="description.value?.length > 0" class="grey-text text-darken-2" for="description">Descrição</label>
+            </div>
+            <div class="input-field col s10">
+                <input required #min_water_level [(ngModel)]="controller.entity.min_water_level" id="min_water_level" required type="number" class="validate"
+                    name="min_water_level">
+                <label [class.active]="min_water_level.value?.length > 0" class="grey-text text-darken-2" for="min_water_level">Nível Mínimo de Água</label>
+            </div>
+            <div class="input-field col s10">
+                <input required #med_water_level [(ngModel)]="controller.entity.med_water_level" id="med_water_level" required type="number" class="validate"
+                    name="med_water_level">
+                <label [class.active]="med_water_level.value?.length > 0" class="grey-text text-darken-2" for="med_water_level">Nível Médio de Água</label>
+            </div>
+            <div class="input-field col s10">
+                <input required #max_water_level [(ngModel)]="controller.entity.max_water_level" id="max_water_level" required type="number" class="validate"
+                    name="max_water_level">
+                <label [class.active]="max_water_level.value?.length > 0" class="grey-text text-darken-2" for="max_water_level">Nível Máximo de Água</label>
+            </div>
+            <div class="input-field col s10">
+                <input required #recipient_radius [(ngModel)]="controller.entity.recipient_radius" id="recipient_radius" required type="number" class="validate"
+                    name="recipient_radius">
+                <label [class.active]="recipient_radius.value?.length > 0" class="grey-text text-darken-2" for="recipient_radius">Raio do Recipiente</label>
+            </div>
+            <div class="input-field col s10">
+                <input required #recipient_height [(ngModel)]="controller.entity.recipient_height" id="recipient_height" required type="number" class="validate"
+                    name="recipient_height">
+                <label [class.active]="recipient_height.value?.length > 0" class="grey-text text-darken-2" for="recipient_height">Altura do Recipiente</label>
+            </div>
+            <label class="label" for="inletOpenTrigger"> Trigger de Abertura de Água </label>
+            <select required #water_inlet_open_trigger="ngModel" [disabled]="controller.busy" class="browser-default" required name="inletOpenTrigger"
+                id="inletOpenTrigger" [(ngModel)]="controller.entity.water_inlet_open_trigger">
+                <option *ngFor="let inletOpenTrigger of inletOpenTriggers" [ngValue]="inletOpenTrigger">{{inletOpenTrigger.label}}</option>
+            </select>
+
+            <label class="label" for="inletCloseTrigger"> Trigger de Fechamento de Água </label>
+            <select required #water_inlet_close_trigger="ngModel" [disabled]="controller.busy" class="browser-default" required name="inletCloseTrigger"
+                id="inletCloseTrigger" [(ngModel)]="controller.entity.water_inlet_close_trigger">
+                <option *ngFor="let inletCloseTrigger of inletCloseTriggers" [ngValue]="inletCloseTrigger">{{inletCloseTrigger.label}}</option>
+            </select>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <a [class.disabled]="!form?.form?.valid" (click)="controller?.entity?.isUpdating ? controller.update() : controller.create()" class="modal-action modal-close waves-effect waves-green btn-flat">
+            <a *ngIf="controller?.entity?.isUpdating">Atualizar</a>
+            <a *ngIf="!controller?.entity?.isUpdating">Criar</a>
+        </a>
+    </div>
+</div>

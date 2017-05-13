@@ -13,10 +13,10 @@ export abstract class ObjectUtil {
     }
 
     public static isBlank(obj: any): boolean {
-        return obj === undefined || obj === null;
+        return obj === null || obj === undefined;
     }
 
     public static isPresent(obj: any): boolean {
-        return obj !== undefined && obj !== null;
+        return obj !== null && obj !== undefined;
     }
 }
