@@ -30,7 +30,7 @@ export class DeviceDataRouter extends BaseRouter {
 
     private static receiveData(request: Request, response: Response, next: NextFunction): void {
         let deviceDataWrapper: DeviceDataWrapper = new DeviceDataWrapper(request.param(DeviceDataRouter.DEVICE_KEY_PARAM), request.body);
-        DeviceDataService.instance().save(deviceDataWrapper).then((deviceData) => {
+        DeviceDataService.instance<DeviceDataService>().save(deviceDataWrapper).then((deviceData) => {
             console.log('[DATA] - ' + JSON.stringify(deviceData));
             SocketService.instance.broadCast(DeviceDataRouter.NEW_DATA_EVENT, deviceData);
             response.json();

@@ -58,7 +58,7 @@ export abstract class RTKObject {
     /**
      * Returns the constructor of this object
      */
-    public get class(): new (...args: any[]) => RTKObject {
+    public get classConstructor(): new (...args: any[]) => RTKObject {
         return this.constructor as new (...args: any[]) => RTKObject;
     }
 

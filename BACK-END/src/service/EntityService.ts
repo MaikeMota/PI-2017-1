@@ -1,20 +1,11 @@
 import { GenericDao } from '../../database/GenericDao';
-import { Entity } from '../../../RETHINK/core';
+import { Entity, RTKSingleton } from '../../../RETHINK/core';
 import { PaginatedList } from "../model/";
 
-export class EntityService<T extends Entity> {
-
-    protected static _instance: EntityService<any>;
+export class EntityService<T extends Entity> extends RTKSingleton {
 
     protected get dao(): GenericDao<any, any> {
-        return GenericDao.instance();
-    }
-
-    public static instance<T extends EntityService<any>>(): T {
-        if (!this._instance) {
-            this._instance = new this();
-        }
-        return <T>this._instance;
+        return GenericDao.instance<GenericDao<any, any>>();
     }
 
     public save<T>(entity: T): Promise<T> {

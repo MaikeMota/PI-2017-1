@@ -1,0 +1,1 @@
+export { DeviceDetailsController } from './DeviceDetailsController';

@@ -1,19 +1,10 @@
 import { SequelizeDataBase } from './SequelizeDataBase';
 import { EntityInstance } from '../src/model/interface';
-import { Entity } from '../../RETHINK/core';
+import { Entity, RTKObject, RTKSingleton } from '../../RETHINK/core';
 import * as SequelizeStatic from 'sequelize';
 import { EntityNotFoundException, UnprocessableEntityException } from "../../RETHINK/core/exception/";
 
-export class GenericDao<EI extends EntityInstance<E>, E extends Entity> {
-
-    private static _instance: GenericDao<any, any>;
-
-    public static instance<E extends GenericDao<any, any>>(): E {
-        if (!this._instance) {
-            this._instance = new this();
-        }
-        return <E>this._instance;
-    }
+export class GenericDao<EI extends EntityInstance<E>, E extends Entity> extends RTKSingleton {
 
     public save(classConstructor: new () => E, entity: E): Promise<E> {
         return new Promise<E>((resolve, reject) => {
