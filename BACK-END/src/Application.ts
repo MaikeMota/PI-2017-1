@@ -59,7 +59,7 @@ export class Application {
         this.configureRouter();
         this.configureErrorHandler();
         let instance: Application = this;
-        SocketService.instance.enableSocket(this.httpServer);        
+        SocketService.instance<SocketService>().enableSocket(this.httpServer);        
         this.httpServer.listen(port, "0.0.0.0", () => {
             console.log(`Server running at ${port}`);
         });

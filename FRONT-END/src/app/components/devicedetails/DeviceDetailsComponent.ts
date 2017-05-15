@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { DeviceDetailsController } from './controller';
+import { SocketService } from '../../services';
 
 @Component({
 	selector: 'device-details',
@@ -8,7 +9,7 @@ import { DeviceDetailsController } from './controller';
 })
 export class DeviceDetailsComponent {
 
-	constructor(public controller: DeviceDetailsController) {
+	constructor(public controller: DeviceDetailsController, private socketService: SocketService) {
         
 	}
 }

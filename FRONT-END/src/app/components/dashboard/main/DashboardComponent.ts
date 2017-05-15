@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { Device } from '../../../model/entities/Device';
 import { DashboardController } from './controller';
 
@@ -10,7 +11,7 @@ import { DashboardController } from './controller';
 export class DashboardComponent {
 	title = 'Controle de Cisternas Híbridas';
 
-	constructor(public controller: DashboardController) {
+	constructor(public controller: DashboardController, private router: Router) {
 		this.controller.retrieveAll();
 		jQuery('#deleteModal').modal();
 	}
@@ -23,5 +24,9 @@ export class DashboardComponent {
 	public delete(device: Device) {
 		this.controller.entity = device.deepClone<Device>();
 		jQuery('#deleteModal').modal('open');
+	}
+
+	public navigateToDetails(device: Device) {
+		this.router.navigate(['home', 'details', device.id]);
 	}
 }

@@ -2,23 +2,13 @@ import * as http from "http";
 import * as express from 'express';
 import * as socketIO from "socket.io";
 import { ObjectUtil } from "../../../RETHINK/util";
+import { RTKSingleton } from "../../../RETHINK/core";
 
-export class SocketService {
+export class SocketService extends RTKSingleton {
 
     private _serverPort = 8080;
     private _app: any;
     private io: SocketIO.Server;
-    private static _instance: SocketService;
-
-    public static get instance(): SocketService {
-        if (ObjectUtil.isBlank(this._instance)) {
-            this._instance = new SocketService();
-        }
-
-        return this._instance;
-    }
-
-    private constructor() { }
 
     public enableSocket(httpServer: http.Server): void {
         /*
