@@ -20,4 +20,6 @@ export class Device extends Entity {
     water_inlet_open_trigger: WaterInLetOpenTrigger;
     @typed
     water_inlet_close_trigger: WaterInLetCloseTrigger;
+    open_water_inlet_under_level: number;
+    close_water_inlet_above_level: number;
 }

@@ -12,5 +12,3 @@ export class DeviceDataEvent extends Entity {
     device_data_id: string;
     event: string;
 }
-
-

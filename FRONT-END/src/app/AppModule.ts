@@ -5,6 +5,7 @@ import { HttpModule } from '@angular/http';
 
 import { AppComponent } from './application/AppComponent';
 import { routes } from './Routes';
+import { SocketService } from './services/SocketService';
 
 import { COMPONENTS, SERVICES } from './index';
 
@@ -24,4 +25,8 @@ import { COMPONENTS, SERVICES } from './index';
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+  constructor(private socketService: SocketService) {
+    socketService.startListening();
+  }
+}

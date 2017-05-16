@@ -1,5 +1,6 @@
 import { Device } from './';
 import { Enum, Entity } from '../../../../../RETHINK/core';
+import { DeviceDataEvent } from "./DeviceDataEvent";
 
 export class DeviceData extends Entity {
 
@@ -10,6 +11,7 @@ export class DeviceData extends Entity {
     public water_level: number;
     public water_inlet_flux: number;
     public water_out_flux: number;
-    public device: Device;
+    public device_id: string;
+    public events: DeviceDataEvent[] = [];
 }
 
