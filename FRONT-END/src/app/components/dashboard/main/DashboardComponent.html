@@ -12,7 +12,10 @@
                     <ul>
                         <span class="card-title activator grey-text text-darken-4"><i class="material-icons right">more_vert</i></span>
                         <li><label>Descrição</label>: {{ device.description }}</li>
+                        <li><label>Status</label>: {{ getDeviceStatus(device) }}</li>
                         <li><label>Nível Atual</label>: {{ device.data[0]?.water_level }}</li>
+                        <li><label>Fluxo de Entrada de Água</label>: {{ device.data[0]?.water_inlet_flux }}</li>
+                        <li><label>Fluxo de Saída de Água</label>: {{ device.data[0]?.water_out_flux }}</li>
                     </ul>
                 </div>
                 <div class="card-reveal">

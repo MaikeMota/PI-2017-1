@@ -12,7 +12,7 @@ import { DeviceStorageService } from "../../../services";
 export class DashboardComponent {
 	title = 'Controle de Cisternas Híbridas';
 
-	constructor(private deviceStorageService: DeviceStorageService, public controller: DashboardController, private router: Router) {		
+	constructor(private deviceStorageService: DeviceStorageService, public controller: DashboardController, private router: Router) {
 		jQuery('#deleteModal').modal();
 	}
 
@@ -28,6 +28,14 @@ export class DashboardComponent {
 
 	public navigateToDetails(device: Device) {
 		this.router.navigate(['home', 'details', device.id]);
+	}
+
+	public getDeviceStatus(device: Device): string {
+		let deviceData = device.data[0]
+		if (deviceData) {
+			return (new Date().getTime() - deviceData.createdAt.getTime() > 10000)? 'Offline': 'Online';
+		} 
+		return "Offline"
 	}
 
 	public get devices(): Device[] {
