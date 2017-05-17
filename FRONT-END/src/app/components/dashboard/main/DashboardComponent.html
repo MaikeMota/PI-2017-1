@@ -12,7 +12,7 @@
                     <ul>
                         <span class="card-title activator grey-text text-darken-4"><i class="material-icons right">more_vert</i></span>
                         <li><label>Descrição</label>: {{ device.description }}</li>
-                        <li><label>Nível Mínimo Atual</label>: {{ device.data[0].water_level }}</li>
+                        <li><label>Nível Atual</label>: {{ device.data[0]?.water_level }}</li>
                     </ul>
                 </div>
                 <div class="card-reveal">
@@ -29,13 +29,13 @@
                     </ul>
                     <div class="card-action">
                         <div class="col s4 center">
-                            <a class="pointer" (click)="update(device)"><i class="blue-text material-icons center small">update</i></a>
+                            <a class="pointer" (click)="update(device)"><i class="blue-text material-icons center small">mode_edit</i></a>
                         </div>
                         <div class="col s4 center">
                             <a class="pointer" (click)="delete(device)"><i class="red-text material-icons center small">delete</i></a>
                         </div>
                         <div class="col s4 center">
-                            <a class="pointer" (click)="navigateToDetails(device)"><i class="green-text material-icons center small">details</i></a>
+                            <a class="pointer" (click)="navigateToDetails(device)"><i class="green-text material-icons center small">equalizer</i></a>
                         </div>
                     </div>
                 </div>
