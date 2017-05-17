@@ -1,11 +1,13 @@
-import { UserInfoService, SocketService } from './services';
+import { DeviceStorageService, UserInfoService, SocketService, DeviceService } from './services';
 import { SERVICES as COMPONENT_SERVICES } from './components';
 import { COMPONENTS as COMPONENT_COMPONENTS } from './components';
 
 export const SERVICES: any[] = [
-    ...COMPONENT_SERVICES,
+    DeviceStorageService,
+    SocketService,
     UserInfoService,
-    SocketService
+    DeviceService,
+    ...COMPONENT_SERVICES
 ];
 
 export const COMPONENTS: any[] = [
