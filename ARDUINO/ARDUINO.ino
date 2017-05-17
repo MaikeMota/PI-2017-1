@@ -18,7 +18,7 @@
 typedef enum {
   UNDER_HALF_VOLUME,
   UNDER_MED_VOLUME,
-  UNDER_MIN_VOUME,
+  UNDER_MIN_VOLUME,
   UNDER_DEFINID_VOLUME
 } OpenWaterInletTriggerEnum;
 
@@ -414,7 +414,7 @@ void checkStreetWaterInletTrigger()
       }
       break;
     }
-    case UNDER_MIN_VOUME:
+    case UNDER_MIN_VOLUME:
     {
       if (lastWaterLevel <= minWaterLevel)
       {
