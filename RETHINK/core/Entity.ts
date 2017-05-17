@@ -29,6 +29,9 @@ export class Entity extends RTKObject {
         }
 
         for (let propertyName in json) {
+            if(propertyName === "createdAt"){
+                console.log();
+            }
             let value: any = json[propertyName];
 
             if (ObjectUtil.isBlank(value) || ObjectUtil.isPresent(value.id)) {
@@ -40,6 +43,8 @@ export class Entity extends RTKObject {
             if (ObjectUtil.isPresent(type)) {
                 if (type.prototype instanceof Enum) {
                     value = type.parse(json[propertyName]);
+                } else if ("Date" === type.name) {
+                    value = new Date(json[propertyName]);
                 } else if ("Array" === type.name) {
                     let arrayType = Reflect.getMetadata("design:arrayType", this, propertyName);
                     let array = [];
