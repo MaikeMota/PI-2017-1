@@ -16,6 +16,7 @@
 <table class="highlight responsive-table" *ngIf="device">
     <thead>
         <tr>
+            <th>Hora</th>
             <th>Volume de Água</th>
             <th>Fluxo de Entrada de Água</th>
             <th>Fluxo de Saída de Água</th>
@@ -24,6 +25,7 @@
     </thead>
     <tbody>
         <tr *ngFor="let data of device.data">
+            <td>{{data.createdAt}}</td>
             <td>{{data.water_level}}</td>
             <td>{{data.water_inlet_flux}}</td>
             <td>{{data.water_out_flux}}</td>
