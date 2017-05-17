@@ -5,9 +5,7 @@ import { ObjectUtil } from "../../../RETHINK/util";
 import { RTKSingleton } from "../../../RETHINK/core";
 
 export class SocketService extends RTKSingleton {
-
-    private _serverPort = 8080;
-    private _app: any;
+    
     private io: SocketIO.Server;
 
     public enableSocket(httpServer: http.Server): void {
