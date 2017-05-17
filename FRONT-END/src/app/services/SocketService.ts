@@ -4,16 +4,15 @@ import * as socketIo from 'socket.io-client';
 import { Injectable } from '@angular/core';
 import { DeviceData } from '../model/entities/DeviceData';
 import { DeviceDataEvent } from '../model/entities/DeviceDataEvent';
+import { DeviceStorageService } from "./";
 
 @Injectable()
 export class SocketService {
     public static readonly NEW_DATA_EVENT: string = "NEW_DEVICE_DATA";
     private socket: SocketIOClient.Socket;
-    public deviceDatas: Map<string, DeviceData>;
 
-    constructor() {
+    constructor(private deviceStorageService: DeviceStorageService) {
         this.init();
-        this.deviceDatas = new Map<string, DeviceData>();
     }
 
     private init(): void {
@@ -26,20 +25,18 @@ export class SocketService {
             let deviceData: DeviceData = new DeviceData();
             deviceData.fill(data);
             deviceData.events = [];
-            if(ObjectUtil.isPresent(data.events)) {
+            if (ObjectUtil.isPresent(data.events)) {
                 data.events.forEach(dataEvent => {
                     let deviceDataEvent: DeviceDataEvent = new DeviceDataEvent();
                     deviceDataEvent.fill(dataEvent);
                     deviceData.events.push(deviceDataEvent);
                 });
             }
-            
-            instance.deviceDatas.set(deviceData.device_id, deviceData);
-            console.log(instance.deviceDatas);
+            instance.deviceStorageService.addDataToDevice(deviceData.device_id, deviceData);
         });
     }
 
-    public getDeviceData(device_id: string): DeviceData {
-        return this.deviceDatas.get(device_id);
+    public stopListening(): void {
+        this.socket.removeAllListeners();
     }
 }

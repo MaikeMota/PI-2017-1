@@ -26,7 +26,6 @@ import { COMPONENTS, SERVICES } from './index';
   bootstrap: [AppComponent]
 })
 export class AppModule {
-  constructor(private socketService: SocketService) {
-    socketService.startListening();
+  constructor() {
   }
 }
