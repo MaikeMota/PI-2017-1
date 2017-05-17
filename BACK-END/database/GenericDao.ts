@@ -10,6 +10,7 @@ export class GenericDao<EI extends EntityInstance<E>, E extends Entity> extends 
         return new Promise<E>((resolve, reject) => {
             this.getModelForEntity(classConstructor).create(entity).then(savedInstance => {
                 entity = savedInstance.dataValues;
+                entity.id = savedInstance['id']; // workaround to get id from sequelize
                 resolve(entity);
             }).catch((error) => {
                 this.handleError(error, reject);
@@ -61,11 +62,12 @@ export class GenericDao<EI extends EntityInstance<E>, E extends Entity> extends 
         });
     }
 
-    public list(classConstructor: new () => E, offset: number = 0, limit: number = 10): Promise<E[]> {
+    public list(classConstructor: new () => E, offset: number = 0, limit: number = 10, include: any[] = []): Promise<E[]> {
         return new Promise<E[]>((resolve, reject) => {
             this.getModelForEntity(classConstructor).findAll({
                 offset: offset,
-                limit: limit
+                limit: limit,
+                include: include
             }).then((results) => {
                 let entities: E[] = [];
                 results.forEach((instance) => {
@@ -102,5 +104,9 @@ export class GenericDao<EI extends EntityInstance<E>, E extends Entity> extends 
         } else {
             reject(error);
         }
+    }
+
+    public static instance<D extends GenericDao<any, any>>(): D {
+        return super.instance<D>();
     }
 }
