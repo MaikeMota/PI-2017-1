@@ -1,4 +1,4 @@
-import { Device, DeviceInstance, DeviceData } from "../model/interface/";
+import { Device, DeviceInstance, DeviceData, EntityInstance } from "../model/interface/";
 import { EntityService } from "./";
 import { StringUtil } from "../../../RETHINK/util";
 import { DeviceDataDao, DeviceDao } from "../../database";
@@ -22,7 +22,7 @@ export class DeviceDataService extends EntityService<DeviceData> {
                     if (entity.events) {
                         deviceData.events = [];
                         for (let e of entity.events) {
-                            e.device_data_id = device.id
+                            e.device_data_id = deviceData.id
                             promises.push(GenericDao.instance().save(DeviceDataEvent, e).then(ev => {
                                 deviceData.events.push(ev);
                             }));
