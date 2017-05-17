@@ -20,6 +20,7 @@ export class HomeComponent implements AfterViewInit {
 
 	ngAfterViewInit() {
 		jQuery('#modal').modal();
+		this.controller.listeningToSocket();
 	}
 
 	addDevice() {

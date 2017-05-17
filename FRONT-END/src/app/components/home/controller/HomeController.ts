@@ -9,6 +9,9 @@ export class HomeController extends AbstractController<any> {
 
     constructor(private socketService: SocketService, private deviceStorageService: DeviceStorageService, private userInfoService: UserInfoService, private router: Router) {
         super();
+    }
+
+    public listeningToSocket(): void {
         this.socketService.startListening();
     }
 
