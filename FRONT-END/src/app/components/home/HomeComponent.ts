@@ -4,6 +4,7 @@ import { DashboardController } from '../dashboard/main/controller';
 
 import 'jquery';
 import { SocketService, DeviceService } from "../../services";
+import { Device } from "../../model/entities";
 
 @Component({
 	selector: 'home',
@@ -24,6 +25,7 @@ export class HomeComponent implements AfterViewInit {
 	}
 
 	addDevice() {
+		this.dashboardController.entity = new Device();
 		jQuery('#modal').modal('open');
 	}
 }
