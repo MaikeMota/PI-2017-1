@@ -25,7 +25,10 @@ export class DeviceDataService extends EntityService<DeviceData> {
                             e.device_data_id = deviceData.id
                             promises.push(GenericDao.instance().save(DeviceDataEvent, e).then(ev => {
                                 deviceData.events.push(ev);
-                            }));
+                                }).catch(error => {
+                                    reject(error);
+                                })
+                            )
                         }
                     }
                     Promise.all(promises).then(() => {
@@ -43,7 +46,7 @@ export class DeviceDataService extends EntityService<DeviceData> {
     protected get class(): new () => DeviceData {
         return DeviceData;
     }
-    
+
     protected get dao(): DeviceDataDao {
         return DeviceDataDao.instance<DeviceDataDao>();
     }
