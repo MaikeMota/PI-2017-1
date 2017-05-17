@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { BaseRouter } from './BaseRouter';
 import { Calculator } from '../service/Calculator';
-import { Device } from "../model/interface";
+import { Device, DeviceData } from "../model/interface";
 import { DeviceService, EntityService } from '../service';
 
 import { StringUtil } from '../../../RETHINK/util';
@@ -34,15 +34,15 @@ export class DeviceRouter extends BaseRouter {
         let offset: number = StringUtil.toInt(request.query['offset']);
         let limit: number = StringUtil.toInt(request.query['limit']);
 
-        DeviceService.instance().list(offset, limit).then((deviceList) => {
+        DeviceService.instance().list(offset, limit, [{all: true, nested: true}]).then((deviceList) => {
             response.json(deviceList);
         }).catch(next);
     }
 
     private static create<T extends Entity>(request: Request, response: Response, next: NextFunction) {
         let requestDevice: Device = request.body;
-        DeviceService.instance().save(requestDevice).then(() => {
-            response.json(requestDevice);
+        DeviceService.instance().save(requestDevice).then((device) => {
+            response.json(device);
         }).catch(next);
     }
 
