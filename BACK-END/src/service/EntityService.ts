@@ -24,7 +24,7 @@ export class EntityService<T extends Entity> extends RTKSingleton {
         return this.dao.byId(this.class, id);
     }
 
-    public list<T>(offset: number = 0, limit: number = 10): Promise<PaginatedList<any>> {
+    public list<T>(offset: number = 0, limit: number = 10, include: any[] = []): Promise<PaginatedList<any>> {
         return new Promise<PaginatedList<any>>((resolve, reject) => {
             let promises = [];
 
@@ -39,7 +39,7 @@ export class EntityService<T extends Entity> extends RTKSingleton {
             );
 
             promises.push(
-                this.dao.list(this.class).then((entities: T[]) => {
+                this.dao.list(this.class, offset, limit, include).then((entities: T[]) => {
                     list.items = entities;
                 })
             );
@@ -55,4 +55,8 @@ export class EntityService<T extends Entity> extends RTKSingleton {
     protected get class(): new () => T {
         return undefined;
     };
+
+    public static instance<ES extends EntityService<any>>(): ES {
+        return super.instance<ES>();
+    }
 }
