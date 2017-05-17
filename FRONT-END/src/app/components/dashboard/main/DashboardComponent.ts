@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { Device } from '../../../model/entities/Device';
 import { DashboardController } from './controller';
+import { DeviceStorageService } from "../../../services";
 
 @Component({
 	selector: 'dashboard',
@@ -11,8 +12,7 @@ import { DashboardController } from './controller';
 export class DashboardComponent {
 	title = 'Controle de Cisternas Híbridas';
 
-	constructor(public controller: DashboardController, private router: Router) {
-		this.controller.retrieveAll();
+	constructor(private deviceStorageService: DeviceStorageService, public controller: DashboardController, private router: Router) {		
 		jQuery('#deleteModal').modal();
 	}
 
@@ -28,5 +28,9 @@ export class DashboardComponent {
 
 	public navigateToDetails(device: Device) {
 		this.router.navigate(['home', 'details', device.id]);
+	}
+
+	public get devices(): Device[] {
+		return this.deviceStorageService.devices;
 	}
 }

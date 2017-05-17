@@ -1,5 +1,37 @@
-<div>Device details</div>
-<h1>JSON</h1>
-{{ socketService.getDeviceData(device_id) | json }}
-<h3>id</h3>
-{{ device_id }}
+<div>
+    Informações Detalhadas</div>
+
+<div *ngIf="device">
+    <label>Descrição</label>: {{ device.description }}<br>
+    <label>Device Key</label>: {{ device.device_key }}<br>
+    <label>Nível Mínimo de Água</label>: {{ device.min_water_level }}<br>
+    <label>Nível Médio de Água</label>: {{ device.med_water_level }}<br>
+    <label>Nível Máximo de Água</label>: {{ device.max_water_level }}<br>
+    <label>Raio do Recipiente</label>: {{ device.recipient_radius }}<br>
+    <label>Altura do Recipiente</label>: {{ device.recipient_height }}<br>
+    <label>Trigger de Entrada de Água</label>: {{ device.water_inlet_open_trigger?.label }}<br>
+    <label>Trigger de Saída de Água</label>: {{ device.water_inlet_close_trigger?.label }}<br>
+</div>
+
+<table class="highlight responsive-table" *ngIf="device">
+    <thead>
+        <tr>
+            <th>Volume de Água</th>
+            <th>Fluxo de Entrada de Água</th>
+            <th>Fluxo de Saída de Água</th>
+            <th> Eventos </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let data of device.data">
+            <td>{{data.water_level}}</td>
+            <td>{{data.water_inlet_flux}}</td>
+            <td>{{data.water_out_flux}}</td>
+            <td>
+                <ul class="collection" *ngIf="data.events.length > 0">
+                    <li class="collection-item" *ngFor="let event of data.events">{{event.event.label}} </li>
+                </ul>
+            </td>
+        </tr>
+    </tbody>
+</table>

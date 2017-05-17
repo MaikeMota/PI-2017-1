@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { DeviceDetailsController } from './controller';
-import { SocketService } from '../../services';
+import { DeviceStorageService } from '../../services';
 import { ActivatedRoute } from '@angular/router';
 import { ObjectUtil } from '../../../../../RETHINK/util';
+import { Device } from "../../model/entities";
 
 @Component({
 	selector: 'device-details',
@@ -11,16 +11,14 @@ import { ObjectUtil } from '../../../../../RETHINK/util';
 })
 export class DeviceDetailsComponent {
 
-	public device_id: number;
+	public device: Device;
 
-	constructor(public controller: DeviceDetailsController, public socketService: SocketService, public route: ActivatedRoute) {
-        this.device_id = null;
+	constructor(private deviceStorageService: DeviceStorageService, public route: ActivatedRoute) {
+		this.device = null;
 		this.route.params.forEach(params => {
-			if(ObjectUtil.isPresent(params["id"])) {
-				this.device_id = Number.parseInt(params["id"]);
-			} else {
-				this.device_id = null;
+			if (ObjectUtil.isPresent(params["id"])) {
+				this.device = this.deviceStorageService.getDevice(params["id"]);
 			}
-        });
+		});
 	}
 }

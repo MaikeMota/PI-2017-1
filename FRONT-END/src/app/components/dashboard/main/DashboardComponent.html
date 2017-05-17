@@ -1,18 +1,18 @@
 <div class="row col">
     <div class="row"></div>
     <div class="row">
-        <div *ngFor="let device of controller.devices" class="col s6 m4 l3">
+        <div *ngFor="let device of devices" class="col s6 m4 l3">
             <div class="card">
                 <div class="card-image waves-effect waves-block waves-light">
-                    <img class="activator" src="http://materializecss.com/images/office.jpg">
+                    <div class="recipient">
+                        <div class="water"></div>
+                    </div>
                 </div>
                 <div class="card-content">
                     <ul>
                         <span class="card-title activator grey-text text-darken-4"><i class="material-icons right">more_vert</i></span>
                         <li><label>Descrição</label>: {{ device.description }}</li>
-                        <li><label>Nível Mínimo de Água</label>: {{ device.min_water_level }}</li>
-                        <li><label>Nível Médio de Água</label>: {{ device.med_water_level }}</li>
-                        <li><label>Nível Máximo de Água</label>: {{ device.max_water_level }}</li>
+                        <li><label>Nível Mínimo Atual</label>: {{ device.data[0].water_level }}</li>
                     </ul>
                 </div>
                 <div class="card-reveal">
