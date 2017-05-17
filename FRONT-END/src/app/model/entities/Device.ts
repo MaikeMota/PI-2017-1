@@ -4,11 +4,6 @@ import { DeviceData } from './';
 import { WaterInLetCloseTrigger, WaterInLetOpenTrigger } from '../enum';
 
 export class Device extends Entity {
-
-    constructor() {
-        super();
-    }
-    
     device_key: string;
     description: string;
     min_water_level: number;
@@ -22,4 +17,6 @@ export class Device extends Entity {
     water_inlet_close_trigger: WaterInLetCloseTrigger;
     open_water_inlet_under_level: number;
     close_water_inlet_above_level: number;
+    @Reflect.metadata('design:arrayType', DeviceData)
+    data: DeviceData[] = [];
 }

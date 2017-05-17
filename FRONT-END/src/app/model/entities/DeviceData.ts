@@ -12,6 +12,7 @@ export class DeviceData extends Entity {
     public water_inlet_flux: number;
     public water_out_flux: number;
     public device_id: string;
+    @Reflect.metadata('design:arrayType', DeviceDataEvent)
     public events: DeviceDataEvent[] = [];
 }
 
