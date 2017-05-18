@@ -30,14 +30,6 @@ export class DashboardComponent {
 		this.router.navigate(['home', 'details', device.id]);
 	}
 
-	public getDeviceStatus(device: Device): string {
-		let deviceData = device.data[0]
-		if (deviceData) {
-			return (new Date().getTime() - deviceData.createdAt.getTime() > 10000)? 'Offline': 'Online';
-		} 
-		return "Offline"
-	}
-
 	public get devices(): Device[] {
 		return this.deviceStorageService.devices;
 	}
