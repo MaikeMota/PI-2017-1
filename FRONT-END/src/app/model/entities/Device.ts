@@ -2,6 +2,7 @@ import { Enum, Entity } from '../../../../../RETHINK/core';
 import { typed } from '../../../../../RETHINK/core/annotation';
 import { DeviceData } from './';
 import { WaterInLetCloseTrigger, WaterInLetOpenTrigger } from '../enum';
+import { Definitions } from "../../shared";
 
 export class Device extends Entity {
     device_key: string;
@@ -20,4 +21,13 @@ export class Device extends Entity {
     @Reflect.metadata('design:arrayType', DeviceData)
     @Reflect.metadata('writable', false)
     data: DeviceData[] = [];
+
+    @Reflect.metadata('writable', false)
+    public get isOnline(): boolean {
+        let deviceData = this.data[0];
+        if (deviceData) {
+            return (new Date().getTime() - deviceData.createdAt.getTime() < Definitions.DEVICE_OFFLINE_TIMEOUT);
+        }
+        return false;
+    }
 }
