@@ -8,7 +8,6 @@ import { DeviceStorageService } from "./";
 
 @Injectable()
 export class SocketService {
-    public static readonly NEW_DATA_EVENT: string = "NEW_DEVICE_DATA";
     private socket: SocketIOClient.Socket;
 
     constructor(private deviceStorageService: DeviceStorageService) {
@@ -21,7 +20,7 @@ export class SocketService {
 
     public startListening(): void {
         let instance: SocketService = this;
-        this.socket.on(SocketService.NEW_DATA_EVENT, (data) => {
+        this.socket.on(Definitions.SOCKET_EVENTS.NEW_DATA_EVENT, (data) => {
             let deviceData: DeviceData = new DeviceData();
             deviceData.fill(data);
             deviceData.events = [];
