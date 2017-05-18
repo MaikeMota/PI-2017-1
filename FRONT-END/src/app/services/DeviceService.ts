@@ -11,7 +11,7 @@ export class DeviceService {
 
     public static readonly ENDPOINT = "device";
 
-    constructor(private http: Http, private userInfoService: UserInfoService, private deviceStorageService: DeviceStorageService) {
+    constructor(private http: Http, private userInfoService: UserInfoService) {
 
     }
 
@@ -31,39 +31,38 @@ export class DeviceService {
                 method: "delete",
                 url: Definitions.SERVER_RESTRICTED_ADDRESS + "/" + DeviceService.ENDPOINT + "/" + device.id,
                 headers: headers,
-                body: device.json()
+                //body: device.json()
             });
 
             let httpRequest: Request = new Request(requestOptions);
 
             this.http.request(httpRequest).toPromise().then(response => {
                 resolve(response);
-                this.deviceStorageService.deleteDevice(device);
             }).catch(error => {
                 reject(error);
             });
         });
     }
 
-    public retrieveAll() {
-        let headers = new Headers();
-        headers.append('Content-Type', 'application/json');
-        headers.append('Authorization', 'Bearer ' + this.userInfoService.token);
+    public retrieveAll(): Promise<Device[]> {
+        return new Promise<Device[]>((resolve, reject) => {
+            let headers = new Headers();
+            headers.append('Content-Type', 'application/json');
+            headers.append('Authorization', 'Bearer ' + this.userInfoService.token);
 
-        let requestOptions = new RequestOptions({
-            method: "get",
-            url: Definitions.SERVER_RESTRICTED_ADDRESS + "/" + DeviceService.ENDPOINT + "?limit=1000000",
-            headers: headers
-        });
+            let requestOptions = new RequestOptions({
+                method: "get",
+                url: Definitions.SERVER_RESTRICTED_ADDRESS + "/" + DeviceService.ENDPOINT + "?limit=1000000",
+                headers: headers
+            });
 
-        let httpRequest: Request = new Request(requestOptions);
+            let httpRequest: Request = new Request(requestOptions);
 
-        this.http.request(httpRequest).toPromise().then(response => {
-            ResponseUtil.getItems(response.json(), Device).forEach((device) => {
-                this.deviceStorageService.addOrUpdateDevice(device);
-            })
-        }).catch(error => {
-            console.error(error);
+            this.http.request(httpRequest).toPromise().then(response => {
+                resolve(ResponseUtil.getItems(response.json(), Device));
+            }).catch(error => {
+                reject(error);
+            });
         });
     }
 
@@ -90,7 +89,6 @@ export class DeviceService {
             this.http.request(httpRequest).toPromise().then(response => {
                 device = ResponseUtil.getItem(response.json(), Device);
                 resolve(device);
-                this.deviceStorageService.addOrUpdateDevice(device);
             }).catch(error => {
                 reject(error);
             });
@@ -120,7 +118,6 @@ export class DeviceService {
             this.http.request(httpRequest).toPromise().then(response => {
                 resolve((response as any)._body ? response.json() : null);
                 let index: number = -1;
-                this.deviceStorageService.addOrUpdateDevice(device);
             }).catch(error => {
                 reject(error);
             });
