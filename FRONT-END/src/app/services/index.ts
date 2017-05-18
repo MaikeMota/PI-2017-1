@@ -1,4 +1,4 @@
 export { UserInfoService } from './UserInfoService';
-export { DeviceStorageService } from './DeviceStorageService';
 export { DeviceService } from './DeviceService';
+export { DeviceStorageService } from './DeviceStorageService';
 export { SocketService } from './SocketService';
