@@ -91,19 +91,25 @@ export abstract class RTKObject {
     }
 
     public json(interceptor?: (key: string, value: any) => any): string {
-        
+
         return JSON.stringify(this, (key: string, value: any) => {
             if ("" === key) {
                 return value;
             }
-            
+
             if (value === '') {
                 return null;
             }
+            let writable: boolean = Reflect.getMetadata('writable', this, key);
+            if (ObjectUtil.isPresent(writable)) {
+                if (!writable) {
+                    return null;
+                }
+            }
 
-            if(ObjectUtil.isPresent(interceptor)) {
+            if (ObjectUtil.isPresent(interceptor)) {
                 let interceptedValue: string = interceptor(key, value);
-                if(StringUtil.isNotNullNotEmptyOrUndefined(interceptedValue)) {
+                if (StringUtil.isNotNullNotEmptyOrUndefined(interceptedValue)) {
                     return interceptedValue;
                 }
             }
@@ -111,7 +117,7 @@ export abstract class RTKObject {
             if (value instanceof RTKObject) {
                 return value.json();
             }
-            
+
             if (value instanceof Date) {
                 return (<Date>value).getTime();
             }
