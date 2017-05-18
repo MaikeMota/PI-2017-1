@@ -18,5 +18,6 @@ export class Device extends Entity {
     open_water_inlet_under_level: number;
     close_water_inlet_above_level: number;
     @Reflect.metadata('design:arrayType', DeviceData)
+    @Reflect.metadata('writable', false)
     data: DeviceData[] = [];
 }
