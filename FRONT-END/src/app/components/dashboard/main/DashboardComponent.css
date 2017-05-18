@@ -22,3 +22,24 @@
 .card-image {
     padding: 1.5em;
 }
+
+.circle {
+	border-radius: 50%;
+	width: 25px;
+	height: 25px; 
+	/* width and height can be anything, as long as they're equal */
+    display: inline-block;
+}
+
+.green {
+    background-color: green;
+}
+
+.red {
+    background-color: red;
+}
+
+.header {
+    display: inline-block;
+    font-size: 1.3em;
+}
