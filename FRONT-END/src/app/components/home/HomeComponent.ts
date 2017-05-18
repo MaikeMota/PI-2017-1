@@ -3,7 +3,7 @@ import { HomeController } from './controller';
 import { DashboardController } from '../dashboard/main/controller';
 
 import 'jquery';
-import { SocketService, DeviceService } from "../../services";
+import { SocketService, DeviceService, DeviceStorageService } from "../../services";
 import { Device } from "../../model/entities";
 
 @Component({
@@ -14,14 +14,16 @@ import { Device } from "../../model/entities";
 export class HomeComponent implements AfterViewInit {
 	title = 'Home';
 
-	constructor(public socketService: SocketService, public controller: HomeController, public deviceService: DeviceService,
-		private dashboardController: DashboardController) {
-		this.deviceService.retrieveAll();
+	constructor(public socketService: SocketService, public controller: HomeController, private dashboardController: DashboardController, private deviceStorageService: DeviceStorageService) {
 	}
 
 	ngAfterViewInit() {
 		jQuery('#modal').modal();
-		this.controller.listeningToSocket();
+		this.deviceStorageService.waitForInitialization().then(() => {
+			this.controller.listeningToSocket();
+		}).catch(error => {
+			console.log(error);
+		});
 	}
 
 	addDevice() {

@@ -17,7 +17,11 @@ export class DeviceDetailsComponent {
 		this.device = null;
 		this.route.params.forEach(params => {
 			if (ObjectUtil.isPresent(params["id"])) {
-				this.device = this.deviceStorageService.getDevice(params["id"]);
+				this.deviceStorageService.waitForInitialization().then(() => {
+					this.device = this.deviceStorageService.getDevice(params["id"]);
+				}).catch(error => {
+					console.log(error);
+				});
 			}
 		});
 	}
