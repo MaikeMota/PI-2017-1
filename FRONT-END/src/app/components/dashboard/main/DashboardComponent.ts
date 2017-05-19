@@ -12,22 +12,18 @@ import { DeviceStorageService } from "../../../services";
 export class DashboardComponent {
 	title = 'Controle de Cisternas Híbridas';
 
-	constructor(private deviceStorageService: DeviceStorageService, public controller: DashboardController, private router: Router) {
+	constructor(private deviceStorageService: DeviceStorageService, public controller: DashboardController) {
 		jQuery('#deleteModal').modal();
 	}
 
-	public update(device: Device) {
+	public updateDevice(device: Device) {
 		this.controller.entity = device.deepClone<Device>();
 		jQuery('#modal').modal('open');
 	}
 
-	public delete(device: Device) {
+	public deleteDevice(device: Device) {
 		this.controller.entity = device.deepClone<Device>();
 		jQuery('#deleteModal').modal('open');
-	}
-
-	public navigateToDetails(device: Device) {
-		this.router.navigate(['home', 'details', device.id]);
 	}
 
 	public get devices(): Device[] {
