@@ -4,6 +4,7 @@ import * as morgan from 'morgan';
 import * as bodyParser from 'body-parser';
 import * as http from "http";
 import * as path from 'path';
+import * as fs from 'fs';
 import { SocketService, TokenService } from './service';
 
 import { BaseRouter } from './router/BaseRouter';
@@ -11,7 +12,7 @@ import { PublicApiRouter } from './router/PublicApiRouter';
 import { CalculatorRouter } from './router/CalculatorRouter';
 import { SequelizeDataBase } from "../database/SequelizeDataBase";
 import { ErrorHandler } from "../../RETHINK/service";
-import { StringUtil } from "../../RETHINK/util";
+import { StringUtil, ObjectUtil } from "../../RETHINK/util";
 
 export class Application {
 
@@ -57,11 +58,9 @@ export class Application {
         this.configureRouter();
         this.configureErrorHandler();
         let instance: Application = this;
-        this.staticHtmlFolder = staticHtmlFolder;
-        this.app.use(express.static(this.staticHtmlFolder));
-        this.app.get('/*', function (req, res) {
-            res.sendFile(path.join(instance.staticHtmlFolder, 'index.html'));
-        });
+        if (StringUtil.isNotNullNotEmptyOrUndefined(staticHtmlFolder)) {
+            this.enableStaticHosting(staticHtmlFolder);
+        }
         SocketService.instance<SocketService>().enableSocket(this.httpServer);
         this.httpServer.listen(port, "0.0.0.0", () => {
             console.log(`Server running at ${port}`);
@@ -83,12 +82,31 @@ export class Application {
         this.app.use(ErrorHandler.handler);
     }
 
+    private enableStaticHosting(staticHtmlFolder): void {
+        this.staticHtmlFolder = staticHtmlFolder;
+        let instance = this;
+        let indexPath: string = path.join(instance.staticHtmlFolder, 'index.html')
+        if (fs.existsSync(this.staticHtmlFolder)) {
+            if (fs.existsSync(indexPath)) {
+                this.app.use(express.static(this.staticHtmlFolder));
+                this.app.get('/*', function (req, res) {
+                    res.sendFile(indexPath);
+                });
+            } else {
+                console.warn(`[WARN] - The path '${this.staticHtmlFolder}' does not contain an index.html!\n[WARN] - The static hosting will be ignored!`);
+            }
+
+        } else {
+            console.warn(`[WARN] - The path '${this.staticHtmlFolder}' does not exist!\n[WARN] - The static hosting will be ignored!`);
+        }
+    }
+
     private register<T extends BaseRouter>(routerConstructor: new () => T): void {
         let route = new routerConstructor();
         this.app.use(`/${route.PATH}`, route.router);
     }
 
-    public static run(port: number | string, staticHtmlFolder: string): Application {
+    public static run(port: number | string, staticHtmlFolder?: string): Application {
         let usePort: number;
         if (typeof port == 'string') {
             usePort = StringUtil.toInt(port);
@@ -104,4 +122,4 @@ export class Application {
 
 }
 
-Application.run(process.env.PORT || 80, path.join(__dirname, '../public'));
+Application.run(process.env.PORT || 80, process.env.STATIC_CONTENT || path.join(__dirname, '../public'));
