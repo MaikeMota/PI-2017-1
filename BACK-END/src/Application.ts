@@ -2,7 +2,9 @@ import * as express from 'express';
 import * as process from 'process';
 import * as morgan from 'morgan';
 import * as bodyParser from 'body-parser';
+import * as compression from 'compression';
 import * as http from "http";
+import * as path from 'path';
 
 import { TokenService } from './service'
 
@@ -18,12 +20,13 @@ export class Application {
 
     private app: express.Express;
     private httpServer: http.Server;
+    private staticHtmlFolder: string;
 
-    constructor(port: number) {
+    constructor(port: number, staticHtmlFolder: string) {
         SequelizeDataBase
             .registerSequelizeModelsFolder('./src/model/sequelize')
             .initializeDatabase().then(sequelizeDB => {
-                this.initializeServer(port);
+                this.initializeServer(port, staticHtmlFolder);
             }).catch((error) => {
                 console.error("There is an error while initializing Database.");
                 console.error(error.stack);
@@ -31,10 +34,28 @@ export class Application {
 
     }
 
-    private initializeServer(port: number): void {
+    private initializeServer(port: number, staticHtmlFolder: string): void {
         TokenService.AUTHORIZATION_HEADER;
         this.app = express();
         this.httpServer = http.createServer(this.app);
+        this.staticHtmlFolder = staticHtmlFolder;
+        this.app.use(express.static(this.staticHtmlFolder))
+        this.configureMiddlewares();
+        this.configureRouter();
+        this.configureErrorHandler();
+        let instance: Application = this;
+        SocketService.instance<SocketService>().enableSocket(this.httpServer);
+        this.httpServer.listen(port, "0.0.0.0", () => {
+            console.log(`Server running at ${port}`);
+        });
+    }
+
+    private configureMiddlewares(): void {
+
+        this.app.use(morgan("dev"));
+        this.app.use(bodyParser.urlencoded({ extended: false }));
+        this.app.use(bodyParser.json());
+        this.app.use(compression);
         this.app.use(function (req, res, next) {
             if (req.method === 'OPTIONS') {
                 console.log('!OPTIONS');
@@ -52,28 +73,17 @@ export class Application {
                 res.header("Access-Control-Allow-Origin", "*");
                 res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
             }
-
             next();
         });
-        this.configureMiddlewares();
-        this.configureRouter();
-        this.configureErrorHandler();
-        let instance: Application = this;
-        SocketService.instance<SocketService>().enableSocket(this.httpServer);        
-        this.httpServer.listen(port, "0.0.0.0", () => {
-            console.log(`Server running at ${port}`);
-        });
-    }
-
-    private configureMiddlewares(): void {
-        this.app.use(morgan("dev"));
-        this.app.use(bodyParser.urlencoded({ extended: false }));
-        this.app.use(bodyParser.json());
     }
 
     private configureRouter(): void {
         this.register(PublicApiRouter);
         this.register(CalculatorRouter);
+
+        this.app.get('/*', function (req, res) {
+            res.sendFile(path.join(this.staticHtmlFolder, 'index.html'));
+        });
     }
 
     private configureErrorHandler(): void {
@@ -85,14 +95,14 @@ export class Application {
         this.app.use(`/${route.PATH}`, route.router);
     }
 
-    public static run(port: number | string): Application {
+    public static run(port: number | string, staticHtmlFolder: string): Application {
         let usePort: number;
         if (typeof port == 'string') {
             usePort = StringUtil.toInt(port);
         } else {
             usePort = <number>port;
         }
-        return new Application(usePort);
+        return new Application(usePort, staticHtmlFolder);
     }
 
     public get appInstance(): express.Express {
@@ -101,4 +111,4 @@ export class Application {
 
 }
 
-Application.run(process.env.PORT || 3000);
+Application.run(process.env.PORT || 80, path.join(__dirname, '/public'));
