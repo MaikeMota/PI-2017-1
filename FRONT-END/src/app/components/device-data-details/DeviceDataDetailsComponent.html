@@ -1,4 +1,4 @@
-<div class="card-panel cyan accent-1">
+<div class="card-panel teal lighten-3 white-text">
     <div *ngIf="device">
         <div class="btn btn-floating pulse circle" [class.green]="device.isOnline" [class.red]="!device.isOnline"
              [title]="device.isOnline? 'Online': 'Offline'"></div>&nbsp;&nbsp;{{device.description}}
