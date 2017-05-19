@@ -53,10 +53,6 @@ export class DeviceStorageService {
         }
     }
 
-    public addDataToDevice(id: string, deviceData: DeviceData) {
-        this.getDevice(id).data.unshift(deviceData);
-    }
-
     public deleteDevice(device: Device): void {
         let deviceIndex = this.devices.indexOf(this.getDevice(device.id));
         if (deviceIndex >= 0) {
