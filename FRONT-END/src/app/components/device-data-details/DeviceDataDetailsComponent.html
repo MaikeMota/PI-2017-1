@@ -1,17 +1,7 @@
 <div class="card-panel cyan accent-1">
-    <div>
-        Informações Detalhadas</div>
-
     <div *ngIf="device">
-        <label class="white-text text-darken-2">Descrição</label>: {{ device.description }}<br>
-        <label class="white-text text-darken-2">Device Key</label>: {{ device.device_key }}<br>
-        <label class="white-text text-darken-2">Nível Mínimo de Água</label>: {{ device.min_water_level }}<br>
-        <label class="white-text text-darken-2">Nível Médio de Água</label>: {{ device.med_water_level }}<br>
-        <label class="white-text text-darken-2" class="white-text text-darken-2">Nível Máximo de Água</label>: {{ device.max_water_level }}<br>
-        <label class="white-text text-darken-2">Raio do Recipiente</label>: {{ device.recipient_radius }}<br>
-        <label class="white-text text-darken-2">Altura do Recipiente</label>: {{ device.recipient_height }}<br>
-        <label class="white-text text-darken-2">Trigger de Entrada de Água</label>: {{ device.water_inlet_open_trigger?.label }}<br>
-        <label class="white-text text-darken-2">Trigger de Saída de Água</label>: {{ device.water_inlet_close_trigger?.label }}<br>
+        <div class="btn btn-floating pulse circle" [class.green]="device.isOnline" [class.red]="!device.isOnline"
+             [title]="device.isOnline? 'Online': 'Offline'"></div>&nbsp;&nbsp;{{device.description}}
     </div>
 
     <table class="highlight responsive-table" *ngIf="device">
@@ -21,7 +11,7 @@
                 <th>Volume de Água</th>
                 <th>Fluxo de Entrada de Água</th>
                 <th>Fluxo de Saída de Água</th>
-                <th> Eventos </th>
+                <th>Eventos</th>
             </tr>
         </thead>
         <tbody>
