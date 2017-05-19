@@ -4,13 +4,13 @@ import * as socketIo from 'socket.io-client';
 import { Injectable } from '@angular/core';
 import { DeviceData } from '../model/entities/DeviceData';
 import { DeviceDataEvent } from '../model/entities/DeviceDataEvent';
-import { DeviceStorageService } from "./";
+import { DeviceStorageService, EventService } from "./";
 
 @Injectable()
 export class SocketService {
     private socket: SocketIOClient.Socket;
 
-    constructor(private deviceStorageService: DeviceStorageService) {
+    constructor(private deviceStorageService: DeviceStorageService, private eventService: EventService) {
         this.init();
     }
 
@@ -31,7 +31,7 @@ export class SocketService {
                     deviceData.events.push(deviceDataEvent);
                 });
             }
-            instance.deviceStorageService.addDataToDevice(deviceData.device_id, deviceData);
+            instance.eventService.emit<DeviceData>(`DEVICE/${deviceData.device_id}/DATA_ARRIVED`, deviceData);
         });
     }
 
