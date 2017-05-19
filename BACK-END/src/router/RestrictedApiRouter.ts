@@ -1,6 +1,5 @@
 import { Router, Request, RequestHandler, Response, NextFunction } from 'express';
 
-import { validateJWTAuthentication } from '../middleware/RestriectedRouteMiddleware';
 
 import { ForbiddenException } from '../../../RETHINK/core/exception';
 import { StringUtil } from '../../../RETHINK/util';
@@ -10,6 +9,7 @@ import { BaseRouter } from './BaseRouter';
 import { CalculatorRouter } from './CalculatorRouter';
 import { DeviceRouter } from './DeviceRouter';
 import { TokenWrapper } from '../model/TokenWrapper';
+import { validateJWTAuthentication } from '../middleware/RestriectedRouteMiddleware';
 
 
 export class RestrictedApiRouter extends BaseRouter {

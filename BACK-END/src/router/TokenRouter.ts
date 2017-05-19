@@ -27,7 +27,7 @@ export class TokenRouter extends BaseRouter {
     private static token(request: Request, response: Response, next: NextFunction): void {
         let authenticationWrapper: AuthenticationWrapper = request.body;
         TokenRouter.validateAuthenticationRequest(authenticationWrapper);
-        TokenService.instance.authenticate(authenticationWrapper).then((authenticationWrapper: AuthenticationWrapper) => {
+        TokenService.instance<TokenService>().authenticate(authenticationWrapper).then((authenticationWrapper: AuthenticationWrapper) => {
             if (authenticationWrapper) {
                 response.json({
                     token: authenticationWrapper.token,
@@ -39,9 +39,9 @@ export class TokenRouter extends BaseRouter {
 
     private static renew(request: Request, response: Response, next: NextFunction): void {
         let authorizationToken: string = request.header(TokenService.AUTHORIZATION_HEADER);
-        TokenService.instance.validateAuthorizationHeader(authorizationToken);
+        TokenService.instance<TokenService>().validateAuthorizationHeader(authorizationToken);
         let token: string = authorizationToken.split(' ')[1];
-        TokenService.instance.renewToken(new TokenWrapper(token)).then((renewedTokenWrapper: TokenWrapper) => {
+        TokenService.instance<TokenService>().renewToken(new TokenWrapper(token)).then((renewedTokenWrapper: TokenWrapper) => {
             response.json(renewedTokenWrapper);
         }).catch(next);
     }
