@@ -5,11 +5,11 @@ import { ObjectUtil } from '../../../../../RETHINK/util';
 import { Device } from "../../model/entities";
 
 @Component({
-	selector: 'device-details',
-	templateUrl: './DeviceDetailsComponent.html',
-	styleUrls: ['./DeviceDetailsComponent.css']
+	selector: 'device-data-details',
+	templateUrl: './DeviceDataDetailsComponent.html',
+	styleUrls: ['./DeviceDataDetailsComponent.css']
 })
-export class DeviceDetailsComponent {
+export class DeviceDataDetailsComponent {
 
 	public device: Device;
 
