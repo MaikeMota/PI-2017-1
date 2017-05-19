@@ -10,7 +10,7 @@
     </div>
     <div class="card-content teal lighten-3 white-text">
         <div class="card-title">
-            <div class="btn btn-floating circle pulse" [class.green]="device.isOnline" [class.red]="!device.isOnline" [title]="device.isOnline? 'Online': 'Offline'"></div>
+            <div class="btn btn-floating pulse circle" [class.green]="device.isOnline" [class.red]="!device.isOnline" [title]="device.isOnline? 'Online': 'Offline'"></div>
             <div class="header activator pointer" title="Clique para revelar os detalhes">&nbsp;&nbsp;{{device.description }}</div>
         </div>
         <p title="Volume Atual"> <label class="white-text">Vol. Atual:</label> {{device.data[0]?.water_level}}</p>
