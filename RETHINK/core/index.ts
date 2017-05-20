@@ -1,5 +1,5 @@
 export { AbstractController } from './AbstractController';
-export { Enum } from './Enum';
+export { Enum, EnumInfo } from './Enum';
 export { Entity } from './Entity';
 export { RTKObject } from './RTKObject';
 export { RTKSingleton } from './RTKSingleton';
