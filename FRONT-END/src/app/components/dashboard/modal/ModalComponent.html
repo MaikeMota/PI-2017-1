@@ -10,27 +10,27 @@
                 <label [class.active]="description.value?.length > 0" class="grey-text text-darken-2" for="description">Descrição</label>
             </div>
             <div class="input-field col s10">
-                <input required #min_water_level [(ngModel)]="controller.entity.min_water_level" id="min_water_level" required type="number" class="validate"
+                <input min="0" step="0.01" required #min_water_level [(ngModel)]="controller.entity.min_water_level" id="min_water_level" required type="number" class="validate"
                     name="min_water_level">
                 <label [class.active]="min_water_level.value?.length > 0" class="grey-text text-darken-2" for="min_water_level">Nível Mínimo de Água</label>
             </div>
             <div class="input-field col s10">
-                <input required #med_water_level [(ngModel)]="controller.entity.med_water_level" id="med_water_level" required type="number" class="validate"
+                <input min="0" step="0.01" required #med_water_level [(ngModel)]="controller.entity.med_water_level" id="med_water_level" required type="number" class="validate"
                     name="med_water_level">
                 <label [class.active]="med_water_level.value?.length > 0" class="grey-text text-darken-2" for="med_water_level">Nível Médio de Água</label>
             </div>
             <div class="input-field col s10">
-                <input required #max_water_level [(ngModel)]="controller.entity.max_water_level" id="max_water_level" required type="number" class="validate"
+                <input min="0" step="0.01" required #max_water_level [(ngModel)]="controller.entity.max_water_level" id="max_water_level" required type="number" class="validate"
                     name="max_water_level">
                 <label [class.active]="max_water_level.value?.length > 0" class="grey-text text-darken-2" for="max_water_level">Nível Máximo de Água</label>
             </div>
             <div class="input-field col s10">
-                <input required #recipient_radius [(ngModel)]="controller.entity.recipient_radius" id="recipient_radius" required type="number" class="validate"
+                <input min="0" step="0.01" required #recipient_radius [(ngModel)]="controller.entity.recipient_radius" id="recipient_radius" required type="number" class="validate"
                     name="recipient_radius">
                 <label [class.active]="recipient_radius.value?.length > 0" class="grey-text text-darken-2" for="recipient_radius">Raio do Recipiente</label>
             </div>
             <div class="input-field col s10">
-                <input required #recipient_height [(ngModel)]="controller.entity.recipient_height" id="recipient_height" required type="number" class="validate"
+                <input min="0" step="0.01" required #recipient_height [(ngModel)]="controller.entity.recipient_height" id="recipient_height" required type="number" class="validate"
                     name="recipient_height">
                 <label [class.active]="recipient_height.value?.length > 0" class="grey-text text-darken-2" for="recipient_height">Altura do Recipiente</label>
             </div>
@@ -45,6 +45,18 @@
                 id="inletCloseTrigger" [(ngModel)]="controller.entity.water_inlet_close_trigger">
                 <option *ngFor="let inletCloseTrigger of inletCloseTriggers" [ngValue]="inletCloseTrigger">{{inletCloseTrigger.label}}</option>
             </select>
+            
+            <div class="input-field col s10">
+                <input min="0" step="0.01" #open_water_inlet_under_level [(ngModel)]="controller.entity.open_water_inlet_under_level" id="open_water_inlet_under_level" required type="number" class="validate"
+                    name="open_water_inlet_under_level">
+                <label [class.active]="open_water_inlet_under_level.value?.length > 0" class="grey-text text-darken-2" for="open_water_inlet_under_level">Abrir Água abaixo do volume</label>
+            </div>
+            
+            <div class="input-field col s10">
+                <input min="0" step="0.01" #close_water_inlet_above_level [(ngModel)]="controller.entity.close_water_inlet_above_level" id="close_water_inlet_above_level" required type="number" class="validate"
+                    name="close_water_inlet_above_level">
+                <label [class.active]="close_water_inlet_above_level.value?.length > 0" class="grey-text text-darken-2" for="close_water_inlet_above_level">Fechar Água acima do volume</label>
+            </div>
         </form>
     </div>
     <div class="modal-footer">

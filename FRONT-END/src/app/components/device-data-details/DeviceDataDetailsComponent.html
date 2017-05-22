@@ -1,0 +1,31 @@
+<div class="card-panel teal lighten-3 white-text">
+    <div *ngIf="device">
+        <div class="btn btn-floating pulse circle" [class.green]="device.isOnline" [class.red]="!device.isOnline"
+             [title]="device.isOnline? 'Online': 'Offline'"></div>&nbsp;&nbsp;{{device.description}}
+    </div>
+
+    <table class="highlight responsive-table" *ngIf="device">
+        <thead>
+            <tr>
+                <th>Hora</th>
+                <th>Volume de Água</th>
+                <th>Fluxo de Entrada de Água</th>
+                <th>Fluxo de Saída de Água</th>
+                <th>Eventos</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let data of device.data">
+                <td>{{data.createdAt}}</td>
+                <td>{{data.water_level}}</td>
+                <td>{{data.water_inlet_flux}}</td>
+                <td>{{data.water_out_flux}}</td>
+                <td>
+                    <ul class="collection" *ngIf="data.events.length > 0">
+                        <li class="collection-item black-text" *ngFor="let event of data.events">{{event.event.label}} </li>
+                    </ul>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

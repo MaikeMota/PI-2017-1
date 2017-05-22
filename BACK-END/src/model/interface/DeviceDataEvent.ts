@@ -6,11 +6,7 @@ export interface DeviceDataEventInstance extends EntityInstance<DeviceDataEvent>
 }
 
 export class DeviceDataEvent extends Entity {
-    constructor() {
-        super();
-    }
-    device_data_id: string;
-    event: string;
+    
+    public device_data_id: string;
+    public event: string;
 }
-
-

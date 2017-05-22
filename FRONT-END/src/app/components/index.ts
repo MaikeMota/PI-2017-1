@@ -4,6 +4,7 @@ import { LoginController } from './login/controller';
 
 import { HomeComponent } from './home/HomeComponent';
 import { LoginComponent } from './login/LoginComponent';
+import { DeviceDataDetailsComponent } from './device-data-details/DeviceDataDetailsComponent';
 
 export const SERVICES: any[] = [
     ...DASHBOARD_SERVICES,
@@ -12,7 +13,8 @@ export const SERVICES: any[] = [
 ];
 
 export const COMPONENTS: any[] = [
-    ...DASHBOARD_COMPONENTS,
     HomeComponent,
-    LoginComponent
+    LoginComponent,
+    ...DASHBOARD_COMPONENTS,
+    DeviceDataDetailsComponent
 ];

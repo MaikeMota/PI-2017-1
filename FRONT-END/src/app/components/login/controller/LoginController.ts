@@ -17,7 +17,7 @@ export class LoginController extends AbstractController<User> {
     }
     
     public login(): void {
-        this.http.post(Definitions.SERVER_ADDRESS+"/"+LoginController.ENDPOINT, this.entity).toPromise().then(response => {
+        this.http.post(Definitions.SERVER_PUBLIC_ADDRESS+"/"+LoginController.ENDPOINT, this.entity).toPromise().then(response => {
             this.userInfoService.token = response.json().token;
             this.router.navigate(['home','dashboard']);
         }).catch(error => {

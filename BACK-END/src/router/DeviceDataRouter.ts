@@ -13,7 +13,7 @@ import { Device } from "../model/interface/index";
 export class DeviceDataRouter extends BaseRouter {
 
     public static readonly ROOT_PATH: string = "device";
-    public static readonly DEVICE_KEY_PARAM = "device_key"
+    public static readonly DEVICE_KEY_PARAM = "device_key";
     public static readonly NEW_DATA_EVENT: string = "NEW_DEVICE_DATA";
 
     protected configureRouter(): void {
@@ -30,9 +30,9 @@ export class DeviceDataRouter extends BaseRouter {
 
     private static receiveData(request: Request, response: Response, next: NextFunction): void {
         let deviceDataWrapper: DeviceDataWrapper = new DeviceDataWrapper(request.param(DeviceDataRouter.DEVICE_KEY_PARAM), request.body);
-        DeviceDataService.instance().save(deviceDataWrapper).then((deviceData) => {
+        DeviceDataService.instance<DeviceDataService>().save(deviceDataWrapper).then((deviceData) => {
             console.log('[DATA] - ' + JSON.stringify(deviceData));
-            SocketService.instance.broadCast(DeviceDataRouter.NEW_DATA_EVENT, deviceData);
+            SocketService.instance<SocketService>().broadCast(DeviceDataRouter.NEW_DATA_EVENT, deviceData);
             response.json();
         }).catch(next);
     }

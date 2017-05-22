@@ -4,10 +4,10 @@ import { DeviceDataEventEnum } from "./DeviceEventEnum";
 
 export class DeviceDataWrapper {
     device_key: string;
-    device_id: string
-    waterLevel: number
-    waterInletFlux: number
-    waterOutFlux: number
+    device_id: string;
+    waterLevel: number;
+    waterInletFlux: number;
+    waterOutFlux: number;
     events: number[];
 
     constructor(device_key: string, obj) {

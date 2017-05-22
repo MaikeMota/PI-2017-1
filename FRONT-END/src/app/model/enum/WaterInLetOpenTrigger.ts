@@ -8,10 +8,10 @@ export class WaterInLetOpenTrigger extends Enum {
     public static readonly UNDER_MED_VOLUME: WaterInLetOpenTrigger = new WaterInLetOpenTrigger('UNDER_MED_VOLUME', {
         "pt-BR": "Abaixo do Volume Médio"
     });
-    public static readonly UNDER_MIN_VOUME: WaterInLetOpenTrigger = new WaterInLetOpenTrigger('UNDER_MIN_VOUME', {
+    public static readonly UNDER_MIN_VOLUME: WaterInLetOpenTrigger = new WaterInLetOpenTrigger('UNDER_MIN_VOLUME', {
         "pt-BR": "Abaixo do Volume Mínimo"
     });
-    public static readonly UNDER_DEFINID_VOLUME: WaterInLetOpenTrigger = new WaterInLetOpenTrigger('UNDER_DEFINID_VOLUME', {
+    public static readonly UNDER_DEFINED_VOLUME: WaterInLetOpenTrigger = new WaterInLetOpenTrigger('UNDER_DEFINED_VOLUME', {
         "pt-BR": "Abaixo do Volume Definido"
     });
 

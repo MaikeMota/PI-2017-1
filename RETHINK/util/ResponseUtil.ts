@@ -16,16 +16,21 @@ export abstract class ResponseUtil {
     public static getItems<T extends Entity>(jsonArray, clazz: new (...args) => T): T[] {
         let items: T[] = [];
 
-        if(ObjectUtil.isBlank(jsonArray) || ObjectUtil.isBlank(jsonArray.items)) {
+        if (ObjectUtil.isBlank(jsonArray) || ObjectUtil.isBlank(jsonArray.items)) {
             return [];
         }
-        
-        for(let i = 0; i < jsonArray.items.length; i++) {
-            let item: T = new clazz();
-            item.fill(jsonArray.items[i]);
+
+        for (let i = 0; i < jsonArray.items.length; i++) {
+            let item = this.getItem(jsonArray.items[i], clazz);
             items.push(item);
         }
 
         return items;
+    }
+
+    public static getItem<T extends Entity>(json, clazz: new (...args) => T): T {
+        let item: T = new clazz();
+        item.fill(json);
+        return item;
     }
 }

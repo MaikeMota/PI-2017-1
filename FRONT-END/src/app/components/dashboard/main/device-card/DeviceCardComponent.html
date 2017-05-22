@@ -1,0 +1,39 @@
+<div class="card z-depth-5">
+    <div class="card-image">
+        <div class="recipient">
+            <div class="water" id="volumeter-{{device.id}}"></div>
+        </div>
+        <a class="btn-floating halfway-fab waves-effect waves-light teal pointer" [routerLink]="['/home/data-details/' + device.id]"
+            title="Clique para ir visualizar os dados anteriores">
+            <i class="material-icons">equalizer</i>
+            </a>
+    </div>
+    <div class="card-content teal lighten-3 white-text">
+        <div class="card-title">
+            <div class="btn btn-floating pulse circle" [class.green]="device.isOnline" [class.red]="!device.isOnline" [title]="device.isOnline? 'Online': 'Offline'"></div>
+            <div class="header activator pointer" title="Clique para revelar os detalhes">&nbsp;&nbsp;{{device.description }}</div>
+        </div>
+        <p title="Volume Atual"> <label class="white-text">Vol. Atual:</label> {{device.data[0]?.water_level}}</p>
+    </div>
+    <div class="card-reveal">
+        <span class="card-title">{{ device.description }}<i class="material-icons right">close</i></span>
+        <label>Chave do Dispositivo</label>: {{ device.device_key }} <br>
+        <label>Mín.</label>: {{ device.min_water_level }} <label>Méd.</label>: {{ device.med_water_level }} <label>Máx.</label>:
+        {{ device.max_water_level }} <br>
+        <label>Raio do Recipiente</label>: {{ device.recipient_radius }} <label>Altura do Recipiente</label>: {{ device.recipient_height
+        }} <br>
+        <label>Abertura de Água</label>: {{ device.water_inlet_open_trigger?.label }} <br>
+        <label>Fechamento de Água</label>: {{ device.water_inlet_close_trigger?.label }} <br>
+        <br>
+        <div class="card-action">
+            <div class="row">
+                <div class="col s6 center">
+                    <a class="pointer" (click)="onUpdateDevice.emit(device)"><i class="blue-text material-icons center small">mode_edit</i></a>
+                </div>
+                <div class="col s6 center">
+                    <a class="pointer" (click)="onDeleteDevice.emit(device)"><i class="red-text material-icons center small">delete</i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -5,6 +5,7 @@ import { readFileSync } from 'fs'
 
 import { SequelizeDataBase } from '../../database/SequelizeDataBase';
 
+import { RTKSingleton } from '../../../RETHINK/core';
 import { ForbiddenException, BadRequestException } from '../../../RETHINK/core/exception';
 import { StringUtil } from '../../../RETHINK/util';
 
@@ -15,16 +16,16 @@ import { AuthenticationWrapper } from '../model/AuthenticationWrapper';
 import { UserDao } from "../../database/UserDao";
 import { UserService } from "./";
 
-export class TokenService {
+export class TokenService extends RTKSingleton {
 
-    private static _instance: TokenService;
+    /*private static _instance: TokenService;
 
     public static get instance(): TokenService {
         if (!this._instance) {
             this._instance = new TokenService();
         }
         return this._instance;
-    }
+    }*/
 
     public static readonly AUTHORIZATION_HEADER: string = "authorization";
     public static readonly TOKEN_PREFIX: string = "Bearer";

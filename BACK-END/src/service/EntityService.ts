@@ -1,20 +1,11 @@
 import { GenericDao } from '../../database/GenericDao';
-import { Entity } from '../../../RETHINK/core';
+import { Entity, RTKSingleton } from '../../../RETHINK/core';
 import { PaginatedList } from "../model/";
 
-export class EntityService<T extends Entity> {
-
-    protected static _instance: EntityService<any>;
+export class EntityService<T extends Entity> extends RTKSingleton {
 
     protected get dao(): GenericDao<any, any> {
-        return GenericDao.instance();
-    }
-
-    public static instance<T extends EntityService<any>>(): T {
-        if (!this._instance) {
-            this._instance = new this();
-        }
-        return <T>this._instance;
+        return GenericDao.instance<GenericDao<any, any>>();
     }
 
     public save<T>(entity: T): Promise<T> {
@@ -33,7 +24,7 @@ export class EntityService<T extends Entity> {
         return this.dao.byId(this.class, id);
     }
 
-    public list<T>(offset: number = 0, limit: number = 10): Promise<PaginatedList<any>> {
+    public list<T>(offset: number = 0, limit: number = 10, include: any[] = []): Promise<PaginatedList<any>> {
         return new Promise<PaginatedList<any>>((resolve, reject) => {
             let promises = [];
 
@@ -48,7 +39,7 @@ export class EntityService<T extends Entity> {
             );
 
             promises.push(
-                this.dao.list(this.class).then((entities: T[]) => {
+                this.dao.list(this.class, offset, limit, include).then((entities: T[]) => {
                     list.items = entities;
                 })
             );
@@ -64,4 +55,8 @@ export class EntityService<T extends Entity> {
     protected get class(): new () => T {
         return undefined;
     };
+
+    public static instance<ES extends EntityService<any>>(): ES {
+        return super.instance<ES>();
+    }
 }
